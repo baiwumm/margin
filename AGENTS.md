@@ -140,6 +140,13 @@ astro.config.ts        # 站点 / 集成 / Markdown / Shiki / 字体 / env schem
 - 文件组织：页面 / 布局 / 组件 / 工具 / 样式各归其位，不要跨目录放置。
 - 错误处理：异步加载（如 Pagefind）做存在性判断与幂等保护；所有 DOM 操作前判空；事件监听用 `AbortController` 管理并在 `astro:page-load` 重建。
 
+# 提交规则
+
+- 提交信息使用 Conventional Commits 格式（与 `cz.yaml` 的 commitizen 约定一致）：`类型: 描述`，类型如 `feat` / `fix` / `docs` / `refactor` / `style` / `chore` 等。
+- **提交描述以中文优先**：用简洁中文一句话说明改动，例如 `fix: 修复搜索弹窗在移动端无法关闭的问题`。
+- 有明确作用域时写 `类型(scope): 描述`（如 `docs(agents): ...`），无作用域时省略。
+- 一次提交只包含一个逻辑改动，不把无关改动混入同一提交。
+
 # Modification Rules
 
 - 不随意修改基础架构：`astro.config.ts`、`content.config.ts`、`Layout.astro`、`src/config.ts` 是地基，改动前必须说明理由并验证全站。
