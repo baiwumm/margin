@@ -2,7 +2,7 @@
 
 Devosfera：基于 AstroPaper 深度二次开发的个人博客（纯静态站点）。项目定位是「个人技术博客 + 图片画廊」，当前主要目标是在保持静态生成、页面性能与既有视觉体系（终端/赛博朋克风格、玻璃拟态、Aurora 光效）的前提下，持续扩展和维护博客内容、画廊、全局搜索、SEO 与 OG 图等既有能力，不做架构性重写。
 
-关键事实：仓库目前为单 commit、无自动化测试、无 CI workflow；所有改动依赖 `astro check` + 构建与人工验证。当前处于「先理解、后修改」的长期 AI 协作模式，任何修改前先阅读本文件与相关代码。
+关键事实：仓库提交历史很浅（当前仅 2 个提交）、无自动化测试、无 CI workflow；所有改动依赖 `astro check` + 构建与人工验证。当前处于「先理解、后修改」的长期 AI 协作模式，任何修改前先阅读本文件与相关代码。
 
 # 修改原则
 
@@ -56,6 +56,7 @@ src/
   config.ts            # SITE 全局配置与功能开关（改站点行为先看这里）
   content.config.ts    # blog / galleries 集合的 Zod schema
   constants.ts         # 社交链接、分享链接（URL 来自 env）
+  assets/              # 字体（woff2/ttf，由 astro.config.ts 注册）、SVG 图标、logo
   data/blog/           # 文章 .md / .mdx（扁平存放）
   data/galleries/      # 每个画廊一个文件夹：index.md + 图片
   layouts/             # Layout / Main / PostDetails / AboutLayout
@@ -84,12 +85,13 @@ astro.config.ts        # 站点 / 集成 / Markdown / Shiki / 字体 / env schem
 # Content System
 
 - **创建文章**：在 `src/data/blog/` 新建 `<slug>.md` 或 `.mdx`，按 schema 写 frontmatter 即可；无需修改路由/配置，标签、RSS、sitemap、搜索、分页自动纳入。文件以下划线 `_` 开头会被 glob 忽略（不参与集合）。
+- **URL / Slug**：文章 slug 即文件名（`/posts/<slug>/`，支持子目录并按目录段逐级 slugify）；标签 slug 由 `slugifyStr` 生成（拉丁字符 → slugify 小写连字符，含非拉丁字符 → lodash.kebabcase 保留原字符）；画廊 slug 即文件夹名（`/galleries/<slug>/`）。
 - **Frontmatter（blog）**：`title`、`pubDatetime`（必填，ISO 日期）、`description`（必填）、`tags`（默认 `["others"]`）、`draft`、`featured`、`modDatetime`、`author`、`ogImage`（本地资源或远程 URL）、`coverImage`、`canonicalURL`、`hideEditPost`、`timezone`（覆盖 `SITE.timezone`）。
 - **Content Collection**：`blog` 与 `galleries` 的字段以 `src/content.config.ts` 为准；新增字段必须同步 schema。
 - **Markdown / MDX**：两者都支持；MDX 可直接写 JSX。正文加 `## Table of contents` 可自动生成 TOC（remark-toc + remark-collapse）。
 - **代码块扩展语法**（已有约定）：`// [!code highlight]`、`// [!code ++]` / `// [!code --]`、`// [!code word]`；在代码围栏语言标识后追加 `file=文件名`（如 `ts file=example.ts`）可显示文件名徽章。
-- **图片**：本地图走 `astro:assets`（`Image` 组件，自动优化 / srcset / 格式转换）；远程图用普通 `<img>` 并带 alt；画廊图片通过 `import.meta.glob` 在构建期收集。
-- **Gallery**：在 `src/data/galleries/<slug>/` 放 `index.md` + 图片；frontmatter 为 `title / description / pubDatetime / draft / coverImage / tags`；图片按文件名排序（数字前缀控制顺序），alt 由文件名自动生成。MDX 中用 `<GalleryEmbed slug="..." cols limit showLink />` 内嵌（无需 import，PostDetails 已全局注册），**slug 必须与画廊文件夹名完全一致**。
+- **图片**：本地图走 `astro:assets`（`Image` 组件，自动优化 / srcset / 格式转换）；远程图用普通 `<img>` 并带 alt；画廊图片通过 `import.meta.glob` 在构建期收集。文章卡片封面由 `SITE.showCoverImages` 控制（默认关闭），开启后按 `coverImage → ogImage → 动态 OG index.png` 的优先级取图。
+- **Gallery**：在 `src/data/galleries/<slug>/` 放 `index.md` + 图片；frontmatter 为 `title / description / pubDatetime / draft / coverImage / tags`；图片按文件名排序（数字前缀控制顺序），alt 由文件名自动生成。MDX 中用 `<GalleryEmbed slug="..." cols limit showLink />` 内嵌（无需 import，PostDetails 已全局注册），**slug 必须与画廊文件夹名完全一致**。画廊的完整技术文档见根目录 `GALLERIES.md`。
 - **Tags / Categories**：只有 Tags，无 Categories；标签页自动生成，新标签无需额外配置。
 - **Draft**：`draft: true` 在构建产物中隐藏（列表 / 详情 / RSS / sitemap），dev 下可见；定时发布按 `SITE.timezone` + `scheduledPostMargin`（15 分钟）计算。
 
@@ -99,6 +101,7 @@ astro.config.ts        # 站点 / 集成 / Markdown / Shiki / 字体 / env schem
 - **什么时候新建组件**：同一 UI 在 2 个以上页面复用，或组件内逻辑较复杂时；单页一次性的小片段直接写在页面里。
 - **组件形式**：全部使用 Astro Component（`.astro`）；不引入 React / Vue 等框架组件。客户端逻辑写在组件 `<script>` 内，遵循「`astro:page-load` 初始化 + `AbortController` 清理 + 幂等防重复（dataset 标记或 childElementCount 判断）」。
 - **放置位置**：可复用组件放 `src/components/`；图标用 `src/assets/icons/` 下的 SVG（Astro 内直接 import 使用）；页面独有样式写页面 `<style>`，跨页面共享样式进 `src/styles/`。
+- **Breadcrumb 返回键**：`Breadcrumb withBackButton` 的返回链接读取 `sessionStorage("backUrl")`，该值由 `Main.astro` / `index.astro` 写入（搜索页还追加 `?q=` 参数）；改动导航/返回相关逻辑前先了解这条数据流。
 
 # Styling Guidelines
 
@@ -167,6 +170,7 @@ astro.config.ts        # 站点 / 集成 / Markdown / Shiki / 字体 / env schem
 - **构建脚本含 Unix 风格 `cp` 命令**：PowerShell / bash 可用，cmd.exe 不可用；构建环境注意这一点。
 - **生产构建依赖 devDependencies**：`@tailwindcss/typography`、`@pagefind/default-ui` 位于 devDependencies 但生产构建需要，CI 安装不要用 `--prod`。
 - **无自动化测试**：改动靠人工验证；View Transitions 下最常见的回归是事件监听器重复绑定。
-- **单 commit 仓库、无历史可回退**：重大改动前建议先提交或备份当前状态。
+- **提交历史很浅（当前仅 2 个提交）**：基本没有可回退的旧版本；重大改动前建议先提交或备份当前状态。
+- **pnpm 原生依赖构建白名单**：`pnpm-workspace.yaml` 的 `allowBuilds` / `onlyBuiltDependencies` 已放行 esbuild 与 sharp；新增带原生构建脚本的依赖时必须同步该白名单（且按「修改原则」先征得用户同意）。
 - **tsconfig 中的 `jsx: "react-jsx"` 是上游遗留**（项目无 React 依赖），不要据此引入 React 组件。
 - 不要删除 `public/` 下被页面引用的资源（favicon、`devosfera-og.webp`、`audio/` 等）。
