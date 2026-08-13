@@ -1,11 +1,12 @@
 ---
-import IconMoon from "@/assets/icons/IconMoon.svg";
+import IconDots from "@/assets/icons/IconDots.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconGallery from "@/assets/icons/IconGallery.svg";
+import IconTag from "@/assets/icons/IconTag.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
+import IconMoon from "@/assets/icons/IconMoon.svg";
 import Logo from "@/assets/logo/margin.svg";
-import LinkButton from "./LinkButton.astro";
 import MobileMenu from "./MobileMenu.astro";
 import IntroAudioCompact from "./IntroAudioCompact.astro";
 import { SITE } from "@/config";
@@ -32,7 +33,10 @@ const isActive = (path: string) => {
   Skip to content
 </a>
 
-<header id="main-header" class="sticky top-0 z-40 w-full transition-colors duration-300">
+<header
+  id="main-header"
+  class="sticky top-0 z-40 w-full transition-colors duration-300"
+>
   <div class="header-scrolled-filter w-full">
     <div class="app-layout">
       <div
@@ -47,7 +51,7 @@ const isActive = (path: string) => {
         <!-- Logo -->
         <a
           href="/"
-          class="group relative z-20 flex items-center gap-2 text-xl font-bold tracking-tight sm:text-2xl shrink-0"
+          class="group relative z-20 flex shrink-0 items-center gap-2 text-xl font-bold tracking-tight sm:text-2xl"
         >
           <!-- <span class="nav-logo-text">{SITE.title}</span> -->
           <Logo class="h-9 w-auto sm:h-10" />
@@ -56,7 +60,7 @@ const isActive = (path: string) => {
         <!-- Center Audio Player -->
         {
           SITE.introAudio.enabled && (
-            <div class="flex-1 flex justify-center min-w-0">
+            <div class="flex min-w-0 flex-1 justify-center">
               <IntroAudioCompact
                 src={SITE.introAudio.src}
                 label={SITE.introAudio.label}
@@ -69,7 +73,10 @@ const isActive = (path: string) => {
         }
 
         <!-- Nav area -->
-        <nav id="nav-menu" class="flex items-center sm:gap-1 shrink-0">
+        <nav
+          id="nav-menu"
+          class="relative flex shrink-0 items-center sm:gap-1.5"
+        >
           <!-- Mobile hamburger (animated lines) -->
           <button
             id="menu-btn"
@@ -86,7 +93,7 @@ const isActive = (path: string) => {
           </button>
 
           <!-- Desktop links (always visible on sm+) -->
-          <ul class="hidden sm:flex sm:flex-row sm:items-center sm:gap-1">
+          <ul class="hidden sm:flex sm:flex-row sm:items-center sm:gap-1.5">
             <li>
               <a
                 href="/posts"
@@ -96,67 +103,11 @@ const isActive = (path: string) => {
             </li>
             <li>
               <a
-                href="/tags"
-                class:list={["nav-link", { "nav-active": isActive("/tags") }]}
-                >Tags</a
-              >
-            </li>
-            <li>
-              <a
                 href="/about"
                 class:list={["nav-link", { "nav-active": isActive("/about") }]}
                 >About</a
               >
             </li>
-            <li class="flex items-center">
-              <a
-                href="/search"
-                class:list={["nav-link", { "nav-active": isActive("/search") }]}
-                title="Go to Search">Search</a
-              >
-            </li>
-            {
-              SITE.showArchives && (
-                <li>
-                  <LinkButton
-                    href="/archives"
-                    class:list={[
-                      "nav-link",
-                      { "nav-active": isActive("/archives") },
-                    ]}
-                    title="Archives"
-                    aria-label="archives"
-                  >
-                    <IconArchive class="hidden sm:inline-block" />
-                    <span class="sm:sr-only">Archives</span>
-                  </LinkButton>
-                </li>
-              )
-            }
-            {
-              SITE.showGalleries && (
-                <li>
-                  <LinkButton
-                    href="/galleries"
-                    class:list={[
-                      "nav-link",
-                      { "nav-active": isActive("/galleries") },
-                    ]}
-                    title="Galleries"
-                    aria-label="galleries"
-                  >
-                    <IconGallery class="hidden sm:inline-block" />
-                    <span class="sm:sr-only">Galleries</span>
-                  </LinkButton>
-                </li>
-              )
-            }
-
-            <!-- Separator -->
-            <li class="flex items-center px-1" aria-hidden="true">
-              <div class="h-4 w-px bg-border/30"></div>
-            </li>
-
             <li class="flex items-center">
               <button
                 data-search-trigger
@@ -169,23 +120,157 @@ const isActive = (path: string) => {
                 <kbd class="nav-kbd">⌘K</kbd>
               </button>
             </li>
-            {
-              SITE.lightAndDarkMode && (
-                <li class="flex items-center">
-                  <button
-                    id="theme-btn"
-                    class="nav-icon-btn relative"
-                    title="Toggles light & dark"
-                    aria-label="auto"
-                    aria-live="polite"
-                  >
-                    <IconMoon class="absolute top-1/2 left-1/2 -translate-1/2 scale-100 rotate-0 transition-all duration-300 dark:scale-0 dark:-rotate-90" />
-                    <IconSunHigh class="absolute top-1/2 left-1/2 -translate-1/2 scale-0 rotate-90 transition-all duration-300 dark:scale-100 dark:rotate-0" />
-                  </button>
-                </li>
-              )
-            }
+            <li class="flex items-center">
+              <button
+                id="menu-more-btn"
+                class="nav-more-btn"
+                title="Menu"
+                aria-label="Open menu"
+                aria-expanded="false"
+                aria-controls="more-menu"
+              >
+                <IconDots class="size-5" />
+              </button>
+            </li>
           </ul>
+
+          <!-- More dropdown panel -->
+          <div id="more-menu" class="more-menu" aria-hidden="true">
+            <div class="more-menu-panel">
+              <div class="menu-section">
+                <span class="menu-section-label">Explore</span>
+                <a
+                  href="/tags"
+                  class:list={[
+                    "menu-row",
+                    { "menu-active": isActive("/tags") },
+                  ]}
+                >
+                  <IconTag class="menu-row-icon" />
+                  <span>Tags</span>
+                </a>
+                {
+                  SITE.showArchives && (
+                    <a
+                      href="/archives"
+                      class:list={[
+                        "menu-row",
+                        { "menu-active": isActive("/archives") },
+                      ]}
+                    >
+                      <IconArchive class="menu-row-icon" />
+                      <span>Archives</span>
+                    </a>
+                  )
+                }
+                {
+                  SITE.showGalleries && (
+                    <a
+                      href="/galleries"
+                      class:list={[
+                        "menu-row",
+                        { "menu-active": isActive("/galleries") },
+                      ]}
+                    >
+                      <IconGallery class="menu-row-icon" />
+                      <span>Galleries</span>
+                    </a>
+                  )
+                }
+              </div>
+
+              <div class="menu-divider"></div>
+
+              {
+                SITE.lightAndDarkMode && (
+                  <div class="menu-section">
+                    <span class="menu-section-label">Preferences</span>
+                    <div class="menu-row menu-row-between">
+                      <span>Theme</span>
+                      <div
+                        class="theme-segment"
+                        role="group"
+                        aria-label="Theme"
+                      >
+                        <button
+                          type="button"
+                          data-theme-option="light"
+                          aria-pressed="false"
+                          aria-label="Light mode"
+                          title="Light"
+                        >
+                          <IconSunHigh class="size-4" />
+                        </button>
+                        <button
+                          type="button"
+                          data-theme-option="dark"
+                          aria-pressed="false"
+                          aria-label="Dark mode"
+                          title="Dark"
+                        >
+                          <IconMoon class="size-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div class="menu-row menu-row-between">
+                      <span>Accent Color</span>
+                      <div
+                        class="accent-dots"
+                        role="group"
+                        aria-label="Accent color"
+                      >
+                        <button
+                          type="button"
+                          class="accent-dot"
+                          data-accent-option="blue"
+                          style="background: var(--accent-blue)"
+                          aria-label="Blue"
+                          aria-pressed="false"
+                          title="Blue"
+                        />
+                        <button
+                          type="button"
+                          class="accent-dot"
+                          data-accent-option="green"
+                          style="background: var(--accent-green)"
+                          aria-label="Green"
+                          aria-pressed="false"
+                          title="Green"
+                        />
+                        <button
+                          type="button"
+                          class="accent-dot"
+                          data-accent-option="purple"
+                          style="background: var(--accent-purple)"
+                          aria-label="Purple"
+                          aria-pressed="false"
+                          title="Purple"
+                        />
+                        <button
+                          type="button"
+                          class="accent-dot"
+                          data-accent-option="orange"
+                          style="background: var(--accent-orange)"
+                          aria-label="Orange"
+                          aria-pressed="false"
+                          title="Orange"
+                        />
+                        <button
+                          type="button"
+                          class="accent-dot"
+                          data-accent-option="red"
+                          style="background: var(--accent-red)"
+                          aria-label="Red"
+                          aria-pressed="false"
+                          title="Red"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )
+              }
+            </div>
+          </div>
         </nav>
       </div>
     </div>
@@ -195,7 +280,7 @@ const isActive = (path: string) => {
   <!-- Bottom border with gradient -->
   <div
     id="header-border"
-    class="header-border-line opacity-0 transition-opacity duration-300 h-px w-full bg-linear-to-r from-transparent via-border/40 to-transparent"
+    class="header-border-line h-px w-full bg-linear-to-r from-transparent via-border/40 to-transparent opacity-0 transition-opacity duration-300"
   >
   </div>
 </header>
@@ -205,9 +290,13 @@ const isActive = (path: string) => {
   #main-header {
     background: transparent;
   }
-  
+
   :global(.header-scrolled) {
-    background: color-mix(in srgb, var(--background) 80%, transparent) !important;
+    background: color-mix(
+      in srgb,
+      var(--background) 80%,
+      transparent
+    ) !important;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
   }
 
@@ -243,15 +332,19 @@ const isActive = (path: string) => {
     font-weight: 500;
     color: var(--foreground);
     border-radius: 0.5rem;
-    transition: color 0.2s ease, background-color 0.2s ease;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
   }
 
-  .nav-link:focus-visible, .nav-icon-btn:focus-visible, .nav-search-btn:focus-visible {
+  .nav-link:focus-visible,
+  .nav-search-btn:focus-visible,
+  .nav-more-btn:focus-visible {
     outline: none;
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 50%, transparent);
   }
 
-  :is(.nav-link, .nav-icon-btn):hover {
+  .nav-link:hover {
     color: var(--accent);
     background: color-mix(in srgb, var(--accent) 8%, transparent);
   }
@@ -276,17 +369,6 @@ const isActive = (path: string) => {
     box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 80%, transparent);
   }
 
-  .nav-icon-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.5rem;
-    transition: color 0.2s ease, background-color 0.2s ease;
-    color: var(--foreground);
-  }
-
   /* ─── Desktop Search Button with ⌘K ─── */
   .nav-search-btn {
     display: inline-flex;
@@ -295,18 +377,21 @@ const isActive = (path: string) => {
     padding: 0.3rem 0.5rem 0.3rem 0.5rem;
     font-size: 0.8125rem;
     font-weight: 500;
-    color: var(--muted-foreground);
-    border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
-    border-radius: 0.5rem;
-    background: color-mix(in srgb, var(--muted) 40%, transparent);
+    color: color-mix(in srgb, var(--foreground) 75%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent-green) 25%, transparent);
+    border-radius: 0.625rem;
+    background: color-mix(in srgb, var(--accent-green) 12%, transparent);
     cursor: pointer;
-    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease;
   }
 
   .nav-search-btn:hover {
-    color: var(--accent);
-    border-color: color-mix(in srgb, var(--accent) 30%, transparent);
-    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    color: var(--foreground);
+    border-color: color-mix(in srgb, var(--accent-green) 45%, transparent);
+    background: color-mix(in srgb, var(--accent-green) 18%, transparent);
   }
 
   .nav-kbd {
@@ -322,13 +407,144 @@ const isActive = (path: string) => {
     border-bottom-width: 2px;
     background: color-mix(in srgb, var(--background) 90%, transparent);
     color: var(--muted-foreground);
-    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
-    transition: color 0.2s ease, border-color 0.2s ease;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease;
   }
 
   .nav-search-btn:hover .nav-kbd {
-    border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+    border-color: color-mix(in srgb, var(--accent-green) 45%, transparent);
     color: var(--accent);
+  }
+
+  /* ─── More Menu Button (…) ─── */
+  .nav-more-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .nav-more-btn:hover {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  .nav-more-btn[aria-expanded="true"] {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 15%, transparent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+
+  /* ─── More Menu Dropdown Panel ─── */
+  .more-menu {
+    position: absolute;
+    top: calc(100% + 0.375rem);
+    right: 0;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  .more-menu.is-open {
+    pointer-events: auto;
+  }
+
+  .more-menu-panel {
+    width: 17rem;
+    padding: 0.375rem;
+    border-radius: 1rem;
+    border: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
+    background: color-mix(in srgb, var(--background) 85%, transparent);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+    transform-origin: top right;
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease,
+      visibility 0.25s;
+    visibility: hidden;
+  }
+
+  .more-menu.is-open .more-menu-panel {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    visibility: visible;
+  }
+
+  .menu-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding: 0.25rem;
+  }
+
+  .menu-section-label {
+    padding: 0.375rem 0.625rem 0.25rem;
+    font-family: var(--font-firacode), monospace;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--foreground) 50%, transparent);
+  }
+
+  .menu-row {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.625rem;
+    border-radius: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .menu-row:hover {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  .menu-row.menu-active {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+
+  .menu-row-icon {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex-shrink: 0;
+  }
+
+  .menu-row-between {
+    justify-content: space-between;
+  }
+
+  .menu-divider {
+    height: 1px;
+    margin: 0.375rem 0.375rem;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--border) 35%, transparent),
+      transparent
+    );
   }
 
   /* ─── Animated Hamburger Button ─── */
@@ -343,7 +559,9 @@ const isActive = (path: string) => {
     border-radius: 0.625rem;
     border: 1px solid transparent;
     background: transparent;
-    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
   }
 
@@ -409,13 +627,12 @@ const isActive = (path: string) => {
     width: 100%;
     transform: rotate(-45deg);
   }
-
-
 </style>
 
 <script>
   let headerCleanup: AbortController | null = null;
   let scrollCleanup: AbortController | null = null;
+  let moreMenuCleanup: AbortController | null = null;
 
   function setupScrollPhysics() {
     if (scrollCleanup) scrollCleanup.abort();
@@ -470,7 +687,7 @@ const isActive = (path: string) => {
     const backdrop = document.querySelector(".mobile-menu-backdrop");
 
     if (!menuBtn || !mobileMenu) return;
-    
+
     const closeMenu = () => {
       menuBtn.setAttribute("aria-expanded", "false");
       menuBtn.setAttribute("aria-label", "Open Menu");
@@ -494,7 +711,7 @@ const isActive = (path: string) => {
       },
       { signal }
     );
-    
+
     // Close when clicking the backdrop
     if (backdrop) {
       backdrop.addEventListener("click", closeMenu, { signal });
@@ -507,13 +724,74 @@ const isActive = (path: string) => {
     });
   }
 
+  function setupMoreMenu() {
+    if (moreMenuCleanup) moreMenuCleanup.abort();
+    moreMenuCleanup = new AbortController();
+    const { signal } = moreMenuCleanup;
+
+    const moreBtn = document.querySelector<HTMLButtonElement>("#menu-more-btn");
+    const moreMenu = document.querySelector("#more-menu");
+    if (!moreBtn || !moreMenu) return;
+
+    const closeMoreMenu = () => {
+      moreBtn.setAttribute("aria-expanded", "false");
+      moreBtn.setAttribute("aria-label", "Open menu");
+      moreMenu.classList.remove("is-open");
+      moreMenu.setAttribute("aria-hidden", "true");
+    };
+
+    moreBtn.addEventListener(
+      "click",
+      () => {
+        const isOpen = moreBtn.getAttribute("aria-expanded") === "true";
+        if (isOpen) {
+          closeMoreMenu();
+        } else {
+          moreBtn.setAttribute("aria-expanded", "true");
+          moreBtn.setAttribute("aria-label", "Close menu");
+          moreMenu.classList.add("is-open");
+          moreMenu.setAttribute("aria-hidden", "false");
+        }
+      },
+      { signal }
+    );
+
+    // Close on outside click
+    document.addEventListener(
+      "click",
+      event => {
+        if (moreBtn.getAttribute("aria-expanded") !== "true") return;
+        const target = event.target as Node;
+        if (moreBtn.contains(target) || moreMenu.contains(target)) return;
+        closeMoreMenu();
+      },
+      { signal }
+    );
+
+    // Close on Escape
+    document.addEventListener(
+      "keydown",
+      event => {
+        if (event.key === "Escape") closeMoreMenu();
+      },
+      { signal }
+    );
+
+    // Close when navigating via a menu link
+    moreMenu.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", closeMoreMenu, { signal });
+    });
+  }
+
   // Initial load
   setupScrollPhysics();
   setupMobileNav();
+  setupMoreMenu();
 
   // Runs on view transitions navigation
   document.addEventListener("astro:after-swap", () => {
     setupScrollPhysics();
     setupMobileNav();
+    setupMoreMenu();
   });
 </script>

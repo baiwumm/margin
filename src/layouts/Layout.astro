@@ -231,6 +231,12 @@ const showGrain = SITE.backdropEffects.grain;
         // Set theme immediately to prevent flash
         document.firstElementChild?.setAttribute("data-theme", themeValue);
 
+        // Restore accent color immediately to prevent flash
+        document.firstElementChild?.setAttribute(
+          "data-accent",
+          localStorage.getItem("accent") || "blue"
+        );
+
         // Export minimal API for external script
         window.theme = {
           themeValue: themeValue,

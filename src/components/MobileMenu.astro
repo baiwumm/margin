@@ -1,7 +1,10 @@
 ---
-import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
+import IconTag from "@/assets/icons/IconTag.svg";
+import IconArchive from "@/assets/icons/IconArchive.svg";
+import IconGallery from "@/assets/icons/IconGallery.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
+import IconMoon from "@/assets/icons/IconMoon.svg";
 import { SITE } from "@/config";
 
 interface Props {
@@ -11,8 +14,8 @@ interface Props {
 const { currentPath } = Astro.props;
 
 const isActive = (path: string) => {
-  const currentPathArray = currentPath.split("/").filter((p) => p.trim());
-  const pathArray = path.split("/").filter((p) => p.trim());
+  const currentPathArray = currentPath.split("/").filter(p => p.trim());
+  const pathArray = path.split("/").filter(p => p.trim());
   return currentPath === path || currentPathArray[0] === pathArray[0];
 };
 ---
@@ -24,7 +27,7 @@ const isActive = (path: string) => {
   <!-- Floating Glass Panel -->
   <div class="app-layout">
     <div
-      class="mobile-menu-panel relative mt-2 w-full mx-auto rounded-2xl border border-white/10 dark:border-white/5 overflow-hidden shadow-2xl"
+      class="mobile-menu-panel relative mx-auto mt-2 w-full overflow-hidden rounded-2xl border border-white/10 shadow-2xl dark:border-white/5"
     >
       <div class="mobile-menu-inner">
         <nav class="mobile-nav-links">
@@ -37,54 +40,142 @@ const isActive = (path: string) => {
             <span>Posts</span>
           </a>
           <a
-            href="/tags"
-            class:list={["mobile-nav-link", { active: isActive("/tags") }]}
-            style="--i:1"
-          >
-            <span class="mobile-nav-indicator"></span>
-            <span>Tags</span>
-          </a>
-          <a
             href="/about"
             class:list={["mobile-nav-link", { active: isActive("/about") }]}
-            style="--i:2"
+            style="--i:1"
           >
             <span class="mobile-nav-indicator"></span>
             <span>About</span>
           </a>
-          {
-            SITE.showArchives && (
-              <a
-                href="/archives"
-                class:list={[
-                  "mobile-nav-link",
-                  { active: isActive("/archives") },
-                ]}
-                style="--i:3"
-              >
-                <span class="mobile-nav-indicator" />
-                <span>Archives</span>
-              </a>
-            )
-          }
-          {
-            SITE.showGalleries && (
-              <a
-                href="/galleries"
-                class:list={[
-                  "mobile-nav-link",
-                  { active: isActive("/galleries") },
-                ]}
-                style="--i:4"
-              >
-                <span class="mobile-nav-indicator" />
-                <span>Galleries</span>
-              </a>
-            )
-          }
         </nav>
 
-        <!-- Divider -->
+        <div class="mobile-menu-divider"></div>
+
+        <div class="mobile-menu-section">
+          <span class="mobile-menu-section-label">Explore</span>
+          <nav class="mobile-nav-links">
+            <a
+              href="/tags"
+              class:list={["mobile-nav-link", { active: isActive("/tags") }]}
+              style="--i:0"
+            >
+              <IconTag class="mobile-nav-link-icon" />
+              <span>Tags</span>
+            </a>
+            {
+              SITE.showArchives && (
+                <a
+                  href="/archives"
+                  class:list={[
+                    "mobile-nav-link",
+                    { active: isActive("/archives") },
+                  ]}
+                  style="--i:1"
+                >
+                  <IconArchive class="mobile-nav-link-icon" />
+                  <span>Archives</span>
+                </a>
+              )
+            }
+            {
+              SITE.showGalleries && (
+                <a
+                  href="/galleries"
+                  class:list={[
+                    "mobile-nav-link",
+                    { active: isActive("/galleries") },
+                  ]}
+                  style="--i:2"
+                >
+                  <IconGallery class="mobile-nav-link-icon" />
+                  <span>Galleries</span>
+                </a>
+              )
+            }
+          </nav>
+        </div>
+
+        {
+          SITE.lightAndDarkMode && (
+            <div class="mobile-menu-section">
+              <span class="mobile-menu-section-label">Preferences</span>
+              <div class="mobile-pref-row">
+                <span>Theme</span>
+                <div class="theme-segment" role="group" aria-label="Theme">
+                  <button
+                    type="button"
+                    data-theme-option="light"
+                    aria-pressed="false"
+                    aria-label="Light mode"
+                    title="Light"
+                  >
+                    <IconSunHigh class="size-4" />
+                  </button>
+                  <button
+                    type="button"
+                    data-theme-option="dark"
+                    aria-pressed="false"
+                    aria-label="Dark mode"
+                    title="Dark"
+                  >
+                    <IconMoon class="size-4" />
+                  </button>
+                </div>
+              </div>
+              <div class="mobile-pref-row">
+                <span>Accent Color</span>
+                <div class="accent-dots" role="group" aria-label="Accent color">
+                  <button
+                    type="button"
+                    class="accent-dot"
+                    data-accent-option="blue"
+                    style="background: var(--accent-blue)"
+                    aria-label="Blue"
+                    aria-pressed="false"
+                    title="Blue"
+                  />
+                  <button
+                    type="button"
+                    class="accent-dot"
+                    data-accent-option="green"
+                    style="background: var(--accent-green)"
+                    aria-label="Green"
+                    aria-pressed="false"
+                    title="Green"
+                  />
+                  <button
+                    type="button"
+                    class="accent-dot"
+                    data-accent-option="purple"
+                    style="background: var(--accent-purple)"
+                    aria-label="Purple"
+                    aria-pressed="false"
+                    title="Purple"
+                  />
+                  <button
+                    type="button"
+                    class="accent-dot"
+                    data-accent-option="orange"
+                    style="background: var(--accent-orange)"
+                    aria-label="Orange"
+                    aria-pressed="false"
+                    title="Orange"
+                  />
+                  <button
+                    type="button"
+                    class="accent-dot"
+                    data-accent-option="red"
+                    style="background: var(--accent-red)"
+                    aria-label="Red"
+                    aria-pressed="false"
+                    title="Red"
+                  />
+                </div>
+              </div>
+            </div>
+          )
+        }
+
         <div class="mobile-menu-divider"></div>
 
         <!-- Bottom action row -->
@@ -98,22 +189,6 @@ const isActive = (path: string) => {
             <IconSearch class="size-4" />
             <span>Search</span>
           </button>
-          {
-            SITE.lightAndDarkMode && (
-              <button
-                id="theme-btn-mobile"
-                class="mobile-action-btn flex-1 justify-center"
-                title="Toggle theme"
-                aria-label="auto"
-                aria-live="polite"
-              >
-                <IconMoon class="block size-4 dark:hidden" />
-                <IconSunHigh class="hidden size-4 dark:block" />
-                <span class="block dark:hidden">Dark mode</span>
-                <span class="hidden dark:block">Light mode</span>
-              </button>
-            )
-          }
         </div>
       </div>
     </div>
@@ -140,7 +215,9 @@ const isActive = (path: string) => {
     inset: 0;
     z-index: -1;
     background: rgba(0, 0, 0, 0);
-    transition: background-color 0.4s ease, opacity 0.4s ease;
+    transition:
+      background-color 0.4s ease,
+      opacity 0.4s ease;
     opacity: 0;
     pointer-events: none;
   }
@@ -187,6 +264,40 @@ const isActive = (path: string) => {
     gap: 0.25rem;
   }
 
+  /* ─── Mobile Menu Sections ─── */
+  .mobile-menu-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .mobile-menu-section-label {
+    padding: 0.25rem 1rem 0.125rem;
+    font-family: var(--font-firacode), monospace;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--foreground) 50%, transparent);
+  }
+
+  .mobile-nav-link-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  .mobile-pref-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+  }
+
   .mobile-nav-link {
     display: flex;
     align-items: center;
@@ -196,7 +307,9 @@ const isActive = (path: string) => {
     font-weight: 500;
     color: var(--foreground);
     border-radius: 0.75rem;
-    transition: color 0.1s ease-out, background-color 0.1s ease-out;
+    transition:
+      color 0.1s ease-out,
+      background-color 0.1s ease-out;
     opacity: 0;
     transform: translateY(8px);
   }
@@ -232,7 +345,9 @@ const isActive = (path: string) => {
     height: 6px;
     border-radius: 50%;
     background: color-mix(in srgb, var(--foreground) 20%, transparent);
-    transition: background-color 0.1s ease-out, box-shadow 0.1s ease-out;
+    transition:
+      background-color 0.1s ease-out,
+      box-shadow 0.1s ease-out;
     flex-shrink: 0;
   }
 
@@ -262,7 +377,9 @@ const isActive = (path: string) => {
     gap: 0.5rem;
     opacity: 0;
     transform: translateY(6px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
   }
 
   .mobile-menu.is-open .mobile-menu-actions {
@@ -283,7 +400,9 @@ const isActive = (path: string) => {
     border: 1px solid color-mix(in srgb, var(--border) 20%, transparent);
     background: color-mix(in srgb, var(--background) 50%, transparent);
     backdrop-filter: blur(8px);
-    transition: color 0.2s ease, background-color 0.2s ease,
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
       border-color 0.2s ease;
     cursor: pointer;
   }

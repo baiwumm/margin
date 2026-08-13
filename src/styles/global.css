@@ -7,7 +7,12 @@
 html[data-theme="light"] {
   --background: #f2f5ec;
   --foreground: #353538;
-  --accent: #1158d1;
+  --accent-blue: #1158d1;
+  --accent-green: #1f9d63;
+  --accent-purple: #7c3aed;
+  --accent-orange: #ea580c;
+  --accent-red: #dc2626;
+  --accent: var(--accent-blue);
   --muted: #bbc789;
   --border: #7cadff;
 }
@@ -15,9 +20,89 @@ html[data-theme="light"] {
 html[data-theme="dark"] {
   --background: #10131a;
   --foreground: #f6f7f8;
-  --accent: #008fec;
+  --accent-blue: #008fec;
+  --accent-green: #34d399;
+  --accent-purple: #a78bfa;
+  --accent-orange: #fb923c;
+  --accent-red: #f87171;
+  --accent: var(--accent-blue);
   --muted: #212f3f;
   --border: #2264e3;
+}
+
+/* Accent color variants (light/dark values resolved via the palette vars above) */
+html[data-accent="green"] {
+  --accent: var(--accent-green);
+}
+
+html[data-accent="purple"] {
+  --accent: var(--accent-purple);
+}
+
+html[data-accent="orange"] {
+  --accent: var(--accent-orange);
+}
+
+html[data-accent="red"] {
+  --accent: var(--accent-red);
+}
+
+/* Shared nav menu controls (Header dropdown + MobileMenu) */
+.theme-segment {
+  display: inline-flex;
+  gap: 0.125rem;
+  padding: 0.1875rem;
+  border-radius: 0.625rem;
+  border: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+  background: color-mix(in srgb, var(--muted) 25%, transparent);
+}
+
+.theme-segment button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: 0.4375rem;
+  line-height: 1.2;
+  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.theme-segment button[aria-pressed="true"] {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--background) 90%, transparent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.accent-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.accent-dot {
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  padding: 0;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.accent-dot:hover {
+  transform: scale(1.15);
+}
+
+.accent-dot[aria-pressed="true"] {
+  border-color: color-mix(in srgb, var(--foreground) 75%, transparent);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--background) 85%, transparent),
+    0 0 8px color-mix(in srgb, var(--accent) 50%, transparent);
 }
 
 @theme inline {
@@ -103,7 +188,8 @@ i {
   background: color-mix(in srgb, var(--foreground) 3%, var(--background));
   padding: 1rem 1rem 1rem 3.5rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 20px -5px color-mix(in srgb, var(--background) 50%, transparent);
+  box-shadow: 0 4px 20px -5px
+    color-mix(in srgb, var(--background) 50%, transparent);
 }
 
 .premium-search input.pagefind-ui__search-input:focus-visible {
@@ -153,11 +239,14 @@ i {
   margin-bottom: 1rem;
 }
 
-.premium-search .pagefind-ui__results .pagefind-ui__result.pagefind-ui__result:hover {
+.premium-search
+  .pagefind-ui__results
+  .pagefind-ui__result.pagefind-ui__result:hover {
   border-color: color-mix(in srgb, var(--accent) 30%, transparent);
   background: color-mix(in srgb, var(--accent) 4%, var(--background));
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--accent) 15%, transparent);
+  box-shadow: 0 10px 30px -10px
+    color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
 .premium-search .pagefind-ui__result-title a {
