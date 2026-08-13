@@ -84,7 +84,8 @@ export default async () => {
                       letterSpacing: "-2px",
                       color: "white",
                       margin: "0 0 20px 0",
-                      lineHeight: 1,
+                      // wotfard 内容高度约 1.225em，行高 1 会裁掉 descender（如 g 的下伸部分）
+                      lineHeight: 1.3,
                       textShadow: "0 4px 20px rgba(0,0,0,0.5)",
                     },
                     children: SITE.title,

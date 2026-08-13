@@ -81,7 +81,7 @@ export default async post => {
                   style: {
                     fontSize: 84,
                     fontWeight: 900,
-                    lineHeight: 1.1,
+                    lineHeight: 1.3,
                     margin: 0,
                     color: "#ffffff",
                     textShadow: "0 2px 10px rgba(0,0,0,0.3)",
