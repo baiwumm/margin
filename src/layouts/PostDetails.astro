@@ -12,7 +12,7 @@ import GalleryEmbed from "@/components/GalleryEmbed.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
 import { getPath } from "@/utils/getPath";
 import { slugifyStr } from "@/utils/slugify";
-import { getReadingTime } from "@/utils/readingTime";
+import { getReadingTime, getWordCount } from "@/utils/readingTime";
 import { getTocFromMarkdown } from "@/utils/getToc";
 import { SITE } from "@/config";
 
@@ -38,6 +38,7 @@ const {
 
 const { Content } = await render(post);
 const readingTime = post.body ? getReadingTime(post.body) : null;
+const wordCount = post.body ? getWordCount(post.body) : null;
 const tocItems = post.body ? getTocFromMarkdown(post.body) : [];
 
 let ogImageUrl: string | undefined;
@@ -189,6 +190,28 @@ const nextPost =
                 <path d="M12 7v5l3 3" />
               </svg>
               <span class="text-sm opacity-70">{readingTime}</span>
+            </div>
+          )}
+
+          {wordCount !== null && (
+            <div
+              class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm"
+            >
+              <svg
+                class="size-3.5 text-accent/70"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M4 7V4h16v3"></path>
+                <path d="M9 20h6"></path>
+                <path d="M12 4v16"></path>
+              </svg>
+              <span class="text-sm opacity-70">{wordCount} 字</span>
             </div>
           )}
 

@@ -27,3 +27,29 @@ export function getReadingTime(body: string, wordsPerMinute = 200): string {
 
   return minutes < 1 ? "不到 1 分钟" : `约 ${minutes} 分钟`;
 }
+
+/**
+ * Counts the total "words" of an article for display (e.g. "1,234 字").
+ * Chinese characters are counted individually; Latin/digit runs count as one word each.
+ *
+ * @param body - Raw markdown/MDX string content
+ * @returns Total character/word count
+ */
+export function getWordCount(body: string): number {
+  const withoutFrontmatter = body.replace(/^---[\s\S]*?---\n?/, "");
+
+  const plainText = withoutFrontmatter
+    .replace(/```[\s\S]*?```/g, "") // fenced code blocks
+    .replace(/`[^`]*`/g, "") // inline code
+    .replace(/!\[.*?\]\(.*?\)/g, "") // images
+    .replace(/\[.*?\]\(.*?\)/g, "$1") // links -> keep link text
+    .replace(/^#{1,6}\s+/gm, "") // headings
+    .replace(/[*_~]{1,3}([^*_~]+)[*_~]{1,3}/g, "$1") // bold/italic
+    .replace(/^\s*[-*+>|]\s*/gm, ""); // lists, blockquotes, tables
+
+  const cjkCount = (plainText.match(/[\u4e00-\u9fff]/g) ?? []).length;
+  const latinWords = (plainText.match(/[A-Za-z0-9]+(?:[-'][A-Za-z0-9]+)*/g) ?? [])
+    .length;
+
+  return cjkCount + latinWords;
+}
