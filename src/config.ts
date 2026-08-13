@@ -1,7 +1,23 @@
+/**
+ * Env helper: prefer real process.env (platform env vars), fall back to
+ * import.meta.env so values from the project's .env file also work.
+ * Astro only injects .env into import.meta.env, not into process.env.
+ */
+const getEnv = (key: string): string => {
+  const procValue = (process.env as Record<string, string | undefined>)[key];
+  if (procValue) return procValue;
+  try {
+    const metaValue = (import.meta.env as Record<string, unknown>)[key];
+    return typeof metaValue === "string" ? metaValue : "";
+  } catch {
+    return "";
+  }
+};
+
 export const SITE = {
   website: "https://baiwumm.com/",
   author: "白雾茫茫丶",
-  profile: process.env.PUBLIC_SOCIAL_GITHUB ?? "", // set in .env
+  profile: getEnv("PUBLIC_SOCIAL_GITHUB"), // set in .env
   desc: "记录代码、思考与灵感的个人空间",
   title: "Margin",
   ogImage: "devosfera-og.webp", // located in the public folder
@@ -27,8 +43,8 @@ export const SITE = {
   },
   editPost: {
     enabled: true,
-    text: "Edit this post",
-    url: process.env.PUBLIC_EDIT_POST_URL ?? "", // set in .env
+    text: "编辑本文",
+    url: getEnv("PUBLIC_EDIT_POST_URL"), // set in .env
   },
   dynamicOgImage: true,
   dir: "ltr", // "rtl" | "auto"

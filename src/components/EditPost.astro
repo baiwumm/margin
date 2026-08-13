@@ -13,7 +13,10 @@ const { hideEditPost, post, class: className = "" } = Astro.props;
 
 const href = `${SITE.editPost.url}${post.filePath}`;
 const showEditPost =
-  SITE.editPost.enabled && !hideEditPost && href.trim() !== "";
+  SITE.editPost.enabled &&
+  SITE.editPost.url.trim() !== "" &&
+  !hideEditPost &&
+  href.trim() !== "";
 ---
 
 {

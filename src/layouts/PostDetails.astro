@@ -9,9 +9,11 @@ import ShareLinks from "@/components/ShareLinks.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import BackToTopButton from "@/components/BackToTopButton.astro";
 import GalleryEmbed from "@/components/GalleryEmbed.astro";
+import TableOfContents from "@/components/TableOfContents.astro";
 import { getPath } from "@/utils/getPath";
 import { slugifyStr } from "@/utils/slugify";
 import { getReadingTime } from "@/utils/readingTime";
+import { getTocFromMarkdown } from "@/utils/getToc";
 import { SITE } from "@/config";
 
 type Props = {
@@ -36,6 +38,7 @@ const {
 
 const { Content } = await render(post);
 const readingTime = post.body ? getReadingTime(post.body) : null;
+const tocItems = post.body ? getTocFromMarkdown(post.body) : [];
 
 let ogImageUrl: string | undefined;
 
@@ -201,12 +204,35 @@ const nextPost =
       </div>
     </header>
 
-    <article
-      id="article"
-      class="app-prose mt-8 w-full max-w-app prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
-    >
-      <Content components={{ GalleryEmbed }} />
-    </article>
+    {
+      tocItems.length > 0 && (
+        <details class="toc-mobile lg:hidden mt-8" data-pagefind-ignore>
+          <summary>本页目录</summary>
+          <TableOfContents items={tocItems} />
+          <div class="toc-share-divider" aria-hidden="true"></div>
+          <ShareLinks class="mt-6 w-full items-start" />
+        </details>
+      )
+    }
+
+    <div class="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,15rem)] lg:items-start">
+      <article
+        id="article"
+        class="app-prose min-w-0 w-full max-w-app prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
+      >
+        <Content components={{ GalleryEmbed }} />
+      </article>
+
+      {
+        tocItems.length > 0 && (
+          <aside class="hidden lg:block lg:sticky lg:top-24">
+            <TableOfContents items={tocItems} class="toc-card" />
+            <div class="toc-share-divider" aria-hidden="true"></div>
+            <ShareLinks class="mt-6 w-full items-start" />
+          </aside>
+        )
+      }
+    </div>
 
     <!-- ═══════ Post footer section ═══════ -->
     <div class="relative mt-12 mb-8 flex items-center justify-center gap-4" aria-hidden="true">
@@ -221,38 +247,6 @@ const nextPost =
 
       <div class="relative h-px flex-1 bg-linear-to-l from-transparent via-border/30 to-accent/20">
         <div class="absolute inset-0 bg-linear-to-l from-transparent via-accent/40 to-accent/40 blur-[2px]"></div>
-      </div>
-    </div>
-
-    <!-- Tags & Share row -->
-    <div
-      class="mt-6 mb-8 flex flex-col items-center gap-6 sm:flex-row sm:items-start sm:justify-between"
-    >
-      <!-- Tags (duplicated from header — aria-hidden to avoid double indexing) -->
-      <div class="flex flex-wrap justify-center gap-2 sm:justify-start" aria-hidden="true">
-        {
-          tags.map((tag: string) => (
-            <a
-              href={`/tags/${slugifyStr(tag)}/`}
-              tabindex="-1"
-              class="inline-flex items-center gap-1 rounded-full border border-border/25 bg-muted/10 px-2.5 py-1 font-firacode text-xs transition-all duration-200 hover:border-accent/40 hover:bg-accent/5 hover:text-accent"
-            >
-              <span class="opacity-40">#</span>
-              {tag}
-            </a>
-          ))
-        }
-      </div>
-
-      <!-- Share links -->
-      <ShareLinks />
-    </div>
-
-    <!-- Decorative separator before prev/next -->
-    <div class="my-6 flex items-center gap-3" aria-hidden="true">
-      <div
-        class="h-px flex-1 bg-linear-to-r from-transparent via-border/30 to-transparent"
-      >
       </div>
     </div>
 
@@ -548,4 +542,56 @@ const nextPost =
       will-change: opacity;
     }
   }
+
+  /* ===== Sidebar TOC (desktop) ===== */
+  .toc-card {
+    max-height: calc(100dvh - 8rem);
+    overflow-y: auto;
+    border: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--foreground) 2%, var(--background));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 1rem 1.1rem;
+  }
+
+  /* ===== Collapsible TOC (mobile) ===== */
+  .toc-mobile {
+    border: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--foreground) 2%, var(--background));
+    padding: 0.75rem 1rem;
+  }
+
+  .toc-mobile summary {
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-firacode), monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .toc-mobile summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .toc-mobile[open] summary {
+    margin-bottom: 0.5rem;
+  }
+
+  /* ===== Divider between TOC and share links ===== */
+  .toc-share-divider {
+    height: 1px;
+    margin-top: 1.5rem;
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in srgb, var(--border) 50%, transparent),
+      transparent
+    );
+  }
+
 </style>

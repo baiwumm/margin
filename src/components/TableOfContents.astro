@@ -1,0 +1,158 @@
+---
+import type { TocItem } from "@/utils/getToc";
+
+type Props = {
+  items: TocItem[];
+  class?: string;
+};
+
+const { items, class: className = "" } = Astro.props;
+---
+
+<nav class:list={["toc-nav", className]} aria-label="本页目录" data-pagefind-ignore>
+  <p class="toc-title">本页目录</p>
+  <ul class="toc-list">
+    {
+      items.map(item => (
+        <li class:list={[`toc-level-${item.level}`]}>
+          <a href={`#${item.id}`}>{item.text}</a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<script>
+  let tocSpyCleanup: AbortController | null = null;
+
+  function initTocSpy() {
+    if (tocSpyCleanup) tocSpyCleanup.abort();
+    tocSpyCleanup = new AbortController();
+    const { signal } = tocSpyCleanup;
+
+    const navs = Array.from(document.querySelectorAll<HTMLElement>(".toc-nav"));
+    if (navs.length === 0) return;
+
+    type Spy = {
+      nav: HTMLElement;
+      links: HTMLAnchorElement[];
+      headings: HTMLElement[];
+    };
+
+    const spies: Spy[] = [];
+    for (const nav of navs) {
+      const links = Array.from(
+        nav.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')
+      );
+      const headings = links
+        .map(link => document.getElementById(link.getAttribute("href")!.slice(1)))
+        .filter((el): el is HTMLElement => el !== null);
+      if (links.length === 0 || headings.length === 0) continue;
+      spies.push({ nav, links, headings });
+    }
+    if (spies.length === 0) return;
+
+    // Sticky header height (top-24 = 6rem) plus a small breathing gap.
+    const HEADER_OFFSET = 104;
+
+    let rafPending = false;
+    const update = () => {
+      rafPending = false;
+      for (const spy of spies) {
+        // The last heading whose top edge is above the offset line is active.
+        let activeId: string | null = spy.headings[0]?.id ?? null;
+        for (const heading of spy.headings) {
+          if (heading.getBoundingClientRect().top <= HEADER_OFFSET) {
+            activeId = heading.id;
+          } else {
+            break;
+          }
+        }
+
+        spy.links.forEach(link => {
+          link.classList.toggle(
+            "active",
+            link.getAttribute("href") === `#${activeId}`
+          );
+        });
+
+        const activeLink = spy.links.find(
+          link => link.getAttribute("href") === `#${activeId}`
+        );
+        // Keep the active item visible when the TOC card itself is scrollable.
+        if (activeLink && spy.nav.scrollHeight > spy.nav.clientHeight) {
+          activeLink.scrollIntoView({ block: "nearest" });
+        }
+      }
+    };
+
+    const onScroll = () => {
+      if (rafPending) return;
+      rafPending = true;
+      requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true, signal });
+    window.addEventListener("resize", onScroll, { passive: true, signal });
+    update();
+  }
+
+  document.addEventListener("astro:page-load", initTocSpy);
+</script>
+
+<style>
+  .toc-title {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-firacode), monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .toc-list li {
+    margin: 0;
+  }
+
+  .toc-list a {
+    display: block;
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.5rem;
+    color: color-mix(in srgb, var(--foreground) 70%, transparent);
+    font-size: 0.85rem;
+    line-height: 1.45;
+    text-decoration: none;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      box-shadow 0.2s ease,
+      text-shadow 0.2s ease;
+  }
+
+  .toc-list a:hover,
+  .toc-list a:focus-visible,
+  .toc-list a.active {
+    color: var(--accent);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  .toc-level-3 a {
+    padding-left: 1.1rem;
+    font-size: 0.8rem;
+  }
+
+  .toc-level-4 a {
+    padding-left: 1.8rem;
+    font-size: 0.75rem;
+  }
+</style>

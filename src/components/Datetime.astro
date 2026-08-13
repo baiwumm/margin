@@ -40,16 +40,19 @@ const isModified = Boolean(
 
 const datetime = isModified && modifiedDatetime ? modifiedDatetime : publishedDatetime;
 
-const date = datetime.locale(localeCode).format("D MMM, YYYY");
+const date =
+  localeCode === "zh"
+    ? datetime.format("YYYY年M月D日")
+    : datetime.locale(localeCode).format("D MMM, YYYY");
 
 const srDate = new Intl.DateTimeFormat(locale, {
   dateStyle: "long",
   timeZone: resolvedTimezone,
 }).format(datetime.toDate());
 
-const updatedText = "Updated:";
-const publishedText = "Published date";
-const updatedSrText = "Updated date";
+const updatedText = "更新于";
+const publishedText = "发布日期";
+const updatedSrText = "更新日期";
 const srLabel = isModified ? updatedSrText : publishedText;
 ---
 

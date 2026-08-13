@@ -4,7 +4,7 @@
  *
  * @param body - Raw markdown/MDX string content
  * @param wordsPerMinute - Average reading speed (default: 200 wpm)
- * @returns Formatted string like "3 min read" or "< 1 min read"
+ * @returns Formatted string like "约 3 分钟" or "不到 1 分钟"
  */
 export function getReadingTime(body: string, wordsPerMinute = 200): string {
   // Strip frontmatter
@@ -25,5 +25,5 @@ export function getReadingTime(body: string, wordsPerMinute = 200): string {
   const wordCount = plainText.split(" ").filter(Boolean).length;
   const minutes = Math.ceil(wordCount / wordsPerMinute);
 
-  return minutes < 1 ? "< 1 min read" : `${minutes} min read`;
+  return minutes < 1 ? "不到 1 分钟" : `约 ${minutes} 分钟`;
 }

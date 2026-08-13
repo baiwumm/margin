@@ -2,14 +2,13 @@ import { defineConfig, envField, fontProviders } from "astro/config";
 import mdx from "@astrojs/mdx";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
-import remarkToc from "remark-toc";
-import remarkCollapse from "remark-collapse";
 import {
   transformerNotationDiff,
   transformerNotationHighlight,
   transformerNotationWordHighlight,
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
+import { remarkRemoveTocMarker } from "./src/utils/remarkRemoveTocMarker";
 import { SITE } from "./src/config";
 
 // https://astro.build/config
@@ -28,7 +27,7 @@ export default defineConfig({
     }),
   ],
   markdown: {
-    remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],
+    remarkPlugins: [remarkRemoveTocMarker],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
       themes: { light: "min-light", dark: "github-dark-default" },

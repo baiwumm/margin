@@ -181,7 +181,7 @@ hideEditPost: false
 
 **MDX**: JSX components can be used directly. `<GalleryEmbed>` is available without importing it (see next section).
 
-**Table of Contents**: add `## Table of contents` to the post body to auto-generate the TOC with `remark-toc` + `remark-collapse`.
+**Table of Contents**: 文章目录由标题自动生成，显示在正文右侧并吸顶，无需在正文添加标记（旧的 `## Table of contents` 标记会自动移除）。
 
 **Annotated code blocks** (via Shiki transformers):
 
