@@ -117,7 +117,7 @@ const isActive = (path: string) => {
                 aria-keyshortcuts="Meta+K"
               >
                 <IconSearch class="size-4.5" />
-                <kbd class="nav-kbd">⌘K</kbd>
+                <kbd class="nav-kbd" data-search-kbd>⌘K</kbd>
               </button>
             </li>
             <li class="flex items-center">
@@ -127,6 +127,7 @@ const isActive = (path: string) => {
                 title="Menu"
                 aria-label="Open menu"
                 aria-expanded="false"
+                aria-haspopup="true"
                 aria-controls="more-menu"
               >
                 <IconDots class="size-5" />
@@ -733,11 +734,19 @@ const isActive = (path: string) => {
     const moreMenu = document.querySelector("#more-menu");
     if (!moreBtn || !moreMenu) return;
 
-    const closeMoreMenu = () => {
+    const getFocusable = () =>
+      Array.from(
+        moreMenu.querySelectorAll<HTMLElement>(
+          "a[href], button:not([disabled])"
+        )
+      ).filter(el => el.offsetParent !== null);
+
+    const closeMoreMenu = (returnFocus = false) => {
       moreBtn.setAttribute("aria-expanded", "false");
       moreBtn.setAttribute("aria-label", "Open menu");
       moreMenu.classList.remove("is-open");
       moreMenu.setAttribute("aria-hidden", "true");
+      if (returnFocus) moreBtn.focus();
     };
 
     moreBtn.addEventListener(
@@ -751,6 +760,8 @@ const isActive = (path: string) => {
           moreBtn.setAttribute("aria-label", "Close menu");
           moreMenu.classList.add("is-open");
           moreMenu.setAttribute("aria-hidden", "false");
+          // Move focus into the panel for keyboard users
+          getFocusable()[0]?.focus();
         }
       },
       { signal }
@@ -768,18 +779,45 @@ const isActive = (path: string) => {
       { signal }
     );
 
-    // Close on Escape
+    // Escape closes and returns focus; arrows move between panel items
     document.addEventListener(
       "keydown",
       event => {
-        if (event.key === "Escape") closeMoreMenu();
+        if (event.key === "Escape") {
+          if (moreBtn.getAttribute("aria-expanded") === "true") {
+            event.preventDefault();
+            closeMoreMenu(true);
+          }
+          return;
+        }
+        if (moreBtn.getAttribute("aria-expanded") !== "true") return;
+        if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+        const items = getFocusable();
+        if (!items.length) return;
+        const current = document.activeElement as HTMLElement | null;
+        const index = current ? items.indexOf(current) : -1;
+        const next =
+          event.key === "ArrowDown"
+            ? (index + 1) % items.length
+            : (index - 1 + items.length) % items.length;
+        event.preventDefault();
+        items[next].focus();
       },
       { signal }
     );
 
     // Close when navigating via a menu link
     moreMenu.querySelectorAll("a").forEach(link => {
-      link.addEventListener("click", closeMoreMenu, { signal });
+      link.addEventListener("click", () => closeMoreMenu(), { signal });
+    });
+  }
+
+  function setupSearchKbd() {
+    const isMac = /Mac|iPhone|iPad|iPod/i.test(
+      navigator.platform || navigator.userAgent
+    );
+    document.querySelectorAll("[data-search-kbd]").forEach(el => {
+      el.textContent = isMac ? "⌘K" : "Ctrl K";
     });
   }
 
@@ -787,11 +825,13 @@ const isActive = (path: string) => {
   setupScrollPhysics();
   setupMobileNav();
   setupMoreMenu();
+  setupSearchKbd();
 
   // Runs on view transitions navigation
   document.addEventListener("astro:after-swap", () => {
     setupScrollPhysics();
     setupMobileNav();
     setupMoreMenu();
+    setupSearchKbd();
   });
 </script>
