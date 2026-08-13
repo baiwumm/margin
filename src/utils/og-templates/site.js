@@ -81,6 +81,7 @@ export default async () => {
                     style: {
                       fontSize: 100, // Very large
                       fontWeight: 900,
+                      fontFamily: "Maple Mono CN",
                       letterSpacing: "-2px",
                       color: "white",
                       margin: "0 0 20px 0",
@@ -112,6 +113,7 @@ export default async () => {
                   props: {
                     style: {
                       fontSize: 36,
+                      fontFamily: "Maple Mono CN",
                       color: "#cbd5e1", // Slate 300 (light gray)
                       maxWidth: "80%", // So it doesn't stretch too much to the sides
                       margin: 0,
@@ -119,6 +121,37 @@ export default async () => {
                       fontWeight: 400,
                     },
                     children: SITE.desc,
+                  },
+                },
+
+                // Author
+                {
+                  type: "p",
+                  props: {
+                    style: {
+                      display: "flex",
+                      alignItems: "center",
+                      fontSize: 26,
+                      fontFamily: "Maple Mono CN",
+                      color: "#94a3b8",
+                      margin: "28px 0 0 0",
+                      lineHeight: 1.4,
+                      fontWeight: 400,
+                    },
+                    children: [
+                      "Written by ",
+                      {
+                        type: "span",
+                        props: {
+                          style: {
+                            fontWeight: "bold",
+                            color: "white",
+                            marginLeft: "6px",
+                          },
+                          children: SITE.author,
+                        },
+                      },
+                    ],
                   },
                 },
               ],
@@ -145,6 +178,7 @@ export default async () => {
                 props: {
                   style: {
                     fontSize: 24,
+                    fontFamily: "Maple Mono CN",
                     color: "#94a3b8", // Subtle text
                     fontWeight: 600,
                     letterSpacing: "1px",

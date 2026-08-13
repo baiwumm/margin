@@ -56,6 +56,7 @@ export default async post => {
                   style: {
                     fontSize: 24,
                     fontWeight: "bold",
+                    fontFamily: "Maple Mono CN",
                     color: "#e2e8f0",
                     letterSpacing: "2px",
                   },
@@ -81,6 +82,7 @@ export default async post => {
                   style: {
                     fontSize: 84,
                     fontWeight: 900,
+                    fontFamily: "Maple Mono CN",
                     lineHeight: 1.3,
                     margin: 0,
                     color: "#ffffff",
@@ -125,6 +127,7 @@ export default async post => {
                   props: {
                     style: {
                       fontSize: 32,
+                      fontFamily: "Maple Mono CN",
                       color: "#cbd5e1",
                     },
                     children: [
@@ -134,6 +137,7 @@ export default async post => {
                         props: {
                           style: {
                             fontWeight: "bold",
+                            fontFamily: "Maple Mono CN",
                             color: "white",
                             marginLeft: "8px",
                           },

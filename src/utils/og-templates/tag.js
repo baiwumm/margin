@@ -93,6 +93,7 @@ export default async tagName => {
                           style: {
                             fontSize: 80,
                             fontWeight: 900,
+                            fontFamily: "Maple Mono CN",
                             color: "#008fec",
                             opacity: 0.7,
                             lineHeight: 1.2,
@@ -107,6 +108,7 @@ export default async tagName => {
                           style: {
                             fontSize: 96,
                             fontWeight: 900,
+                            fontFamily: "Maple Mono CN",
                             letterSpacing: "-2px",
                             color: "white",
                             lineHeight: 1.2,
@@ -140,6 +142,7 @@ export default async tagName => {
                   props: {
                     style: {
                       fontSize: 32,
+                      fontFamily: "Maple Mono CN",
                       color: "#94a3b8",
                       margin: 0,
                       lineHeight: 1.4,
@@ -172,6 +175,7 @@ export default async tagName => {
                 props: {
                   style: {
                     fontSize: 22,
+                    fontFamily: "Maple Mono CN",
                     color: "#94a3b8",
                     fontWeight: 600,
                     letterSpacing: "1px",
