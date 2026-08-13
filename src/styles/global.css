@@ -21,7 +21,7 @@ html[data-theme="dark"] {
 }
 
 @theme inline {
-  --font-app: var(--font-wotfard);
+  --font-app: "Maple Mono CN", var(--font-wotfard);
   --font-sriracha: var(--font-sriracha);
   --font-firacode: var(--font-firacode);
   --color-background: var(--background);
