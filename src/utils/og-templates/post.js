@@ -59,7 +59,7 @@ export default async post => {
                     color: "#e2e8f0",
                     letterSpacing: "2px",
                   },
-                  children: SITE.title + ".com",
+                  children: SITE.title.split("·")[0].trim() + ".com",
                 },
               },
             },

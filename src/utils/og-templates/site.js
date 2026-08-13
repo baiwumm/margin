@@ -88,7 +88,7 @@ export default async () => {
                       lineHeight: 1.3,
                       textShadow: "0 4px 20px rgba(0,0,0,0.5)",
                     },
-                    children: SITE.title,
+                    children: SITE.title.split("·")[0].trim(),
                   },
                 },
 

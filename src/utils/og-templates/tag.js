@@ -145,7 +145,7 @@ export default async tagName => {
                       lineHeight: 1.4,
                       fontWeight: 400,
                     },
-                    children: `All articles tagged on ${SITE.title}`,
+                    children: `All articles tagged on ${SITE.title.split("·")[0].trim()}`,
                   },
                 },
               ],

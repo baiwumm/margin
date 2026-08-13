@@ -18,7 +18,7 @@ export const SITE = {
   website: "https://baiwumm.com/",
   author: "白雾茫茫丶",
   profile: getEnv("PUBLIC_SOCIAL_GITHUB"), // set in .env
-  desc: "记录代码、思考与灵感的个人空间",
+  desc: "边白 · 记录代码、思考与灵感",
   title: "Margin",
   ogImage: "devosfera-og.webp", // located in the public folder
   lightAndDarkMode: true,
