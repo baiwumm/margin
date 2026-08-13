@@ -44,7 +44,7 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
           aria-label={`Go to home of ${SITE.title}`}
           class="group footer-home-link relative flex items-center gap-2 rounded-md text-lg font-bold tracking-tight"
         >
-          <Logo class="footer-logo w-28 opacity-80 transition-all duration-300 group-hover:opacity-100 group-hover:scale-105 dark:invert" />
+          <Logo class="footer-logo h-9 w-auto opacity-80 transition-all duration-300 group-hover:opacity-100 group-hover:scale-105" />
           <span class="sr-only">{SITE.title}</span>
         </a>
         <p
