@@ -103,12 +103,12 @@ const { items, class: className = "" } = Astro.props;
 <style>
   .toc-title {
     margin: 0 0 0.75rem;
-    font-family: var(--font-firacode), monospace;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.18em;
+    font-family: var(--font-app);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: color-mix(in srgb, var(--foreground) 70%, transparent);
   }
 
   .toc-list {
