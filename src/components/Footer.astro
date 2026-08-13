@@ -3,7 +3,7 @@ import type { HTMLAttributes } from "astro/types";
 import { SOCIALS } from "@/constants";
 import LinkButton from "./LinkButton.astro";
 import { SITE } from "@/config";
-import Logo from "@/assets/logo/devosfera.svg";
+import Logo from "@/assets/logo/margin.svg";
 
 const currentYear = new Date().getFullYear();
 const socialHeadingId = "footer-social-heading";
@@ -12,6 +12,7 @@ const socialLinks = SOCIALS.map(social => ({
   ...social,
   isExternal: /^https?:\/\//.test(social.href),
 }));
+const githubHref = SOCIALS.find(social => social.name === "GitHub")?.href ?? "";
 
 type Props = {
   noMarginTop?: boolean;
@@ -49,7 +50,7 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
         <p
           class="max-w-xs text-center font-firacode text-[11px] leading-relaxed tracking-wide text-foreground/55 sm:text-start"
         >
-          A space where curiosity turns into code.
+          {SITE.desc}
         </p>
       </div>
 
@@ -94,8 +95,20 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
       class="mt-4 flex flex-col items-center justify-between gap-2 sm:flex-row"
     >
       <p class="font-firacode text-[11px] tracking-wide text-foreground/50">
-        &copy; {currentYear}
-        {SITE.title}. All rights reserved.
+        &copy; {currentYear}{" "}
+        {githubHref ? (
+          <a
+            href={githubHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="transition-colors duration-200 hover:text-accent"
+          >
+            Baiwumm
+          </a>
+        ) : (
+          "Baiwumm"
+        )}
+        . All rights reserved.
       </p>
       <p class="font-firacode text-[11px] tracking-wide text-foreground/45">
         Made with <span class="text-accent">&#9829;</span> and lots of coffee

@@ -4,7 +4,7 @@ import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconGallery from "@/assets/icons/IconGallery.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
-import Logo from "@/assets/logo/devosfera.svg";
+import Logo from "@/assets/logo/margin.svg";
 import LinkButton from "./LinkButton.astro";
 import MobileMenu from "./MobileMenu.astro";
 import IntroAudioCompact from "./IntroAudioCompact.astro";
@@ -477,16 +477,28 @@ const isActive = (path: string) => {
     if (!header || !navWrap || !borderLine) return;
 
     let rafPending = false;
+    let scrolled = false;
+    // Hysteresis around the threshold: activate only after scrolling past
+    // ACTIVATE, and only deactivate after returning below DEACTIVATE.
+    // This prevents the header height change from flipping the state back
+    // and forth near the boundary (visible as jitter while the header sticks).
+    const ACTIVATE_SCROLL_Y = 16;
+    const DEACTIVATE_SCROLL_Y = 8;
     const handleScroll = () => {
       if (rafPending) return;
       rafPending = true;
       requestAnimationFrame(() => {
-        const scrolled = window.scrollY > 15;
-        header.classList.toggle("header-scrolled", scrolled);
-        navWrap.classList.toggle("sm:py-5", !scrolled);
-        navWrap.classList.toggle("sm:py-3", scrolled);
-        borderLine.classList.toggle("opacity-0", !scrolled);
-        borderLine.classList.toggle("opacity-100", scrolled);
+        const nextScrolled = scrolled
+          ? window.scrollY > DEACTIVATE_SCROLL_Y
+          : window.scrollY > ACTIVATE_SCROLL_Y;
+        if (nextScrolled !== scrolled) {
+          scrolled = nextScrolled;
+          header.classList.toggle("header-scrolled", scrolled);
+          navWrap.classList.toggle("sm:py-5", !scrolled);
+          navWrap.classList.toggle("sm:py-3", scrolled);
+          borderLine.classList.toggle("opacity-0", !scrolled);
+          borderLine.classList.toggle("opacity-100", scrolled);
+        }
         rafPending = false;
       });
     };

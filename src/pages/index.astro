@@ -26,7 +26,7 @@ const featuredPosts = sortedPosts.filter(({ data }) => "featured" in data && dat
 const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && data.featured));
 ---
 
-<Layout>
+<Layout title={`${SITE.desc} | ${SITE.title}`}>
   <Header />
 
   <main id="main-content" data-layout="index" class="relative app-layout">
@@ -89,9 +89,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && dat
         <p
           class="mt-7 max-w-xl text-base leading-relaxed opacity-75 sm:text-lg"
         >
-          A space where curiosity turns into code. Exploring
-          web development, software architecture, and everything that makes the
-          tech world go round.
+          {SITE.desc}
         </p>
         <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
           <p class="text-sm opacity-50 flex-shrink-0">
