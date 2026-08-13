@@ -7,6 +7,7 @@
 html[data-theme="light"] {
   --background: #f2f5ec;
   --foreground: #353538;
+  --muted-foreground: color-mix(in srgb, var(--foreground) 60%, transparent);
   --accent-blue: #1158d1;
   --accent-green: #1f9d63;
   --accent-purple: #7c3aed;
@@ -61,7 +62,9 @@ html[data-accent="red"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.25rem;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
   border-radius: 0.4375rem;
   line-height: 1.2;
   color: color-mix(in srgb, var(--foreground) 60%, transparent);
@@ -96,6 +99,13 @@ html[data-accent="red"] {
 
 .accent-dot:hover {
   transform: scale(1.15);
+}
+
+.accent-dot:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--background),
+    0 0 0 4px color-mix(in srgb, var(--accent) 60%, transparent);
 }
 
 .accent-dot[aria-pressed="true"] {
