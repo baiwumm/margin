@@ -220,6 +220,12 @@ const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && dat
       background-position: 100% center;
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-title {
+      animation: none;
+    }
+  }
 </style>
 
 <script>

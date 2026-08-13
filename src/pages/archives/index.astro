@@ -23,18 +23,18 @@ const [blogPosts, galleryPosts] = await Promise.all([
 const posts = [...blogPosts, ...galleryPosts];
 
 const months = [
-  "Enero",
-  "Febrero",
-  "Marzo",
-  "Abril",
-  "Mayo",
-  "Junio",
-  "Julio",
-  "Agosto",
-  "Septiembre",
-  "Octubre",
-  "Noviembre",
-  "Diciembre",
+  "一月",
+  "二月",
+  "三月",
+  "四月",
+  "五月",
+  "六月",
+  "七月",
+  "八月",
+  "九月",
+  "十月",
+  "十一月",
+  "十二月",
 ];
 
 const totalPosts = posts.length;
@@ -131,7 +131,10 @@ const yearGroups = Object.entries(
                                   }}
                                 >
                                   {post.collection === "galleries" && (
-                                    <span title="Gallery" class="inline-flex items-center justify-center p-0.5 rounded-md text-accent/80 opacity-70">
+                                    <span
+                                      title="Gallery"
+                                      class="inline-flex items-center justify-center rounded-md p-0.5 text-accent/80 opacity-70"
+                                    >
                                       <IconGallery class="size-3.5" />
                                     </span>
                                   )}
