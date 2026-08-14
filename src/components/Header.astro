@@ -270,6 +270,35 @@ const isActive = (path: string) => {
                   </div>
                 )
               }
+
+              <div class="menu-divider"></div>
+
+              <div class="menu-section">
+                <span class="menu-section-label">Help</span>
+                <button
+                  type="button"
+                  class="menu-row menu-row-between menu-row-btn"
+                  data-shortcuts-trigger
+                >
+                  <span class="menu-row-start">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="menu-row-icon"
+                      aria-hidden="true"
+                    >
+                      <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                      <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9 14h6"></path>
+                    </svg>
+                    <span>Shortcuts</span>
+                  </span>
+                  <kbd class="nav-kbd">?</kbd>
+                </button>
+              </div>
             </div>
           </div>
         </nav>
@@ -531,6 +560,21 @@ const isActive = (path: string) => {
     width: 1.05rem;
     height: 1.05rem;
     flex-shrink: 0;
+  }
+
+  .menu-row-btn {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .menu-row-start {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
   }
 
   .menu-row-between {
@@ -809,6 +853,11 @@ const isActive = (path: string) => {
     // Close when navigating via a menu link
     moreMenu.querySelectorAll("a").forEach(link => {
       link.addEventListener("click", () => closeMoreMenu(), { signal });
+    });
+
+    // Close when opening the shortcuts panel from the menu
+    moreMenu.querySelectorAll("[data-shortcuts-trigger]").forEach(btn => {
+      btn.addEventListener("click", () => closeMoreMenu(), { signal });
     });
   }
 

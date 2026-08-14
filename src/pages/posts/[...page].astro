@@ -149,6 +149,59 @@ const nextURL = page.url.next ? new URL(page.url.next, SITE.website).toString() 
       }, { signal });
     }
 
+    // Vim-style card navigation (j / k)
+    const isTyping = () => {
+      const el = document.activeElement;
+      if (!el) return false;
+      const tag = el.tagName;
+      return (
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        (el as HTMLElement).isContentEditable
+      );
+    };
+
+    const modalOpen = (selector: string) =>
+      document.querySelector(selector)?.classList.contains("active") ?? false;
+
+    const getCardLinks = () =>
+      Array.from(
+        document.querySelectorAll<HTMLAnchorElement>(
+          "[data-default-posts-container] li a[aria-labelledby]"
+        )
+      ).filter(el => el.offsetParent !== null);
+
+    document.addEventListener(
+      "keydown",
+      (e: KeyboardEvent) => {
+        if (isTyping()) return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        // Do not hijack keys while a modal is open
+        if (
+          modalOpen(".shortcuts-overlay") ||
+          modalOpen("#search-modal")
+        ) {
+          return;
+        }
+        if (e.key !== "j" && e.key !== "k") return;
+
+        const links = getCardLinks();
+        if (links.length === 0) return;
+
+        e.preventDefault();
+        const active = document.activeElement as HTMLElement | null;
+        const current = active ? links.indexOf(active as HTMLAnchorElement) : -1;
+        const next =
+          e.key === "j"
+            ? links[current < 0 ? 0 : Math.min(current + 1, links.length - 1)]
+            : links[current < 0 ? links.length - 1 : Math.max(current - 1, 0)];
+        next.focus();
+        next.scrollIntoView({ block: "nearest" });
+      },
+      { signal }
+    );
+
     // Initialize Pagefind local search
     const container = document.querySelector("#posts-pagefind");
     if (!container || container.childElementCount > 0) return;

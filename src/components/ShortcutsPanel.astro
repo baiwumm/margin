@@ -1,0 +1,481 @@
+---
+---
+
+<div
+  id="shortcuts-panel"
+  class="shortcuts-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-label="键盘快捷键"
+  data-shortcuts-panel
+>
+  <div class="shortcuts-backdrop" data-shortcuts-close></div>
+
+  <div class="shortcuts-card" data-shortcuts-card>
+    <button
+      type="button"
+      class="shortcuts-close"
+      data-shortcuts-close
+      aria-label="关闭快捷键面板"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M18 6 6 18"></path>
+        <path d="m6 6 12 12"></path>
+      </svg>
+    </button>
+
+    <div class="shortcuts-head">
+      <span class="shortcuts-head-icon" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+          <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9 14h6"></path>
+        </svg>
+      </span>
+      <h2 class="shortcuts-title">
+        <span class="shortcuts-title-text">键盘快捷键</span>
+      </h2>
+    </div>
+
+    <div class="shortcuts-body">
+      <div class="shortcuts-grid">
+        <section class="shortcuts-section">
+          <h3 class="shortcuts-group-title">通用</h3>
+          <ul class="shortcuts-list">
+            <li class="shortcuts-row">
+              <span>开关快捷键面板</span>
+              <span class="shortcuts-keys"><kbd>?</kbd></span>
+            </li>
+            <li class="shortcuts-row">
+              <span>切换主题（亮色 / 暗色）</span>
+              <span class="shortcuts-keys"><kbd>t</kbd></span>
+            </li>
+            <li class="shortcuts-row">
+              <span>打开 / 关闭搜索</span>
+              <span class="shortcuts-keys"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </li>
+            <li class="shortcuts-row">
+              <span>关闭当前弹窗</span>
+              <span class="shortcuts-keys"><kbd>Esc</kbd></span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="shortcuts-section">
+          <h3 class="shortcuts-group-title">Vim 导航</h3>
+          <ul class="shortcuts-list">
+            <li class="shortcuts-row">
+              <span>选择下一篇 / 下一张卡片</span>
+              <span class="shortcuts-keys"><kbd>j</kbd></span>
+            </li>
+            <li class="shortcuts-row">
+              <span>选择上一篇 / 上一张卡片</span>
+              <span class="shortcuts-keys"><kbd>k</kbd></span>
+            </li>
+            <li class="shortcuts-row">
+              <span>打开选中的文章</span>
+              <span class="shortcuts-keys"><kbd>Enter</kbd></span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="shortcuts-section shortcuts-span-2">
+          <h3 class="shortcuts-group-title">跳转（先按 g）</h3>
+          <ul class="shortcuts-list">
+            <li class="shortcuts-row">
+              <span>回首页</span>
+              <span class="shortcuts-keys"><kbd>g</kbd><kbd>h</kbd></span>
+            </li>
+            <li class="shortcuts-row">
+              <span>去文章列表</span>
+              <span class="shortcuts-keys"><kbd>g</kbd><kbd>p</kbd></span>
+            </li>
+            <li class="shortcuts-row">
+              <span>去标签页</span>
+              <span class="shortcuts-keys"><kbd>g</kbd><kbd>t</kbd></span>
+            </li>
+            <li class="shortcuts-row">
+              <span>去画廊</span>
+              <span class="shortcuts-keys"><kbd>g</kbd><kbd>g</kbd></span>
+            </li>
+          </ul>
+        </section>
+      </div>
+
+      <p class="shortcuts-hint">
+        按 <kbd>?</kbd> 或 <kbd>Esc</kbd> 关闭面板 · <kbd>⌘</kbd> 在
+        Windows / Linux 上为 <kbd>Ctrl</kbd>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { navigate } from "astro:transitions/client";
+
+  let controller: AbortController | null = null;
+
+  function initShortcutsPanel() {
+    if (controller) controller.abort();
+    controller = new AbortController();
+    const { signal } = controller;
+
+    const panel = document.querySelector<HTMLElement>("[data-shortcuts-panel]");
+    if (!panel) return;
+
+    const isOpen = () => panel.classList.contains("active");
+    const openPanel = () => panel.classList.add("active");
+    const closePanel = () => panel.classList.remove("active");
+
+    const isTyping = () => {
+      const el = document.activeElement;
+      if (!el) return false;
+      const tag = el.tagName;
+      return (
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        (el as HTMLElement).isContentEditable
+      );
+    };
+
+    const toggleTheme = () => {
+      // 复用主题脚本绑定在分段按钮上的完整切换逻辑
+      const current = document.documentElement.getAttribute("data-theme");
+      const target = current === "dark" ? "light" : "dark";
+      const optionBtn = document.querySelector<HTMLElement>(
+        `[data-theme-option="${target}"]`
+      );
+      if (optionBtn) {
+        optionBtn.click();
+        return;
+      }
+      // 兜底：直接切 data-theme 并写入偏好
+      document.firstElementChild?.setAttribute("data-theme", target);
+      localStorage.setItem("theme", target);
+    };
+
+    // g + [h|p|t|g] 两键跳转
+    let goTimer: number | undefined;
+    const GO_DESTINATIONS: Record<string, string> = {
+      h: "/",
+      p: "/posts/",
+      t: "/tags",
+      g: "/galleries",
+    };
+
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (isTyping()) return;
+
+      // 复合键：g 系列待定时，第二键优先匹配跳转，避免同时触发单键功能
+      if (goTimer !== undefined) {
+        const dest = GO_DESTINATIONS[e.key];
+        window.clearTimeout(goTimer);
+        goTimer = undefined;
+        if (dest) {
+          e.preventDefault();
+          closePanel();
+          navigate(dest);
+          return;
+        }
+      }
+
+      // 关闭当前弹窗
+      if (e.key === "Escape") {
+        if (isOpen()) {
+          e.preventDefault();
+          closePanel();
+        }
+        return;
+      }
+
+      // 开关快捷键面板
+      if (e.key === "?") {
+        e.preventDefault();
+        if (isOpen()) closePanel();
+        else openPanel();
+        return;
+      }
+
+      // 切换主题
+      if (e.key === "t" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        toggleTheme();
+        return;
+      }
+
+      // 搜索弹窗（Ctrl/Cmd+K）打开时，顺带收起快捷键面板
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        if (isOpen()) closePanel();
+        return;
+      }
+
+      if (e.key === "g") {
+        e.preventDefault();
+        window.clearTimeout(goTimer);
+        goTimer = window.setTimeout(() => {
+          goTimer = undefined;
+        }, 1500);
+        return;
+      }
+    };
+
+    document.addEventListener("keydown", handleKeydown, { signal });
+
+    // 页脚 / 菜单中的入口按钮
+    document.querySelectorAll<HTMLElement>("[data-shortcuts-trigger]").forEach(btn => {
+      btn.addEventListener(
+        "click",
+        e => {
+          e.preventDefault();
+          openPanel();
+        },
+        { signal }
+      );
+    });
+
+    // 遮罩与关闭按钮
+    panel.querySelectorAll<HTMLElement>("[data-shortcuts-close]").forEach(el => {
+      el.addEventListener("click", closePanel, { signal });
+    });
+  }
+
+  document.addEventListener("astro:page-load", initShortcutsPanel);
+</script>
+
+<style>
+  .shortcuts-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.25s ease,
+      visibility 0.25s ease;
+  }
+
+  .shortcuts-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .shortcuts-backdrop {
+    position: fixed;
+    inset: 0;
+    background: color-mix(in srgb, var(--background) 80%, transparent);
+  }
+
+  .shortcuts-card {
+    position: relative;
+    width: min(100%, 36rem);
+    max-height: min(85vh, 38rem);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+    background: color-mix(in srgb, var(--foreground) 3%, var(--background));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent) 5%, transparent),
+      0 4px 12px color-mix(in srgb, var(--background) 40%, transparent),
+      0 20px 60px -12px color-mix(in srgb, var(--background) 70%, transparent),
+      0 0 100px -20px color-mix(in srgb, var(--accent) 12%, transparent);
+    transform: scale(0.95) translateY(-12px);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .shortcuts-overlay.active .shortcuts-card {
+    transform: scale(1) translateY(0);
+  }
+
+  .shortcuts-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 0.375rem;
+    border: none;
+    background: transparent;
+    color: color-mix(in srgb, var(--foreground) 45%, transparent);
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .shortcuts-close:hover {
+    color: var(--foreground);
+    background: color-mix(in srgb, var(--foreground) 7%, transparent);
+  }
+
+  .shortcuts-close svg {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+
+  .shortcuts-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem 1rem;
+    border-bottom: 1px solid
+      color-mix(
+        in srgb,
+        var(--accent) 8%,
+        color-mix(in srgb, var(--foreground) 6%, transparent)
+      );
+    background: color-mix(in srgb, var(--background) 40%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .shortcuts-head-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent);
+  }
+
+  .shortcuts-head-icon svg {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+
+  .shortcuts-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .shortcuts-title-text {
+    background: linear-gradient(135deg, var(--foreground), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .shortcuts-body {
+    padding: 1rem 1.5rem 1.25rem;
+    overflow-y: auto;
+  }
+
+  .shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .shortcuts-section {
+    border: 1px solid color-mix(in srgb, var(--border) 22%, transparent);
+    border-radius: 0.875rem;
+    background: color-mix(in srgb, var(--foreground) 2%, transparent);
+    padding: 0.75rem 0.875rem;
+  }
+
+  .shortcuts-span-2 {
+    grid-column: span 2;
+  }
+
+  .shortcuts-section + .shortcuts-section {
+    margin-top: 0;
+  }
+
+  .shortcuts-group-title {
+    display: flex;
+    align-items: center;
+    font-family: var(--font-app);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.5rem;
+  }
+
+  .shortcuts-list {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .shortcuts-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.4375rem 0;
+    border-bottom: 1px dashed
+      color-mix(in srgb, var(--foreground) 5%, transparent);
+    font-size: 0.8125rem;
+    color: var(--foreground);
+  }
+
+  .shortcuts-list .shortcuts-row:last-child {
+    border-bottom: none;
+  }
+
+  .shortcuts-keys {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .shortcuts-keys kbd,
+  .shortcuts-hint kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.375rem;
+    padding: 0 0.3125rem;
+    border-radius: 0.25rem;
+    border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+    background: color-mix(in srgb, var(--foreground) 5%, transparent);
+    font-family: var(--font-firacode);
+    font-size: 0.6875rem;
+    color: color-mix(in srgb, var(--foreground) 70%, transparent);
+  }
+
+  .shortcuts-hint {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin: 0.875rem 0 0;
+    font-size: 0.7rem;
+    color: color-mix(in srgb, var(--foreground) 50%, transparent);
+  }
+</style>
