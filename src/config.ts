@@ -46,6 +46,25 @@ export const SITE = {
     text: "编辑本文",
     url: getEnv("PUBLIC_EDIT_POST_URL"), // set in .env
   },
+  // Giscus comments (GitHub Discussions driven, zero backend, zero maintenance).
+  // The repo must be public; you can use a dedicated public repo just for
+  // comments so the blog source stays private.
+  // repo / repoId / category / categoryId come from .env (generate at https://giscus.app).
+  comments: {
+    enabled: true, // set to true after PUBLIC_GISCUS_* are configured
+    giscus: {
+      repo: getEnv("PUBLIC_GISCUS_REPO"),
+      repoId: getEnv("PUBLIC_GISCUS_REPO_ID"),
+      category: getEnv("PUBLIC_GISCUS_CATEGORY"),
+      categoryId: getEnv("PUBLIC_GISCUS_CATEGORY_ID"),
+      mapping: "pathname",
+      strict: "0",
+      reactionsEnabled: "1",
+      emitMetadata: "1",
+      inputPosition: "top",
+      lang: "zh-CN",
+    },
+  },
   dynamicOgImage: true,
   dir: "ltr", // "rtl" | "auto"
   lang: "zh-CN", // html lang code. Set this empty and default will be "en"

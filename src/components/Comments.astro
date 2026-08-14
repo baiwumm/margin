@@ -1,0 +1,143 @@
+---
+import { SITE } from "@/config";
+
+const { enabled, giscus } = SITE.comments;
+
+const missingConfig =
+  !giscus.repo ||
+  !giscus.repoId ||
+  !giscus.category ||
+  !giscus.categoryId;
+
+const shouldRender = enabled && !missingConfig;
+
+// Giscus only accepts https:// custom theme URLs, so dev/preview (localhost)
+// falls back to its built-in transparent themes (the outer glass card still
+// matches the site); production uses the site-hosted custom themes below.
+const useCustomTheme = Astro.url.protocol === "https:";
+const themeLight = useCustomTheme
+  ? new URL("/giscus/giscus-light.css", Astro.url.origin).href
+  : "transparent_light";
+const themeDark = useCustomTheme
+  ? new URL("/giscus/giscus-dark.css", Astro.url.origin).href
+  : "transparent_dark";
+---
+
+{
+  shouldRender && (
+    <section id="comments" class="mt-12" aria-label="评论" data-pagefind-ignore>
+      <div class="relative overflow-hidden rounded-2xl border border-border/20 bg-muted/5 p-5 backdrop-blur-md sm:p-8">
+        <!-- Aurora glow decorations -->
+        <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div class="absolute -top-24 -right-8 h-44 w-44 rounded-full bg-accent/10 blur-3xl" />
+          <div class="absolute -bottom-24 -left-8 h-44 w-44 rounded-full bg-accent/5 blur-3xl" />
+        </div>
+
+        <div class="relative">
+          <div class="mb-5 flex items-center gap-2">
+            <span class="h-1.5 w-1.5 rounded-full bg-accent/60 shadow-[0_0_8px_var(--color-accent)]" />
+            <h2 class="font-firacode text-[10px] tracking-widest text-accent/70 uppercase">
+              评论
+            </h2>
+            <div class="h-px flex-1 bg-linear-to-r from-accent/20 to-transparent" />
+          </div>
+
+          <div id="giscus-container" class="giscus"></div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+{
+  enabled && missingConfig && (
+    <aside
+      class="mt-12 rounded-2xl border border-border/20 bg-muted/5 p-5 text-sm leading-relaxed text-foreground/60"
+      data-pagefind-ignore
+    >
+      评论功能已开启但配置不完整：请在
+      <code class="mx-1 rounded bg-muted/40 px-1.5 py-0.5 font-firacode text-xs">
+        .env
+      </code>
+      中配置
+      <code class="mx-1 rounded bg-muted/40 px-1.5 py-0.5 font-firacode text-xs">
+        PUBLIC_GISCUS_REPO
+      </code>
+      、
+      <code class="mx-1 rounded bg-muted/40 px-1.5 py-0.5 font-firacode text-xs">
+        PUBLIC_GISCUS_REPO_ID
+      </code>
+      、
+      <code class="mx-1 rounded bg-muted/40 px-1.5 py-0.5 font-firacode text-xs">
+        PUBLIC_GISCUS_CATEGORY
+      </code>
+      与
+      <code class="mx-1 rounded bg-muted/40 px-1.5 py-0.5 font-firacode text-xs">
+        PUBLIC_GISCUS_CATEGORY_ID
+      </code>
+      。
+    </aside>
+  )
+}
+
+<script is:inline define:vars={{ giscus, themeLight, themeDark }}>
+  let cleanup = null;
+
+  function initComments() {
+    // Clean up previous listeners on view transitions navigation
+    if (cleanup) cleanup.abort();
+    cleanup = new AbortController();
+    const { signal } = cleanup;
+
+    const container = document.getElementById("giscus-container");
+    if (!container || container.dataset.giscusReady) return;
+    container.dataset.giscusReady = "true";
+
+    const currentTheme = () =>
+      document.documentElement.getAttribute("data-theme") === "dark"
+        ? themeDark
+        : themeLight;
+
+    // Giscus reads all its options from data-* attributes on this script tag
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.dataset.repo = giscus.repo;
+    script.dataset.repoId = giscus.repoId;
+    script.dataset.category = giscus.category;
+    script.dataset.categoryId = giscus.categoryId;
+    script.dataset.mapping = giscus.mapping;
+    script.dataset.strict = giscus.strict;
+    script.dataset.reactionsEnabled = giscus.reactionsEnabled;
+    script.dataset.emitMetadata = giscus.emitMetadata;
+    script.dataset.inputPosition = giscus.inputPosition;
+    script.dataset.lang = giscus.lang;
+    script.dataset.loading = "lazy";
+    script.dataset.theme = currentTheme();
+    container.appendChild(script);
+
+    // Keep the iframe theme in sync with the site theme (html[data-theme])
+    const syncTheme = () => {
+      const theme = currentTheme();
+      script.dataset.theme = theme;
+      window.giscus?.setConfig({ theme });
+    };
+
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    // Disconnect the observer when leaving the page (View Transitions)
+    document.addEventListener(
+      "astro:before-swap",
+      () => observer.disconnect(),
+      { signal, once: true }
+    );
+  }
+
+  // Initialize on load and on every view transitions navigation
+  document.addEventListener("astro:page-load", initComments);
+</script>
