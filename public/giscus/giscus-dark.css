@@ -300,11 +300,19 @@ a {
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
-.gsc-reactions-popover .m-2 {
+.gsc-reactions-popover div.m-2 {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.375rem;
+}
+
+.gsc-reactions-popover p.m-2 {
+  margin: 0.5rem;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .gsc-emoji-button {
