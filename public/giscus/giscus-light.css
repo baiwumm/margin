@@ -5,7 +5,7 @@
  */
 
 @font-face {
-  font-family: "Wotfard";
+  font-family: "Margin Font";
   src: url("/giscus/fonts/wotfard.woff2") format("woff2");
   font-display: swap;
 }
@@ -17,11 +17,11 @@
   --g-faint-fg: rgba(53, 53, 56, 0.42);
   --g-accent: #1158d1;
   --g-accent-soft: rgba(17, 88, 209, 0.12);
-  --g-border: rgba(124, 173, 255, 0.28);
-  --g-border-soft: rgba(124, 173, 255, 0.18);
-  --g-card: rgba(255, 255, 255, 0.78);
-  --g-card-hover: rgba(255, 255, 255, 0.92);
-  --g-control: rgba(53, 53, 56, 0.055);
+  --g-border: rgba(124, 173, 255, 0.3);
+  --g-border-soft: rgba(124, 173, 255, 0.2);
+  --g-card: color-mix(in srgb, #f2f5ec 70%, #ffffff 30%);
+  --g-card-hover: color-mix(in srgb, #f2f5ec 62%, #ffffff 38%);
+  --g-control: rgba(53, 53, 56, 0.06);
   --g-control-hover: rgba(17, 88, 209, 0.09);
   --g-shadow: 0 1px 3px rgba(53, 53, 56, 0.08), 0 1px 2px rgba(53, 53, 56, 0.04);
   --g-radius: 0.75rem;
@@ -31,7 +31,7 @@
 body {
   background: transparent;
   color: var(--g-fg);
-  font-family: "Maple Mono CN", "Wotfard", "Fira Code", ui-monospace,
+  font-family: "Maple Mono CN", "Margin Font", "Fira Code", ui-monospace,
     "SFMono-Regular", Menlo, Consolas, sans-serif;
   font-size: 14px;
   line-height: 1.7;
