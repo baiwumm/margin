@@ -146,10 +146,31 @@ const shouldRender = enabled && !missingConfig;
       attributeFilter: ["data-theme"],
     });
 
+    // giscus reads its options when client.js runs and removes the script tag
+    // afterwards. With data-loading="lazy" the iframe may be created much
+    // later, so a theme change made before the iframe existed would be lost.
+    // Push the current theme as soon as the iframe appears (and again once it
+    // finishes loading) so the switch applies without a refresh.
+    const containerObserver = new MutationObserver(() => {
+      const iframe = container.querySelector(
+        'iframe.giscus-frame, iframe[src*="giscus"]'
+      );
+      if (!iframe) return;
+      if (!iframe.dataset.themeSynced) {
+        iframe.dataset.themeSynced = "true";
+        syncTheme();
+      }
+      iframe.addEventListener("load", syncTheme, { once: true });
+    });
+    containerObserver.observe(container, { childList: true, subtree: true });
+
     // Disconnect the observer when leaving the page (View Transitions)
     document.addEventListener(
       "astro:before-swap",
-      () => observer.disconnect(),
+      () => {
+        observer.disconnect();
+        containerObserver.disconnect();
+      },
       { signal, once: true }
     );
   }
