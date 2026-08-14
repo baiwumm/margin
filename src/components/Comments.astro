@@ -10,17 +10,6 @@ const missingConfig =
   !giscus.categoryId;
 
 const shouldRender = enabled && !missingConfig;
-
-// Giscus only accepts https:// custom theme URLs, so dev/preview (localhost)
-// falls back to its built-in transparent themes (the outer glass card still
-// matches the site); production uses the site-hosted custom themes below.
-const useCustomTheme = Astro.url.protocol === "https:";
-const themeLight = useCustomTheme
-  ? new URL("/giscus/giscus-light.css", Astro.url.origin).href
-  : "transparent_light";
-const themeDark = useCustomTheme
-  ? new URL("/giscus/giscus-dark.css", Astro.url.origin).href
-  : "transparent_dark";
 ---
 
 {
@@ -80,7 +69,7 @@ const themeDark = useCustomTheme
   )
 }
 
-<script is:inline define:vars={{ giscus, themeLight, themeDark }}>
+<script is:inline define:vars={{ giscus }}>
   let cleanup = null;
 
   function initComments() {
@@ -93,10 +82,23 @@ const themeDark = useCustomTheme
     if (!container || container.dataset.giscusReady) return;
     container.dataset.giscusReady = "true";
 
-    const currentTheme = () =>
-      document.documentElement.getAttribute("data-theme") === "dark"
-        ? themeDark
-        : themeLight;
+    // Giscus only accepts https:// custom theme URLs, so dev/preview
+    // (localhost) falls back to the built-in transparent themes. On https we
+    // resolve the theme from the current origin, so the same build works on
+    // the staging domain (margin-baiwumm.vercel.app) and after migrating to
+    // baiwumm.com without re-deploying.
+    const currentTheme = () => {
+      const isDark =
+        document.documentElement.getAttribute("data-theme") === "dark";
+      if (location.protocol !== "https:") {
+        return isDark ? "transparent_dark" : "transparent_light";
+      }
+      return (
+        location.origin +
+        "/giscus/" +
+        (isDark ? "giscus-dark.css" : "giscus-light.css")
+      );
+    };
 
     // Giscus reads all its options from data-* attributes on this script tag
     const script = document.createElement("script");
