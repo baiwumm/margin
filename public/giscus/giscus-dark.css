@@ -146,21 +146,32 @@ a {
 }
 
 .gsc-comment-box-tabs {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
   gap: 0;
   font-size: 0;
-  margin: 0.5rem 0.5rem 0;
-  padding: 0.125rem 0 0.125rem 0.125rem;
-  border: 1px solid var(--g-border-soft);
-  border-radius: 0.5rem;
-  background: var(--g-control);
-  width: fit-content;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0.5rem 0.75rem !important;
+  border: none !important;
+  border-bottom: 1px solid var(--g-border-soft) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
 }
 
 .gsc-comment-box-tabs > div {
   display: contents;
+}
+
+/* Markdown 提示：与输入/预览/Aa 同一行，靠最右侧 */
+.gsc-comment-box-tabs::after {
+  content: "支持使用 Markdown 语法";
+  margin-left: auto;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--g-faint-fg);
+  white-space: nowrap;
 }
 
 .gsc-comment-box-tabs button {
@@ -189,7 +200,16 @@ a {
 }
 
 .gsc-comment-box-write {
-  padding: 0.5rem;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+.gsc-comment-box-write:focus-within {
+  box-shadow: none !important;
+}
+
+.gsc-comment-box-textarea-extras {
+  display: none !important;
 }
 
 .gsc-comment-box-textarea {
@@ -454,7 +474,8 @@ a {
 }
 
 .gsc-comment-box.gsc-comment-box-is-reply {
-  margin: 0.5rem 0 0.25rem;
+  margin: 0.75rem 0.75rem 0.5rem !important;
+  width: auto !important;
 }
 
 .gsc-comment-children > .gsc-comment-wrap {
