@@ -1,0 +1,4 @@
+# Allow Giscus (https://giscus.app) to load the custom theme stylesheets
+# from this site cross-origin. Applied by Cloudflare Pages at deploy time.
+/giscus/*
+  Access-Control-Allow-Origin: *
