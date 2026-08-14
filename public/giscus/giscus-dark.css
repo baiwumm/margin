@@ -488,6 +488,7 @@ a {
 }
 
 .gsc-reply-box {
+  margin: 0.75rem 0.75rem 0.5rem;
   border: 1px solid var(--g-border);
   border-radius: var(--g-radius) !important;
   background: color-mix(in srgb, #10131a 78%, #263044 22%);
