@@ -433,7 +433,7 @@ a {
   font-size: 12px;
 }
 
-.gsc-comment-footer button {
+.gsc-comment-footer button:not(.gsc-emoji-button) {
   color: var(--g-muted-fg);
   border-radius: var(--g-radius-sm);
   background: var(--g-control);
@@ -441,7 +441,7 @@ a {
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.gsc-comment-footer button:hover {
+.gsc-comment-footer button:not(.gsc-emoji-button):hover {
   color: var(--g-accent);
   background: var(--g-control-hover);
 }
