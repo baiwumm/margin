@@ -1,29 +1,38 @@
 /*
  * Margin dark theme for Giscus
- * Mirrors the design tokens from src/styles/global.css (html[data-theme="dark"]).
- * This file lives inside the Giscus iframe, so values are hard-coded here.
+ * Card-style comments matching the modern minimal look of the reference,
+ * with the site's font stack (Maple Mono CN -> Wotfard) loaded from /giscus/fonts.
  */
+
+@font-face {
+  font-family: "Wotfard";
+  src: url("/giscus/fonts/wotfard.woff2") format("woff2");
+  font-display: swap;
+}
 
 :root {
   --g-bg: #10131a;
   --g-fg: #f6f7f8;
-  --g-muted-fg: rgba(246, 247, 248, 0.6);
+  --g-muted-fg: rgba(246, 247, 248, 0.58);
   --g-faint-fg: rgba(246, 247, 248, 0.4);
   --g-accent: #008fec;
-  --g-accent-soft: rgba(0, 143, 236, 0.15);
-  --g-border: rgba(34, 100, 227, 0.3);
+  --g-accent-soft: rgba(0, 143, 236, 0.14);
+  --g-border: rgba(34, 100, 227, 0.28);
   --g-border-soft: rgba(34, 100, 227, 0.16);
-  --g-muted: #212f3f;
-  --g-muted-soft: rgba(33, 47, 63, 0.7);
-  --g-panel: rgba(246, 247, 248, 0.04);
+  --g-card: rgba(30, 35, 44, 0.82);
+  --g-card-hover: rgba(38, 44, 55, 0.92);
+  --g-control: rgba(246, 247, 248, 0.055);
+  --g-control-hover: rgba(0, 143, 236, 0.1);
+  --g-shadow: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.2);
   --g-radius: 0.75rem;
+  --g-radius-sm: 0.625rem;
 }
 
 body {
   background: transparent;
   color: var(--g-fg);
-  font-family: "Maple Mono CN", "Fira Code", "Cascadia Code", ui-monospace,
-    "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: "Maple Mono CN", "Wotfard", "Fira Code", ui-monospace,
+    "SFMono-Regular", Menlo, Consolas, sans-serif;
   font-size: 14px;
   line-height: 1.7;
 }
@@ -49,8 +58,10 @@ a {
 /* ===== Comment box (composer) ===== */
 .gsc-comment-box {
   border: 1px solid var(--g-border);
-  border-radius: 1rem;
-  background: var(--g-panel);
+  border-radius: var(--g-radius) !important;
+  background: var(--g-card);
+  box-shadow: var(--g-shadow);
+  margin-bottom: 0.75rem;
 }
 
 .gsc-comment-box-tabs {
@@ -68,9 +79,9 @@ a {
 }
 
 .gsc-comment-box-textarea {
-  background: rgba(16, 19, 26, 0.75);
-  border: 1px solid var(--g-border);
-  border-radius: var(--g-radius);
+  background: rgba(16, 19, 26, 0.55);
+  border: 1px solid var(--g-border-soft);
+  border-radius: var(--g-radius-sm);
 }
 
 .gsc-comment-box-textarea:focus-within {
@@ -92,7 +103,7 @@ a {
 }
 
 .gsc-comment-box-buttons__primary {
-  border-radius: var(--g-radius);
+  border-radius: var(--g-radius-sm);
   background: var(--g-accent);
   color: #fff;
   border: 1px solid var(--g-accent);
@@ -105,7 +116,7 @@ a {
 }
 
 .gsc-comment-box-buttons__secondary {
-  border-radius: var(--g-radius);
+  border-radius: var(--g-radius-sm);
   border: 1px solid var(--g-border);
   color: var(--g-muted-fg);
   padding: 6px 16px;
@@ -118,7 +129,7 @@ a {
 
 .gsc-md-preview {
   border: 1px solid var(--g-border-soft);
-  border-radius: var(--g-radius);
+  border-radius: var(--g-radius-sm);
   padding: 0.5rem 0.75rem;
 }
 
@@ -131,9 +142,10 @@ a {
 .gsc-reactions-button {
   border: 1px solid var(--g-border-soft);
   border-radius: 9999px;
-  background: rgba(246, 247, 248, 0.04);
+  background: var(--g-card);
   color: var(--g-muted-fg);
   font-size: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .gsc-reactions-button:hover {
@@ -143,18 +155,34 @@ a {
 
 .gsc-reactions-button.popover {
   border-color: var(--g-accent);
-  box-shadow: 0 4px 20px rgba(0, 143, 236, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 143, 236, 0.18);
 }
 
 .gsc-reactions-popover {
-  background: var(--g-muted);
+  background: var(--g-card);
   border: 1px solid var(--g-border);
-  border-radius: 1rem;
+  border-radius: var(--g-radius);
+  box-shadow: var(--g-shadow);
 }
 
-/* ===== Comment item ===== */
+/* ===== Comment item: standalone cards ===== */
+.gsc-comment-wrap {
+  border-bottom: none !important;
+  margin-bottom: 0.75rem;
+}
+
 .gsc-comment {
-  border-bottom: 1px solid var(--g-border-soft);
+  border: 1px solid var(--g-border);
+  border-radius: var(--g-radius) !important;
+  background: var(--g-card);
+  box-shadow: var(--g-shadow);
+  padding: 0.9rem 1rem;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gsc-comment-wrap:hover .gsc-comment {
+  background: var(--g-card-hover);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .gsc-comment-header {
@@ -178,11 +206,12 @@ a {
 
 .gsc-avatar,
 .gsc-avatar img {
-  border-radius: 0.625rem;
+  border-radius: 50%;
+  border: 1px solid rgba(34, 100, 227, 0.35);
 }
 
 .gsc-comment-content {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .gsc-comment-content p {
@@ -194,16 +223,16 @@ a {
 }
 
 .gsc-comment-content code {
-  background: var(--g-muted-soft);
+  background: var(--g-control);
   border-radius: 0.375rem;
   padding: 0.15em 0.4em;
   font-size: 0.9em;
 }
 
 .gsc-comment-content pre {
-  background: var(--g-muted-soft);
+  background: var(--g-control);
   border: 1px solid var(--g-border-soft);
-  border-radius: var(--g-radius);
+  border-radius: var(--g-radius-sm);
   padding: 0.75rem 1rem;
   overflow-x: auto;
 }
@@ -221,7 +250,7 @@ a {
 }
 
 .gsc-comment-content img {
-  border-radius: var(--g-radius);
+  border-radius: var(--g-radius-sm);
 }
 
 .gsc-comment-footer {
@@ -230,19 +259,32 @@ a {
 }
 
 .gsc-comment-footer button {
-  color: var(--g-faint-fg);
-  border-radius: 0.5rem;
+  color: var(--g-muted-fg);
+  border-radius: var(--g-radius-sm);
+  background: var(--g-control);
+  padding: 2px 10px;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .gsc-comment-footer button:hover {
   color: var(--g-accent);
+  background: var(--g-control-hover);
 }
 
 /* ===== Replies ===== */
+.gsc-comment-children > .gsc-comment-wrap {
+  margin-bottom: 0.5rem;
+}
+
+.gsc-comment-children .gsc-comment {
+  background: color-mix(in srgb, var(--g-card) 70%, var(--g-bg));
+  box-shadow: none;
+}
+
 .gsc-reply-box {
   border: 1px solid var(--g-border);
   border-radius: var(--g-radius);
-  background: var(--g-panel);
+  background: var(--g-card);
 }
 
 /* ===== Pagination ===== */
@@ -252,17 +294,17 @@ a {
 
 .gsc-pagination-button {
   border: 1px solid var(--g-border);
-  border-radius: var(--g-radius);
-  background: var(--g-panel);
+  border-radius: var(--g-radius-sm);
+  background: var(--g-card);
   color: var(--g-fg);
   padding: 6px 18px;
   font-size: 13px;
+  box-shadow: var(--g-shadow);
 }
 
 .gsc-pagination-button:hover {
   border-color: var(--g-accent);
   color: var(--g-accent);
-  box-shadow: 0 4px 20px rgba(0, 143, 236, 0.15);
 }
 
 .gsc-pagination-button:disabled {
