@@ -29,6 +29,7 @@ export const SITE = {
   showGalleries: true,
   showGalleriesInIndex: true, // Show galleries in the general paginated list (only if showGalleries is true)
   showBackButton: true, // show back button in post detail
+  readMode: true, // immersive reading mode on post pages (toggle with the `r` key)
   showTagsInCards: true, // show tag pills at the bottom of post cards
   showCoverImages: false, // show cover images (OG) in post cards (requires pnpm build in dev mode)
   indexPostsGrid: false, // show recent/featured posts in grid layout on the home page (like /posts page)

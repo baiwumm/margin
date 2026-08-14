@@ -1,0 +1,594 @@
+---
+import { SITE } from "@/config";
+
+const readModeEnabled = SITE.readMode;
+const READ_MODE_SHORTCUT = "r";
+---
+
+{
+  readModeEnabled && (
+    <>
+      <!-- Entry button, rendered inside the post metadata row (matches the
+           reference screenshot). Stays visible while reading so the user can
+           flip back and forth. -->
+      <button
+        id="read-mode-toggle"
+        type="button"
+        class="read-mode-toggle"
+        data-read-mode-toggle
+        data-pagefind-ignore
+        aria-pressed="false"
+        aria-label="开启沉浸式阅读"
+        aria-keyshortcuts={READ_MODE_SHORTCUT}
+        title={`阅读模式（快捷键 ${READ_MODE_SHORTCUT}）`}
+      >
+        <svg
+          class="size-3.5 text-accent/70"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        </svg>
+        <span>Read Mode</span>
+      </button>
+
+      <!-- Bottom floating toolbar (Sans / Serif, zoom, Exit) -->
+      <div
+        id="read-mode-bar"
+        class="read-mode-bar"
+        data-read-mode-bar
+        data-pagefind-ignore
+        aria-hidden="true"
+      >
+        <!-- Breathing glow halo around the toolbar while reading -->
+        <span
+          class="animate-reading-halo pointer-events-none absolute -inset-1.5 -z-10 rounded-full bg-accent/20 blur-md"
+          aria-hidden="true"
+        ></span>
+        <div class="read-mode-bar-inner">
+          <div class="read-mode-segment" role="group" aria-label="阅读字体">
+            <button
+              type="button"
+              class="read-mode-font-btn"
+              data-read-font-option="sans"
+              aria-pressed="true"
+              title="无衬线字体（默认 Maple Mono）"
+            >
+              Sans
+            </button>
+            <button
+              type="button"
+              class="read-mode-font-btn"
+              data-read-font-option="serif"
+              aria-pressed="false"
+              title="衬线字体"
+            >
+              Serif
+            </button>
+          </div>
+
+          <span class="read-mode-divider" aria-hidden="true"></span>
+
+          <div class="read-mode-zoom" role="group" aria-label="字号缩放">
+            <button
+              type="button"
+              class="read-mode-zoom-btn"
+              data-read-zoom-out
+              aria-label="缩小字号"
+              title="缩小字号"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+            <span class="read-mode-zoom-label" data-read-zoom-label>100%</span>
+            <button
+              type="button"
+              class="read-mode-zoom-btn"
+              data-read-zoom-in
+              aria-label="放大字号"
+              title="放大字号"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+          </div>
+
+          <span class="read-mode-divider" aria-hidden="true"></span>
+
+          <button
+            type="button"
+            class="read-mode-exit"
+            data-read-mode-exit
+            aria-label="退出阅读模式（快捷键 R）"
+            title="退出阅读模式（快捷键 R）"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            <span>Exit</span>
+            <kbd class="read-mode-exit-kbd">R</kbd>
+          </button>
+        </div>
+      </div>
+    </>
+  )
+}
+
+<script>
+  const READ_MODE_SHORTCUT = "r";
+  const SCALE_MIN = 80;
+  const SCALE_MAX = 140;
+  const SCALE_STEP = 10;
+
+  let controller: AbortController | null = null;
+
+  function initReadMode() {
+    // Clean up listeners from the previous page (View Transitions)
+    if (controller) controller.abort();
+    controller = new AbortController();
+    const { signal } = controller;
+
+    const root = document.documentElement;
+    const toggleBtn = document.querySelector<HTMLButtonElement>(
+      "[data-read-mode-toggle]"
+    );
+    const bar = document.querySelector<HTMLElement>("[data-read-mode-bar]");
+    if (!toggleBtn || !bar) return;
+
+    const isActive = () => root.hasAttribute("data-read-mode");
+
+    const isTyping = () => {
+      const el = document.activeElement as HTMLElement | null;
+      if (!el) return false;
+      const tag = el.tagName;
+      return (
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        el.isContentEditable
+      );
+    };
+
+    // Don't let `r` / `Esc` fight with the search modal or shortcuts panel
+    const dialogOpen = () =>
+      document
+        .querySelector("#search-modal")
+        ?.classList.contains("active") ||
+      document
+        .querySelector("[data-shortcuts-panel]")
+        ?.classList.contains("active");
+
+    const getFont = (): "sans" | "serif" =>
+      localStorage.getItem("read-mode-font") === "serif" ? "serif" : "sans";
+
+    const getScale = (): number => {
+      const raw = localStorage.getItem("read-mode-scale");
+      if (raw === null) return 100;
+      const value = Number(raw);
+      if (!Number.isFinite(value)) return 100;
+      return Math.min(SCALE_MAX, Math.max(SCALE_MIN, Math.round(value)));
+    };
+
+    const syncBar = () => {
+      const active = isActive();
+      bar.classList.toggle("active", active);
+      bar.setAttribute("aria-hidden", String(!active));
+      toggleBtn.setAttribute("aria-pressed", String(active));
+      document
+        .querySelectorAll<HTMLButtonElement>("[data-read-font-option]")
+        .forEach(btn => {
+          btn.setAttribute(
+            "aria-pressed",
+            String(btn.dataset.readFontOption === getFont())
+          );
+        });
+      const label = document.querySelector<HTMLElement>(
+        "[data-read-zoom-label]"
+      );
+      if (label) label.textContent = `${getScale()}%`;
+    };
+
+    const applyState = () => {
+      root.setAttribute("data-read-mode", "");
+      root.setAttribute("data-read-font", getFont());
+      root.style.setProperty("--read-scale", String(getScale() / 100));
+      syncBar();
+    };
+
+    const clearState = () => {
+      root.removeAttribute("data-read-mode");
+      root.removeAttribute("data-read-font");
+      root.style.removeProperty("--read-scale");
+      syncBar();
+    };
+
+    const toggle = () => (isActive() ? clearState() : applyState());
+
+    toggleBtn.addEventListener("click", toggle, { signal });
+
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-read-font-option]")
+      .forEach(btn => {
+        btn.addEventListener(
+          "click",
+          () => {
+            localStorage.setItem(
+              "read-mode-font",
+              btn.dataset.readFontOption ?? "sans"
+            );
+            root.setAttribute("data-read-font", getFont());
+            syncBar();
+          },
+          { signal }
+        );
+      });
+
+    const updateScale = (delta: number) => {
+      const next = Math.min(
+        SCALE_MAX,
+        Math.max(SCALE_MIN, getScale() + delta)
+      );
+      localStorage.setItem("read-mode-scale", String(next));
+      root.style.setProperty("--read-scale", String(next / 100));
+      syncBar();
+    };
+
+    document
+      .querySelector<HTMLButtonElement>("[data-read-zoom-out]")
+      ?.addEventListener("click", () => updateScale(-SCALE_STEP), { signal });
+    document
+      .querySelector<HTMLButtonElement>("[data-read-zoom-in]")
+      ?.addEventListener("click", () => updateScale(SCALE_STEP), { signal });
+    document
+      .querySelector<HTMLButtonElement>("[data-read-mode-exit]")
+      ?.addEventListener("click", clearState, { signal });
+
+    document.addEventListener(
+      "keydown",
+      (e: KeyboardEvent) => {
+        if (e.key !== READ_MODE_SHORTCUT && e.key !== "Escape") return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        if (isTyping() || dialogOpen()) return;
+
+        if (e.key === "Escape") {
+          if (isActive()) {
+            e.preventDefault();
+            clearState();
+          }
+          return;
+        }
+
+        // `r` toggles the reading mode
+        e.preventDefault();
+        toggle();
+      },
+      { signal }
+    );
+
+    // Reading mode is session-scoped: leave it automatically when navigating
+    // away so the next page never inherits a stale layout.
+    document.addEventListener("astro:before-swap", () => clearState(), {
+      signal,
+      once: true,
+    });
+
+    // Keep the UI in sync if the state somehow survives a re-render
+    syncBar();
+  }
+
+  document.addEventListener("astro:page-load", initReadMode);
+</script>
+
+<style>
+  /* ===== Entry button (matches the metadata chips) ===== */
+  .read-mode-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
+    background: color-mix(in srgb, var(--muted) 10%, transparent);
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--foreground) 72%, transparent);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  /* Breathing halo around the toolbar — runs while reading */
+  .animate-reading-halo {
+    animation: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .read-mode-bar.active .animate-reading-halo {
+    opacity: 1;
+    animation: reading-halo 3s ease-in-out infinite;
+  }
+
+  @keyframes reading-halo {
+    0%,
+    100% {
+      opacity: 0.45;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.06);
+    }
+  }
+
+  .read-mode-toggle:hover {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+
+  .read-mode-toggle[aria-pressed="true"] {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+
+  /* ===== Bottom floating toolbar ===== */
+  .read-mode-bar {
+    position: fixed;
+    left: 50%;
+    bottom: 1.25rem;
+    z-index: 70;
+    transform: translateX(-50%) translateY(0.75rem);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease,
+      visibility 0.25s;
+  }
+
+  .read-mode-bar.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .read-mode-bar-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    max-width: min(100vw - 1.5rem, 32rem);
+    padding: 0.4rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+    background: color-mix(in srgb, var(--background) 88%, transparent);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    box-shadow:
+      0 12px 32px -12px color-mix(in srgb, var(--accent) 35%, transparent),
+      0 4px 16px color-mix(in srgb, var(--foreground) 12%, transparent);
+  }
+
+  .read-mode-divider {
+    width: 1px;
+    align-self: stretch;
+    margin: 0.35rem 0;
+    background: color-mix(in srgb, var(--border) 45%, transparent);
+  }
+
+  .read-mode-segment {
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--foreground) 6%, transparent);
+  }
+
+  .read-mode-font-btn {
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    font-family: var(--font-firacode), monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--foreground) 65%, transparent);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .read-mode-font-btn:hover {
+    color: var(--foreground);
+  }
+
+  .read-mode-font-btn[aria-pressed="true"] {
+    background: var(--accent);
+    color: var(--background);
+  }
+
+  .read-mode-zoom {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .read-mode-zoom-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: color-mix(in srgb, var(--foreground) 70%, transparent);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .read-mode-zoom-btn:hover {
+    color: var(--foreground);
+    background: color-mix(in srgb, var(--foreground) 7%, transparent);
+  }
+
+  .read-mode-zoom-btn svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .read-mode-zoom-label {
+    min-width: 2.75rem;
+    text-align: center;
+    font-family: var(--font-firacode), monospace;
+    font-size: 12px;
+    color: color-mix(in srgb, var(--foreground) 75%, transparent);
+  }
+
+  .read-mode-exit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: none;
+    background: color-mix(in srgb, var(--accent) 9%, transparent);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--foreground) 75%, transparent);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .read-mode-exit:hover {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+  }
+
+  .read-mode-exit svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .read-mode-exit-kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.15rem;
+    height: 1.15rem;
+    padding: 0 0.25rem;
+    border-radius: 0.3rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    background: color-mix(in srgb, var(--background) 75%, transparent);
+    font-family: var(--font-firacode), monospace;
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  /* ===== Immersive layout while reading ===== */
+  :global(html[data-read-mode] #main-header),
+  :global(html[data-read-mode] .site-backdrop),
+  :global(html[data-read-mode] .progress-container),
+  :global(html[data-read-mode] .post-breadcrumb),
+  :global(html[data-read-mode] .post-toc-aside),
+  :global(html[data-read-mode] .toc-mobile),
+  :global(html[data-read-mode] .post-end-divider),
+  :global(html[data-read-mode] .post-pagination),
+  :global(html[data-read-mode] .post-edit-chip),
+  :global(html[data-read-mode] #comments),
+  :global(html[data-read-mode] .footer-wrapper),
+  :global(html[data-read-mode] #btt-btn-container) {
+    display: none !important;
+  }
+
+  /* Clean reading surface */
+  :global(html[data-read-mode] body) {
+    background: var(--background);
+  }
+
+  /* Keep the title from hugging the top in immersive mode */
+  :global(html[data-read-mode] .post-header) {
+    margin-top: 2.5rem;
+  }
+
+  :global(html[data-read-mode] .post-content-grid) {
+    display: block;
+  }
+
+  :global(html[data-read-mode] #article) {
+    max-width: 44rem;
+    margin-inline: auto;
+    zoom: var(--read-scale, 1);
+  }
+
+  /* Serif reading variant (system serif stack, no new font dependency) */
+  :global(html[data-read-mode][data-read-font="serif"] #article) {
+    font-family: Georgia, "Noto Serif SC", "Songti SC", "STSong", serif;
+  }
+
+  /* De-emphasize the hero card: keep title + chips on a clean surface */
+  :global(html[data-read-mode] .post-hero-bg) {
+    display: none;
+  }
+
+  :global(html[data-read-mode] .post-header-card) {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .read-mode-bar {
+      transition: none;
+    }
+
+    .read-mode-bar.active .animate-reading-halo {
+      animation: none;
+      opacity: 0.8;
+    }
+  }
+</style>
