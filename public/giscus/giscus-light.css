@@ -144,39 +144,57 @@ a {
 }
 
 .gsc-comment-box-tabs {
-  border-bottom: 1px solid var(--g-border-soft);
-  gap: 0.25rem;
-  padding: 0.5rem 0.5rem 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin: 0.5rem 0.5rem 0;
+  padding: 0.125rem;
+  border: 1px solid var(--g-border-soft);
+  border-radius: 0.5rem;
+  background: var(--g-control);
+  width: fit-content;
+}
+
+.gsc-comment-box-tabs > div {
+  margin: 0;
 }
 
 .gsc-comment-box-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: none !important;
-  border-radius: var(--g-radius-sm);
-  padding: 0.35rem 0.9rem;
+  border-radius: 0.375rem;
+  padding: 0.3rem 0.85rem !important;
   color: var(--g-faint-fg);
   background: transparent;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .gsc-comment-box-tabs button:hover {
   color: var(--g-accent);
-  background: var(--g-control);
 }
 
 .gsc-comment-box-tabs button.color-bg-canvas,
 .gsc-comment-box-tabs button[aria-selected="true"] {
   color: var(--g-accent);
-  background: var(--g-accent-soft);
-  font-weight: 600;
+  background: var(--g-bg);
+  box-shadow: 0 1px 3px rgba(53, 53, 56, 0.08);
+}
+
+.gsc-comment-box-write {
+  padding: 0.5rem;
 }
 
 .gsc-comment-box-textarea {
+  width: 100%;
+  margin: 0;
   background: color-mix(in srgb, #f2f5ec 78%, #ffffff 22%);
   border: 1px solid var(--g-border-soft);
   border-style: solid;
   border-radius: var(--g-radius-sm);
-  margin: 0.5rem;
-  width: auto;
+  padding: 0.625rem 0.75rem;
 }
 
 .gsc-comment-box-textarea:focus-within {
@@ -187,9 +205,8 @@ a {
 
 .gsc-comment-box-textarea-extras {
   border: none !important;
-  margin: 0 0.5rem 0.5rem;
-  padding: 0.25rem 0.25rem 0;
-  border-radius: var(--g-radius-sm);
+  margin: 0.25rem 0 0;
+  padding: 0;
   background: transparent;
 }
 
@@ -207,28 +224,67 @@ a {
 }
 
 .gsc-comment-box-buttons__primary {
-  border-radius: var(--g-radius-sm);
-  background: var(--g-accent);
-  color: #fff;
-  border: 1px solid var(--g-accent);
-  padding: 6px 16px;
-  font-weight: 600;
+  border: 1px solid color-mix(in srgb, var(--g-accent) 22%, transparent);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--g-accent) 10%, transparent);
+  color: var(--g-accent);
+  padding: 0.5rem 1.1rem;
+  font-weight: 500;
+  font-size: 13px;
 }
 
 .gsc-comment-box-buttons__primary:hover {
-  background: color-mix(in srgb, var(--g-accent) 85%, #fff);
+  border-color: var(--g-accent);
+  background: color-mix(in srgb, var(--g-accent) 18%, transparent);
+  color: var(--g-accent);
 }
 
 .gsc-comment-box-buttons__secondary {
-  border-radius: var(--g-radius-sm);
-  border: 1px solid var(--g-border);
+  border: 1px solid var(--g-border-soft);
+  border-radius: 0.5rem;
+  background: var(--g-control);
   color: var(--g-muted-fg);
-  padding: 6px 16px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 13px;
 }
 
 .gsc-comment-box-buttons__secondary:hover {
   color: var(--g-accent);
   border-color: var(--g-accent);
+  background: var(--g-control-hover);
+}
+
+.gsc-comment-box-buttons .btn-primary {
+  border: 1px solid color-mix(in srgb, var(--g-accent) 22%, transparent);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--g-accent) 10%, transparent);
+  color: var(--g-accent);
+  padding: 0.5rem 1.1rem;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.gsc-comment-box-buttons .btn-primary:hover {
+  border-color: var(--g-accent);
+  background: color-mix(in srgb, var(--g-accent) 18%, transparent);
+  color: var(--g-accent);
+}
+
+.gsc-comment-box-buttons .btn {
+  border: 1px solid var(--g-border-soft);
+  border-radius: 0.5rem;
+  background: var(--g-control);
+  color: var(--g-muted-fg);
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.gsc-comment-box-buttons .btn:hover {
+  color: var(--g-accent);
+  border-color: var(--g-accent);
+  background: var(--g-control-hover);
 }
 
 .gsc-md-preview {
@@ -376,6 +432,14 @@ a {
 }
 
 /* ===== Replies ===== */
+.gsc-reply {
+  padding: 1rem 1rem 0.75rem;
+}
+
+.gsc-comment-box.gsc-comment-box-is-reply {
+  margin: 0.5rem 0 0.25rem;
+}
+
 .gsc-comment-children > .gsc-comment-wrap {
   margin-bottom: 0.5rem;
 }
