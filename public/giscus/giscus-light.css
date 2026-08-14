@@ -17,8 +17,8 @@
   --g-faint-fg: rgba(53, 53, 56, 0.42);
   --g-accent: #1158d1;
   --g-accent-soft: rgba(17, 88, 209, 0.12);
-  --g-border: rgba(124, 173, 255, 0.3);
-  --g-border-soft: rgba(124, 173, 255, 0.2);
+  --g-border: color-mix(in srgb, #7cadff 24%, transparent);
+  --g-border-soft: color-mix(in srgb, #7cadff 15%, transparent);
   --g-card: color-mix(in srgb, #f2f5ec 70%, #ffffff 30%);
   --g-card-hover: color-mix(in srgb, #f2f5ec 62%, #ffffff 38%);
   --g-control: rgba(53, 53, 56, 0.06);
@@ -26,6 +26,84 @@
   --g-shadow: 0 1px 3px rgba(53, 53, 56, 0.08), 0 1px 2px rgba(53, 53, 56, 0.04);
   --g-radius: 0.75rem;
   --g-radius-sm: 0.625rem;
+
+  /* Primer-compatible tokens. giscus components reference these variables;
+   * without them border-color falls back to currentColor (near-black), which
+   * is what caused the harsh black borders. Map them to the page palette. */
+  --color-canvas-default: var(--g-card);
+  --color-canvas-overlay: var(--g-card);
+  --color-canvas-inset: var(--g-bg);
+  --color-canvas-subtle: var(--g-control);
+  --color-bg-canvas: var(--g-card);
+  --color-bg-primary: var(--g-card);
+  --color-bg-secondary: var(--g-control);
+  --color-bg-tertiary: var(--g-control);
+  --color-bg-overlay: var(--g-card);
+  --color-bg-info: var(--g-accent-soft);
+  --color-bg-canvas-inset: var(--g-bg);
+  --color-fg-default: var(--g-fg);
+  --color-fg-muted: var(--g-muted-fg);
+  --color-fg-subtle: var(--g-faint-fg);
+  --color-text-primary: var(--g-fg);
+  --color-text-secondary: var(--g-muted-fg);
+  --color-text-tertiary: var(--g-faint-fg);
+  --color-text-link: var(--g-accent);
+  --color-accent-fg: var(--g-accent);
+  --color-accent-emphasis: var(--g-accent);
+  --color-accent-muted: rgba(17, 88, 209, 0.4);
+  --color-accent-subtle: var(--g-accent-soft);
+  --color-border-default: var(--g-border);
+  --color-border-muted: var(--g-border-soft);
+  --color-border-primary: var(--g-border);
+  --color-border-secondary: var(--g-border-soft);
+  --color-border-tertiary: var(--g-border-soft);
+  --color-border-info: var(--g-border);
+  --color-box-border-info: var(--g-border);
+  --color-label-border: var(--g-border-soft);
+  --color-input-bg: color-mix(in srgb, #f2f5ec 78%, #ffffff 22%);
+  --color-input-contrast-bg: color-mix(in srgb, #f2f5ec 78%, #ffffff 22%);
+  --color-input-border: var(--g-border-soft);
+  --color-neutral-muted: rgba(53, 53, 56, 0.07);
+  --color-btn-text: var(--g-fg);
+  --color-btn-bg: color-mix(in srgb, #f2f5ec 72%, #ffffff 28%);
+  --color-btn-hover-bg: color-mix(in srgb, #f2f5ec 64%, #ffffff 36%);
+  --color-btn-active-bg: color-mix(in srgb, #f2f5ec 58%, #ffffff 42%);
+  --color-btn-selected-bg: color-mix(in srgb, #f2f5ec 58%, #ffffff 42%);
+  --color-btn-border: var(--g-border-soft);
+  --color-btn-hover-border: var(--g-border);
+  --color-btn-active-border: var(--g-border);
+  --color-btn-shadow: none;
+  --color-btn-inset-shadow: none;
+  --color-btn-primary-text: #fff;
+  --color-btn-primary-bg: var(--g-accent);
+  --color-btn-primary-border: var(--g-accent);
+  --color-btn-primary-hover-bg: color-mix(in srgb, var(--g-accent) 85%, #fff);
+  --color-btn-primary-hover-border: var(--g-accent);
+  --color-btn-primary-selected-bg: color-mix(in srgb, var(--g-accent) 78%, #fff);
+  --color-btn-primary-shadow: none;
+  --color-btn-primary-inset-shadow: none;
+  --color-btn-primary-selected-shadow: none;
+  --color-btn-primary-disabled-bg: color-mix(in srgb, var(--g-accent) 45%, #fff);
+  --color-btn-primary-disabled-border: transparent;
+  --color-btn-primary-disabled-text: rgba(255, 255, 255, 0.8);
+  --color-action-list-item-default-hover-bg: var(--g-control-hover);
+  --color-segmented-control-bg: var(--g-control);
+  --color-segmented-control-button-bg: color-mix(in srgb, #f2f5ec 78%, #ffffff 22%);
+  --color-segmented-control-button-selected-border: var(--g-border);
+  --color-social-reaction-bg-hover: var(--g-control-hover);
+  --color-social-reaction-bg-reacted-hover: var(--g-accent-soft);
+  --color-primer-shadow-inset: none;
+  --color-hidden-text-expander-bg: var(--g-control);
+  --color-auto-gray-7: var(--g-faint-fg);
+  --color-danger-fg: #d1242f;
+  --color-danger-muted: rgba(209, 36, 47, 0.2);
+  --color-danger-subtle: rgba(209, 36, 47, 0.08);
+  --color-attention-fg: #9a6700;
+  --color-attention-muted: rgba(154, 103, 0, 0.2);
+  --color-attention-subtle: rgba(154, 103, 0, 0.08);
+  --color-success-fg: #1a7f37;
+  --color-text-danger: #d1242f;
+  --color-text-success: #1a7f37;
 }
 
 body {
@@ -62,31 +140,57 @@ a {
   background: var(--g-card);
   box-shadow: var(--g-shadow);
   margin-bottom: 0.75rem;
+  overflow: hidden;
 }
 
 .gsc-comment-box-tabs {
   border-bottom: 1px solid var(--g-border-soft);
+  gap: 0.25rem;
+  padding: 0.5rem 0.5rem 0;
 }
 
-.gsc-comment-box-tabs__tab {
+.gsc-comment-box-tabs button {
+  border: none !important;
+  border-radius: var(--g-radius-sm);
+  padding: 0.35rem 0.9rem;
   color: var(--g-faint-fg);
+  background: transparent;
   font-size: 12px;
 }
 
-.gsc-comment-box-tabs__tab.active {
+.gsc-comment-box-tabs button:hover {
   color: var(--g-accent);
-  border-bottom: 2px solid var(--g-accent);
+  background: var(--g-control);
+}
+
+.gsc-comment-box-tabs button.color-bg-canvas,
+.gsc-comment-box-tabs button[aria-selected="true"] {
+  color: var(--g-accent);
+  background: var(--g-accent-soft);
+  font-weight: 600;
 }
 
 .gsc-comment-box-textarea {
   background: color-mix(in srgb, #f2f5ec 78%, #ffffff 22%);
   border: 1px solid var(--g-border-soft);
+  border-style: solid;
   border-radius: var(--g-radius-sm);
+  margin: 0.5rem;
+  width: auto;
 }
 
 .gsc-comment-box-textarea:focus-within {
   border-color: var(--g-accent);
+  border-style: solid;
   box-shadow: 0 0 0 3px var(--g-accent-soft);
+}
+
+.gsc-comment-box-textarea-extras {
+  border: none !important;
+  margin: 0 0.5rem 0.5rem;
+  padding: 0.25rem 0.25rem 0;
+  border-radius: var(--g-radius-sm);
+  background: transparent;
 }
 
 .gsc-comment-box-textarea textarea,
@@ -283,8 +387,24 @@ a {
 
 .gsc-reply-box {
   border: 1px solid var(--g-border);
-  border-radius: var(--g-radius);
+  border-radius: var(--g-radius) !important;
   background: color-mix(in srgb, #f2f5ec 78%, #ffffff 22%);
+  padding: 0.75rem 0.9rem;
+  overflow: hidden;
+}
+
+.gsc-reply-box button.form-control {
+  border-color: var(--g-border-soft);
+  border-radius: var(--g-radius-sm);
+  background: transparent;
+  color: var(--g-faint-fg);
+  padding: 0.55rem 0.75rem;
+}
+
+.gsc-reply-box button.form-control:hover {
+  border-color: var(--g-accent);
+  color: var(--g-muted-fg);
+  background: var(--g-control-hover);
 }
 
 /* ===== Pagination ===== */
