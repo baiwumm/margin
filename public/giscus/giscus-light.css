@@ -395,10 +395,10 @@ a {
 
 .gsc-reply-box button.form-control {
   border-color: var(--g-border-soft);
-  border-radius: var(--g-radius-sm);
+  border-radius: var(--g-radius-sm) !important;
   background: transparent;
   color: var(--g-faint-fg);
-  padding: 0.55rem 0.75rem;
+  padding: 0.55rem 0.75rem !important;
 }
 
 .gsc-reply-box button.form-control:hover {
