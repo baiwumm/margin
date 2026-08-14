@@ -146,6 +146,7 @@ a {
 .gsc-comment-box-tabs {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.125rem;
   margin: 0.5rem 0.5rem 0;
   padding: 0.125rem;
@@ -156,7 +157,7 @@ a {
 }
 
 .gsc-comment-box-tabs > div {
-  margin: 0;
+  display: contents;
 }
 
 .gsc-comment-box-tabs button {
