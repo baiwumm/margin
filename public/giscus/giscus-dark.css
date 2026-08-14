@@ -297,7 +297,39 @@ a {
   background: var(--g-card);
   border: 1px solid var(--g-border);
   border-radius: var(--g-radius);
-  box-shadow: var(--g-shadow);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.gsc-reactions-popover .m-2 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.375rem;
+}
+
+.gsc-emoji-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.25rem;
+  width: 2.25rem;
+  margin: 0;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  background: transparent;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.gsc-emoji-button:hover:not(:disabled) {
+  background: var(--g-control-hover);
+  border-color: var(--g-border-soft);
+  transform: scale(1.08);
+}
+
+.gsc-emoji-button.has-reacted {
+  border-color: var(--g-accent);
+  background: var(--g-accent-soft);
 }
 
 /* ===== Comment item: standalone cards ===== */
