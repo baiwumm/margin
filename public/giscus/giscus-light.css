@@ -396,7 +396,38 @@ a {
   color: var(--g-faint-fg);
 }
 
-.gsc-comment-author-badge,
+/* ===== Commenter role badge: match the page's tag-badge look ===== */
+.gsc-comment-author > div span,
+.gsc-reply-author > div span {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--g-accent) 20%, transparent) !important;
+  border-radius: 9999px !important;
+  background: color-mix(in srgb, var(--g-accent) 5%, transparent) !important;
+  padding: 0.125rem 0.625rem !important;
+  font-size: 12px !important;
+  line-height: 1.5;
+  color: var(--g-accent) !important;
+  font-weight: 500;
+  text-transform: none !important;
+}
+
+/* 仓库所有者（博主本人）的徽章文字统一为「博主」；
+ * 选择器按作者 GitHub 主页链接区分，若更换仓库/账号需同步更新 */
+.gsc-comment-author a[href="https://github.com/baiwumm"] ~ div span,
+.gsc-reply-author a[href="https://github.com/baiwumm"] ~ div span {
+  font-size: 0 !important;
+}
+
+.gsc-comment-author a[href="https://github.com/baiwumm"] ~ div span::after,
+.gsc-reply-author a[href="https://github.com/baiwumm"] ~ div span::after {
+  content: "博主";
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--g-accent);
+}
+
 .gsc-comment-author-verified-badge {
   border-radius: 9999px;
 }
