@@ -18,6 +18,9 @@ export default defineConfig({
     prefetchAll: true,
     defaultStrategy: "hover",
   },
+  devToolbar: {
+    enabled: false, // disable the Astro Dev Toolbar (dev-only UI)
+  },
   integrations: [
     mdx({
       extendMarkdownConfig: true,
