@@ -147,9 +147,10 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 0.125rem;
+  gap: 0;
+  font-size: 0;
   margin: 0.5rem 0.5rem 0;
-  padding: 0.125rem;
+  padding: 0.125rem 0 0.125rem 0.125rem;
   border: 1px solid var(--g-border-soft);
   border-radius: 0.5rem;
   background: var(--g-control);
@@ -171,6 +172,7 @@ a {
   background: transparent;
   font-size: 12px;
   font-weight: 500;
+  margin-right: 0.125rem;
 }
 
 .gsc-comment-box-tabs button:hover {
