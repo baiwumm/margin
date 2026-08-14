@@ -219,7 +219,7 @@ i {
   border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
   border-radius: 1rem;
   background: color-mix(in srgb, var(--foreground) 3%, var(--background));
-  padding: 1rem 1rem 1rem 3.5rem;
+  padding: 1rem 3rem 1rem 3.5rem;
   transition: all 0.3s ease;
   box-shadow: 0 4px 20px -5px
     color-mix(in srgb, var(--background) 50%, transparent);
@@ -244,19 +244,47 @@ i {
   width: 20px;
   height: 20px;
   left: 20px;
-  top: calc(50% - 10px);
+  /* 相对 form 顶部固定偏移（form 顶部即输入框顶部），
+     避免结果区展开导致 form 变高后图标下移 */
+  top: calc((var(--pagefind-ui-scale, 1) * 64px - 20px) / 2);
 }
 
 .premium-search .pagefind-ui__search-clear {
-  border-radius: 0.5rem;
-  padding: 0 1rem;
+  /* 同上：相对 form 顶部固定偏移，锚定在输入框内垂直居中 */
+  top: calc((var(--pagefind-ui-scale, 1) * 64px - 1.75rem) / 2);
+  right: 0.75rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
   background: color-mix(in srgb, var(--foreground) 5%, transparent);
-  right: 10px;
+  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+  font-size: 0;
+  line-height: 0;
+}
+
+.premium-search .pagefind-ui__search-clear::before {
+  content: "";
+  width: 0.85rem;
+  height: 0.85rem;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18'/%3E%3Cpath d='m6 6 12 12'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18'/%3E%3Cpath d='m6 6 12 12'/%3E%3C/svg%3E")
+    center / contain no-repeat;
 }
 
 .premium-search .pagefind-ui__search-clear:hover {
   background: color-mix(in srgb, var(--accent) 15%, transparent);
   color: var(--accent);
+}
+
+.premium-search .pagefind-ui__search-clear:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
 .premium-search .pagefind-ui__results-area {
