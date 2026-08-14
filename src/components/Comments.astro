@@ -119,11 +119,25 @@ const shouldRender = enabled && !missingConfig;
     script.dataset.theme = currentTheme();
     container.appendChild(script);
 
-    // Keep the iframe theme in sync with the site theme (html[data-theme])
+    // Keep the iframe theme in sync with the site theme (html[data-theme]).
+    // The plain giscus embed does not expose window.giscus, so use the
+    // official parent-to-giscus postMessage API (ISetConfigMessage).
     const syncTheme = () => {
       const theme = currentTheme();
       script.dataset.theme = theme;
-      window.giscus?.setConfig({ theme });
+      const iframe = container.querySelector(
+        'iframe.giscus-frame, iframe[src*="giscus"]'
+      );
+      if (iframe?.contentWindow) {
+        iframe.contentWindow.postMessage(
+          { giscus: { setConfig: { theme } } },
+          "https://giscus.app"
+        );
+      }
+      // Keep a fallback for setups where the react-style API is available
+      if (window.giscus?.setConfig) {
+        window.giscus.setConfig({ theme });
+      }
     };
 
     const observer = new MutationObserver(syncTheme);
