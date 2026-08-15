@@ -1,0 +1,182 @@
+---
+import type { Props } from "astro";
+import IconNext from "@/assets/icons/skills/nextdotjs.svg";
+import IconNuxt from "@/assets/icons/skills/nuxtdotjs.svg";
+import IconReact from "@/assets/icons/skills/react.svg";
+import IconVue from "@/assets/icons/skills/vuedotjs.svg";
+import IconNest from "@/assets/icons/skills/nestjs.svg";
+import IconTypeScript from "@/assets/icons/skills/typescript.svg";
+import IconJavaScript from "@/assets/icons/skills/javascript.svg";
+import IconHtml5 from "@/assets/icons/skills/html5.svg";
+import IconPrisma from "@/assets/icons/skills/prisma.svg";
+import IconPostgres from "@/assets/icons/skills/postgresql.svg";
+import IconVercel from "@/assets/icons/skills/vercel.svg";
+
+interface Skill {
+  icon: (_props: Props) => Element;
+  name: string;
+  url: string;
+}
+
+const skills: Skill[] = [
+  { icon: IconNext, name: "Next.js", url: "https://nextjs.org" },
+  { icon: IconNuxt, name: "Nuxt.js", url: "https://nuxt.com" },
+  { icon: IconReact, name: "React", url: "https://react.dev" },
+  { icon: IconVue, name: "Vue", url: "https://vuejs.org" },
+  { icon: IconNest, name: "NestJS", url: "https://nestjs.com" },
+  {
+    icon: IconTypeScript,
+    name: "TypeScript",
+    url: "https://www.typescriptlang.org",
+  },
+  {
+    icon: IconJavaScript,
+    name: "JavaScript",
+    url: "https://developer.mozilla.org/docs/Web/JavaScript",
+  },
+  { icon: IconHtml5, name: "HTML5", url: "https://html.com" },
+  { icon: IconPrisma, name: "Prisma", url: "https://www.prisma.io" },
+  {
+    icon: IconPostgres,
+    name: "PostgreSQL",
+    url: "https://www.postgresql.org",
+  },
+  { icon: IconVercel, name: "Vercel", url: "https://vercel.com" },
+];
+---
+
+<div class="skill-marquee">
+  <div class="skill-marquee__track">
+    {
+      [0, 1].map(dup => (
+        <ul class="skill-marquee__group" aria-hidden={dup === 1}>
+          {skills.map(skill => {
+            const Icon = skill.icon;
+            return (
+              <li>
+                <a
+                  href={skill.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={skill.name}
+                >
+                  <Icon class="skill-marquee__icon" aria-hidden="true" />
+                  <span>{skill.name}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .skill-marquee {
+    position: relative;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      black 10%,
+      black 90%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      black 10%,
+      black 90%,
+      transparent
+    );
+  }
+
+  .skill-marquee__track {
+    display: flex;
+    width: max-content;
+    animation: skill-marquee-scroll 36s linear infinite;
+  }
+
+  .skill-marquee:hover .skill-marquee__track,
+  .skill-marquee:focus-within .skill-marquee__track {
+    animation-play-state: paused;
+  }
+
+  .skill-marquee__group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.9rem 0.75rem 0.9rem 0;
+    list-style: none;
+  }
+
+  .skill-marquee__group li {
+    flex-shrink: 0;
+    margin: 0;
+  }
+
+  .skill-marquee__group a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-foreground);
+    background: color-mix(
+      in srgb,
+      var(--color-foreground) 4%,
+      var(--color-background)
+    );
+    border: 1px solid color-mix(in srgb, var(--color-accent) 15%, transparent);
+    backdrop-filter: blur(12px);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      transform 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .skill-marquee__group a:hover,
+  .skill-marquee__group a:focus-visible {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+    box-shadow:
+      0 6px 18px color-mix(in srgb, var(--color-accent) 15%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-accent) 8%, transparent);
+  }
+
+  .skill-marquee__icon {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: currentColor;
+    opacity: 0.85;
+  }
+
+  @keyframes skill-marquee-scroll {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skill-marquee__track {
+      animation: none;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .skill-marquee__group {
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .skill-marquee__group + .skill-marquee__group {
+      display: none;
+    }
+  }
+</style>

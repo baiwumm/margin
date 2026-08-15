@@ -1,10 +1,13 @@
 ---
 import type { MarkdownLayoutProps } from "astro";
+import { Image } from "astro:assets";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
+import Comments from "@/components/Comments.astro";
 import Layout from "./Layout.astro";
 import { SITE } from "@/config";
+import avatar from "@/assets/avatar.png";
 
 type Props = MarkdownLayoutProps<{ title: string; description?: string }>;
 
@@ -28,7 +31,16 @@ const { frontmatter } = Astro.props;
         <div class="avatar-ring">
           <div class="avatar-glow"></div>
           <div class="avatar-inner">
-            <span class="avatar-emoji">👨‍💻</span>
+            <Image
+              src={avatar}
+              alt="白雾茫茫丶的头像"
+              width={220}
+              height={220}
+              class="avatar-img"
+              sizes="220px"
+              loading="eager"
+              fetchpriority="high"
+            />
           </div>
         </div>
         <h1 class="hero-title">
@@ -36,19 +48,84 @@ const { frontmatter } = Astro.props;
           <span class="name-glow">{SITE.author}</span>
         </h1>
         <div class="hero-badges">
-          <span class="badge" data-badge>🚀 Developer</span>
-          <span class="badge" data-badge>📚 Student</span>
-          <span class="badge" data-badge>🎮 Gamer</span>
+          <span class="badge" data-badge>
+            <svg
+              class="size-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M10 9l-6 5 6 5"></path>
+              <path d="M14 9l6 5-6 5"></path>
+            </svg>
+            前端工程师
+          </span>
+          <span class="badge" data-badge>
+            <svg
+              class="size-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 17l6-5-6-5"></path>
+              <path d="M12 19h8"></path>
+            </svg>
+            vibecoding
+          </span>
+          <span class="badge" data-badge>
+            <svg
+              class="size-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            深圳
+          </span>
         </div>
       </div>
     </div>
 
     <section
       id="about"
-      class="about-content app-prose mb-28 max-w-app prose-img:border-0"
+      class="about-content app-prose mb-12 max-w-app prose-img:border-0"
     >
       <slot />
     </section>
+
+    <div
+      class="about-comments-divider relative mb-4 flex items-center gap-4"
+      aria-hidden="true"
+    >
+      <div
+        class="h-px flex-1 bg-linear-to-r from-transparent via-border/30 to-accent/20"
+      >
+      </div>
+      <div
+        class="h-1.5 w-1.5 rounded-full bg-accent/50 shadow-[0_0_8px_var(--color-accent)]"
+      >
+      </div>
+      <div
+        class="h-px flex-1 bg-linear-to-l from-transparent via-border/30 to-accent/20"
+      >
+      </div>
+    </div>
+
+    <Comments />
   </main>
   <Footer />
 </Layout>
@@ -290,6 +367,7 @@ const { frontmatter } = Astro.props;
     width: 100%;
     height: 100%;
     border-radius: 50%;
+    overflow: hidden;
     background: var(--color-background);
     display: flex;
     align-items: center;
@@ -297,9 +375,12 @@ const { frontmatter } = Astro.props;
     animation: ring-spin 6s linear infinite reverse;
   }
 
-  .avatar-emoji {
-    font-size: 2.8rem;
-    line-height: 1;
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 50%;
+    object-fit: cover;
   }
 
   .hero-title {
@@ -348,6 +429,9 @@ const { frontmatter } = Astro.props;
   .badge {
     position: relative;
     overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
     padding: 0.45rem 1.1rem;
     border-radius: 999px;
     font-size: 0.8rem;
@@ -411,6 +495,10 @@ const { frontmatter } = Astro.props;
     display: inline-block;
   }
 
+  .about-content :global(h2 + *) {
+    margin-top: 1rem;
+  }
+
   .about-content :global(h2::after) {
     content: "";
     position: absolute;
@@ -421,5 +509,103 @@ const { frontmatter } = Astro.props;
     background: linear-gradient(90deg, var(--color-accent), transparent);
     border-radius: 999px;
     box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 30%, transparent);
+  }
+
+  /* ── Timeline ── */
+  .about-content :global(.timeline) {
+    position: relative;
+  }
+
+  .about-content :global(.timeline)::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 21px;
+    width: 2px;
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      var(--color-accent),
+      color-mix(in srgb, var(--color-accent) 25%, transparent) 60%,
+      var(--color-border)
+    );
+    opacity: 0.55;
+  }
+
+  .about-content :global(.timeline-item) {
+    position: relative;
+    padding-left: 3.4rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .about-content :global(.timeline-item:last-child) {
+    padding-bottom: 0;
+  }
+
+  .about-content :global(.timeline-dot) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.15rem;
+    color: var(--color-accent);
+    background: var(--color-background);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    box-shadow:
+      0 0 0 4px color-mix(in srgb, var(--color-accent) 10%, transparent),
+      0 4px 14px color-mix(in srgb, var(--color-accent) 18%, transparent);
+    z-index: 1;
+  }
+
+  .about-content :global(.timeline-dot__icon) {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+
+  .about-content :global(.timeline-title) {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .about-content :global(.timeline-desc) {
+    margin-top: 0.3rem;
+    font-size: 0.85rem;
+    line-height: 1.65;
+    opacity: 0.65;
+  }
+
+  @media (min-width: 640px) {
+    .about-content :global(.timeline) {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+
+    .about-content :global(.timeline)::before {
+      top: 21px;
+      bottom: auto;
+      left: 0;
+      right: 0;
+      width: auto;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        var(--color-accent),
+        color-mix(in srgb, var(--color-accent) 25%, transparent) 70%,
+        var(--color-border)
+      );
+    }
+
+    .about-content :global(.timeline-item) {
+      padding-left: 0;
+      padding-top: 3.2rem;
+      padding-bottom: 0;
+    }
   }
 </style>

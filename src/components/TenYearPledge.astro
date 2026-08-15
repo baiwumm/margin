@@ -1,0 +1,75 @@
+---
+const START = new Date("2023-04-29T00:00:00+08:00");
+const END = new Date("2033-04-29T00:00:00+08:00");
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const totalDays = Math.round((END.getTime() - START.getTime()) / DAY_MS);
+const now = new Date();
+const clamped = Math.min(
+  Math.max(now.getTime() - START.getTime(), 0),
+  END.getTime() - START.getTime()
+);
+const elapsedDays = Math.floor(clamped / DAY_MS);
+const remainingDays = Math.max(totalDays - elapsedDays, 0);
+const percent = (elapsedDays / totalDays) * 100;
+
+const remainingYears = Math.floor(remainingDays / 365.2425);
+const remainingMonths = Math.floor((remainingDays % 365.2425) / 30.437);
+---
+
+<div
+  class="relative overflow-hidden rounded-2xl border border-accent/15 bg-muted/5 p-5 sm:p-6"
+>
+  <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+    <div
+      class="absolute -top-20 -right-10 h-40 w-40 rounded-full bg-accent/10 blur-3xl"
+    >
+    </div>
+    <div
+      class="absolute -bottom-20 -left-10 h-40 w-40 rounded-full bg-accent/5 blur-3xl"
+    >
+    </div>
+  </div>
+
+  <div class="relative">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span
+          class="h-1.5 w-1.5 rounded-full bg-accent/60 shadow-[0_0_8px_var(--color-accent)]"
+        ></span>
+        <span class="text-[10px] tracking-widest text-accent/70 uppercase">
+          十年之约
+        </span>
+      </div>
+      <span class="text-xs text-foreground/50"> 2023.04.29 → 2033.04.29 </span>
+    </div>
+
+    <p class="mt-2 text-sm leading-relaxed text-foreground/75">
+      与未来的自己约定：把写博客这件事，坚持十年。
+    </p>
+
+    <div
+      class="mt-4 h-2.5 overflow-hidden rounded-full bg-muted/20"
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(percent)}
+      aria-label="十年之约进度"
+    >
+      <div
+        class="h-full rounded-full bg-linear-to-r from-accent/50 via-accent to-accent shadow-[0_0_12px_var(--color-accent)]"
+        style={`width: ${percent}%`}
+      >
+      </div>
+    </div>
+
+    <div class="mt-2 flex flex-wrap justify-between gap-1 text-xs">
+      <span class="text-accent">
+        已走过 {elapsedDays} 天 · {percent.toFixed(1)}%
+      </span>
+      <span class="text-foreground/50">
+        还剩约 {remainingYears} 年 {remainingMonths} 个月
+      </span>
+    </div>
+  </div>
+</div>

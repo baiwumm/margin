@@ -1,0 +1,292 @@
+---
+layout: ../layouts/AboutLayout.astro
+title: "关于我"
+description: "认识一下白雾茫茫丶——扎根深圳的前端程序员，喜欢用 React/Vue 构建界面，对工程化与性能优化充满好奇。"
+---
+
+import { PUBLIC_SOCIAL_EMAIL } from "astro:env/client";
+import SiteStats from "@/components/SiteStats.astro";
+import TenYearPledge from "@/components/TenYearPledge.astro";
+import SkillMarquee from "@/components/SkillMarquee.astro";
+import MbtiType from "@/components/MbtiType.astro";
+
+## 关于我
+
+Hi，我是白雾茫茫丶 👋 一名扎根深圳的前端程序员。在互联网行业深耕多年，最初因兴趣开始折腾代码，如今把它走成了职业：喜欢用 **React / Vue** 构建用户界面，对**工程化**与**性能优化**充满好奇，正努力向「更优雅的代码」和「更高效的协作」靠近。
+
+## 专业技能
+
+<SkillMarquee />
+
+## 成长足迹
+
+<div class="timeline">
+  <div class="timeline-item">
+    <div class="timeline-dot">
+      <svg
+        class="timeline-dot__icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M7 20h10" />
+        <path d="M10 20c5.5-2.5.8-6.4 3-10" />
+        <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" />
+        <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" />
+      </svg>
+    </div>
+    <div class="timeline-title">兴趣萌芽</div>
+    <p class="timeline-desc">最初因兴趣开始折腾代码，对互联网懵懂又好奇。</p>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot">
+      <svg
+        class="timeline-dot__icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+      </svg>
+    </div>
+    <div class="timeline-title">入行摸索</div>
+    <p class="timeline-desc">在工作中持续踩坑，也在踩坑中不断进步。</p>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot">
+      <svg
+        class="timeline-dot__icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+      </svg>
+    </div>
+    <div class="timeline-title">建站</div>
+    <p class="timeline-desc">工作两年左右萌生建站想法，记录成长。</p>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-dot">
+      <svg
+        class="timeline-dot__icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
+        <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
+        <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
+        <path d="M10 6h4" />
+        <path d="M10 10h4" />
+        <path d="M10 14h4" />
+        <path d="M10 18h4" />
+      </svg>
+    </div>
+    <div class="timeline-title">现在</div>
+    <p class="timeline-desc">扎根深圳，专注前端，追求更优雅的代码与协作。</p>
+  </div>
+</div>
+
+## 兴趣与生活
+
+<ul class="list-none space-y-3 pl-0">
+  <li class="flex items-center gap-3">
+    <span class="flex size-9 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-accent/10 text-accent">
+      <svg
+        class="size-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M10 9l-6 5 6 5" />
+        <path d="M14 9l6 5-6 5" />
+      </svg>
+    </span>
+    <span class="text-[0.95rem] leading-relaxed">
+      <strong>写代码</strong> —— 把想法变成能跑起来的产品，享受从 0 到 1
+      的过程。
+    </span>
+  </li>
+  <li class="flex items-center gap-3">
+    <span class="flex size-9 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-accent/10 text-accent">
+      <svg
+        class="size-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M9 18V5l12-2v13" />
+        <circle cx="6" cy="18" r="3" />
+        <circle cx="18" cy="16" r="3" />
+      </svg>
+    </span>
+    <span class="text-[0.95rem] leading-relaxed">
+      <strong>音乐</strong> —— 写代码时的固定背景音是 Lo-fi，安静又治愈。
+    </span>
+  </li>
+  <li class="flex items-center gap-3">
+    <span class="flex size-9 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-accent/10 text-accent">
+      <svg
+        class="size-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect width="20" height="12" x="2" y="6" rx="2" />
+        <path d="M6 12h4" />
+        <path d="M8 10v4" />
+        <path d="M15 13h.01" />
+        <path d="M18 11h.01" />
+      </svg>
+    </span>
+    <span class="text-[0.95rem] leading-relaxed">
+      <strong>游戏</strong> —— 偶尔钻进虚拟世界放松一下，也算一种解压方式。
+    </span>
+  </li>
+  <li class="flex items-center gap-3">
+    <span class="flex size-9 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-accent/10 text-accent">
+      <svg
+        class="size-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M14.4 14.4 9.6 9.6" />
+        <path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z" />
+        <path d="m21.5 21.5-1.4-1.4" />
+        <path d="M3.9 3.9 2.5 2.5" />
+        <path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z" />
+      </svg>
+    </span>
+    <span class="text-[0.95rem] leading-relaxed">
+      <strong>健身</strong> —— 保持身体在线，才能持续产出。
+    </span>
+  </li>
+</ul>
+
+## 人格档案
+
+<MbtiType />
+
+<div class="space-y-4">
+  <div>
+    <div class="mb-1.5 flex justify-between text-xs text-foreground/70">
+      <span>内向 I · 55%</span>
+      <span>外向 E · 45%</span>
+    </div>
+    <div class="relative h-2 overflow-hidden rounded-full bg-muted/20">
+      <div class="absolute inset-y-0 left-0 w-[55%] rounded-full bg-linear-to-r from-accent/40 to-accent" />
+      <div class="absolute inset-y-0 left-1/2 w-px bg-background/70" />
+    </div>
+  </div>
+  <div>
+    <div class="mb-1.5 flex justify-between text-xs text-foreground/70">
+      <span>直觉 N · 58%</span>
+      <span>实感 S · 42%</span>
+    </div>
+    <div class="relative h-2 overflow-hidden rounded-full bg-muted/20">
+      <div class="absolute inset-y-0 left-0 w-[58%] rounded-full bg-linear-to-r from-accent/40 to-accent" />
+      <div class="absolute inset-y-0 left-1/2 w-px bg-background/70" />
+    </div>
+  </div>
+  <div>
+    <div class="mb-1.5 flex justify-between text-xs text-foreground/70">
+      <span>思考 T · 56%</span>
+      <span>情感 F · 44%</span>
+    </div>
+    <div class="relative h-2 overflow-hidden rounded-full bg-muted/20">
+      <div class="absolute inset-y-0 left-0 w-[56%] rounded-full bg-linear-to-r from-accent/40 to-accent" />
+      <div class="absolute inset-y-0 left-1/2 w-px bg-background/70" />
+    </div>
+  </div>
+  <div>
+    <div class="mb-1.5 flex justify-between text-xs text-foreground/70">
+      <span>判断 J · 86%</span>
+      <span>知觉 P · 14%</span>
+    </div>
+    <div class="relative h-2 overflow-hidden rounded-full bg-muted/20">
+      <div class="absolute inset-y-0 left-0 w-[86%] rounded-full bg-linear-to-r from-accent/40 to-accent" />
+      <div class="absolute inset-y-0 left-1/2 w-px bg-background/70" />
+    </div>
+  </div>
+  <div>
+    <div class="mb-1.5 flex justify-between text-xs text-foreground/70">
+      <span>自信果断 A · 78%</span>
+      <span>谨慎 T · 22%</span>
+    </div>
+    <div class="relative h-2 overflow-hidden rounded-full bg-muted/20">
+      <div class="absolute inset-y-0 left-0 w-[78%] rounded-full bg-linear-to-r from-accent/40 to-accent" />
+      <div class="absolute inset-y-0 left-1/2 w-px bg-background/70" />
+    </div>
+  </div>
+</div>
+
+## 这个博客
+
+我认为，寻找一种以自己喜欢的方式，把生活、学习、工作、进步与经验记录下来，是一件很美好的事——这就是我建立博客的初衷。
+
+工作两年左右，我萌生了搭建博客的想法。那时候我对互联网还处于一种懵懂的状态，有太多新鲜事物等着去摸索；摸索的过程里会一直踩坑，但踩坑本身，就是一种进步。
+
+拥有一个自己喜欢的博客，是一件很酷的事。你会以自己喜欢的方式去不断完善它。在这个物欲横流的时代，能有一件自己喜欢、并且有能力去追逐的事情，并不容易。
+
+**Margin** 是我为自己搭建的小天地，用来记录代码、思考与灵感。这里会有关于开发与技术的文章，以及偶尔深夜冒出来的随想。它由 **Astro** 构建，纯静态生成，自带全文搜索与动态 OG 图，力求在性能与体验之间取得平衡。
+
+<SiteStats />
+
+## 十年之约
+
+<TenYearPledge />
+
+## 友链与联系
+
+如果你也喜欢搭建自己的小天地，欢迎添加友链，与我在互联网中共同进步。
+
+{
+PUBLIC_SOCIAL_EMAIL && (
+
+<p>
+友链申请或交流：<a href={`mailto:${PUBLIC_SOCIAL_EMAIL}`}>
+{PUBLIC_SOCIAL_EMAIL}
+</a>
+，或直接在评论区留言。
+</p>
+)
+}
+
+看完这篇有什么想说的？欢迎在评论区和我聊聊～
+
+> 代码是写给人看的，只是顺便让机器能运行。
