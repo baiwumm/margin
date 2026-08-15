@@ -32,3 +32,5 @@ pnpm-debug.log*
 
 public/pagefind
 .vercel
+.env.*
+!.env.example
