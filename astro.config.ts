@@ -85,12 +85,6 @@ export default defineConfig({
         context: "client",
         optional: true,
       }),
-      // URL of the hosted repo used by the "Edit this post" button
-      PUBLIC_EDIT_POST_URL: envField.string({
-        access: "public",
-        context: "client",
-        optional: true,
-      }),
       // Giscus comments (GitHub Discussions). The repo must be public.
       PUBLIC_GISCUS_REPO: envField.string({
         access: "public",

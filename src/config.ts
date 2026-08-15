@@ -43,7 +43,7 @@ export const SITE = {
     grain: true, // background visual noise layer
   },
   editPost: {
-    enabled: true,
+    enabled: false,
     text: "编辑本文",
     url: getEnv("PUBLIC_EDIT_POST_URL"), // set in .env
   },
