@@ -9,7 +9,7 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
     "pointer-events-none fixed end-4 bottom-8 z-50",
     "md:end-8 md:bottom-10",
     "translate-y-8 opacity-0",
-    "transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",
+    "transition-[opacity,translate] duration-300 ease-out motion-reduce:transition-none",
   ]}
 >
   <button
@@ -39,8 +39,7 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
     <!-- 2: Button Background, leaves 3px of the ring visible -->
     <span
       aria-hidden="true"
-      class="absolute inset-[3px] z-10 rounded-full bg-background/95"
-    ></span>
+      class="absolute inset-[3px] z-10 rounded-full bg-background/95"></span>
     <!-- 3: Content (icon + label) -->
     <IconArrowNarrowUp
       aria-hidden="true"
@@ -64,9 +63,8 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
     const { signal } = backToTopCleanup;
 
     const rootElement = document.documentElement;
-    const btnContainer = document.querySelector<HTMLElement>(
-      "#btt-btn-container"
-    );
+    const btnContainer =
+      document.querySelector<HTMLElement>("#btt-btn-container");
     const backToTopBtn = document.querySelector<HTMLButtonElement>(
       "[data-button='back-to-top']"
     );
@@ -88,15 +86,14 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
       const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
       const scrollTop = rootElement.scrollTop || window.scrollY || 0;
 
-      if (scrollTotal <= 0) return { ratio: 0, progress: 0 };
+      if (scrollTotal <= 0) return { progress: 0, scrollTop: 0 };
 
-      const ratio = Math.min(scrollTop / scrollTotal, 1);
-      const progress = Math.round(ratio * 100);
-      return { ratio, progress };
+      const progress = Math.round(Math.min(scrollTop / scrollTotal, 1) * 100);
+      return { progress, scrollTop };
     }
 
     function handleScroll() {
-      const { ratio, progress } = getScrollMetrics();
+      const { progress, scrollTop } = getScrollMetrics();
 
       if (progress !== lastProgress) {
         progressEl.style.setProperty(
@@ -106,7 +103,8 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
         lastProgress = progress;
       }
 
-      const isVisible = ratio > 0.2;
+      // 滚动超过一个视口高度后才显示，避免页面较短时一滚就出现
+      const isVisible = scrollTop > window.innerHeight;
 
       if (isVisible !== lastVisible) {
         containerEl.classList.toggle("opacity-100", isVisible);

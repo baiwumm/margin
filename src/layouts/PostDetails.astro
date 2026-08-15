@@ -8,7 +8,6 @@ import EditPost from "@/components/EditPost.astro";
 import ShareLinks from "@/components/ShareLinks.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import ReadMode from "@/components/ReadMode.astro";
-import BackToTopButton from "@/components/BackToTopButton.astro";
 import GalleryEmbed from "@/components/GalleryEmbed.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
 import Comments from "@/components/Comments.astro";
@@ -85,16 +84,20 @@ const currentPostIndex = allPosts.findIndex(a => a.id === post.id);
 
 const prevPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
 const nextPost =
-  currentPostIndex < allPosts.length - 1 ? allPosts[currentPostIndex + 1] : null;
+  currentPostIndex < allPosts.length - 1
+    ? allPosts[currentPostIndex + 1]
+    : null;
 ---
 
 <Layout {...layoutProps}>
   <Header />
-  {SITE.showBackButton && (
-    <div class="post-breadcrumb">
-      <Breadcrumb withBackButton />
-    </div>
-  )}
+  {
+    SITE.showBackButton && (
+      <div class="post-breadcrumb">
+        <Breadcrumb withBackButton />
+      </div>
+    )
+  }
   <main
     id="main-content"
     class:list={["relative app-layout pb-12", { "mt-8": !SITE.showBackButton }]}
@@ -103,7 +106,9 @@ const nextPost =
     <!-- Post header section -->
     <header class="post-header relative mb-10 text-center">
       <div class="post-hero-bg"></div>
-      <div class="post-header-card relative z-10 rounded-3xl border border-border/20 bg-muted/5 px-6 py-8 backdrop-blur-md sm:px-10 sm:py-12">
+      <div
+        class="post-header-card relative z-10 rounded-3xl border border-border/20 bg-muted/5 px-6 py-8 backdrop-blur-md sm:px-10 sm:py-12"
+      >
         <!-- Title -->
         <h1
           transition:name={slugifyStr(title)}
@@ -178,48 +183,48 @@ const nextPost =
           </div>
 
           <!-- Reading time chip -->
-          {readingTime && (
-            <div
-              class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm"
-            >
-              <svg
-                class="size-3.5 text-accent/70"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
-                <path d="M12 7v5l3 3" />
-              </svg>
-              <span class="text-sm opacity-70">{readingTime}</span>
-            </div>
-          )}
+          {
+            readingTime && (
+              <div class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm">
+                <svg
+                  class="size-3.5 text-accent/70"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0" />
+                  <path d="M12 7v5l3 3" />
+                </svg>
+                <span class="text-sm opacity-70">{readingTime}</span>
+              </div>
+            )
+          }
 
-          {wordCount !== null && (
-            <div
-              class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm"
-            >
-              <svg
-                class="size-3.5 text-accent/70"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M4 7V4h16v3"></path>
-                <path d="M9 20h6"></path>
-                <path d="M12 4v16"></path>
-              </svg>
-              <span class="text-sm opacity-70">{wordCount} 字</span>
-            </div>
-          )}
+          {
+            wordCount !== null && (
+              <div class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm">
+                <svg
+                  class="size-3.5 text-accent/70"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 7V4h16v3" />
+                  <path d="M9 20h6" />
+                  <path d="M12 4v16" />
+                </svg>
+                <span class="text-sm opacity-70">{wordCount} 字</span>
+              </div>
+            )
+          }
 
           <!-- Edit post -->
           <EditPost
@@ -231,35 +236,35 @@ const nextPost =
           <!-- Immersive reading mode entry -->
           <ReadMode />
         </div>
-
-
       </div>
     </header>
 
     {
       tocItems.length > 0 && (
-        <details class="toc-mobile lg:hidden mt-8" data-pagefind-ignore>
+        <details class="toc-mobile mt-8 lg:hidden" data-pagefind-ignore>
           <summary>本页目录</summary>
           <TableOfContents items={tocItems} />
-          <div class="toc-share-divider" aria-hidden="true"></div>
+          <div class="toc-share-divider" aria-hidden="true" />
           <ShareLinks class="mt-6 w-full items-start" />
         </details>
       )
     }
 
-    <div class="post-content-grid mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,15rem)] lg:items-start">
+    <div
+      class="post-content-grid mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,15rem)] lg:items-start"
+    >
       <article
         id="article"
-        class="app-prose min-w-0 w-full max-w-app prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
+        class="app-prose w-full max-w-app min-w-0 prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
       >
         <Content components={{ GalleryEmbed }} />
       </article>
 
       {
         tocItems.length > 0 && (
-          <aside class="post-toc-aside hidden lg:block lg:sticky lg:top-24">
+          <aside class="post-toc-aside hidden lg:sticky lg:top-24 lg:block">
             <TableOfContents items={tocItems} class="toc-card" />
-            <div class="toc-share-divider" aria-hidden="true"></div>
+            <div class="toc-share-divider" aria-hidden="true" />
             <ShareLinks class="mt-6 w-full items-start" />
           </aside>
         )
@@ -269,18 +274,35 @@ const nextPost =
     <Comments />
 
     <!-- ═══════ Post footer section ═══════ -->
-    <div class="post-end-divider relative mt-12 mb-8 flex items-center justify-center gap-4" aria-hidden="true">
-      <div class="relative h-px flex-1 bg-linear-to-r from-transparent via-border/30 to-accent/20">
-        <div class="absolute inset-0 bg-linear-to-r from-transparent via-accent/40 to-accent/40 blur-[2px]"></div>
+    <div
+      class="post-end-divider relative mt-12 mb-8 flex items-center justify-center gap-4"
+      aria-hidden="true"
+    >
+      <div
+        class="relative h-px flex-1 bg-linear-to-r from-transparent via-border/30 to-accent/20"
+      >
+        <div
+          class="absolute inset-0 bg-linear-to-r from-transparent via-accent/40 to-accent/40 blur-[2px]"
+        >
+        </div>
       </div>
-      
-      <div class="relative z-10 flex items-center gap-2 font-firacode text-[10px] tracking-widest text-accent/40 uppercase select-none">
-        <span class="h-1.5 w-1.5 rounded-full bg-accent/50 shadow-[0_0_8px_var(--color-accent)]"></span>
+
+      <div
+        class="relative z-10 flex items-center gap-2 font-firacode text-[10px] tracking-widest text-accent/40 uppercase select-none"
+      >
+        <span
+          class="h-1.5 w-1.5 rounded-full bg-accent/50 shadow-[0_0_8px_var(--color-accent)]"
+        ></span>
         end
       </div>
 
-      <div class="relative h-px flex-1 bg-linear-to-l from-transparent via-border/30 to-accent/20">
-        <div class="absolute inset-0 bg-linear-to-l from-transparent via-accent/40 to-accent/40 blur-[2px]"></div>
+      <div
+        class="relative h-px flex-1 bg-linear-to-l from-transparent via-border/30 to-accent/20"
+      >
+        <div
+          class="absolute inset-0 bg-linear-to-l from-transparent via-accent/40 to-accent/40 blur-[2px]"
+        >
+        </div>
       </div>
     </div>
 
@@ -350,7 +372,6 @@ const nextPost =
       }
     </div>
   </main>
-  <BackToTopButton />
   <Footer />
 </Layout>
 
@@ -391,7 +412,7 @@ const nextPost =
             const height =
               document.documentElement.scrollHeight -
               document.documentElement.clientHeight;
-            myBar.style.width = ((winScroll / height) * 100) + "%";
+            myBar.style.width = (winScroll / height) * 100 + "%";
             ticking = false;
           });
           ticking = true;
@@ -528,7 +549,11 @@ const nextPost =
      blur effect via filter:blur(16px), avoiding a second compositing layer */
     background: color-mix(in srgb, var(--muted) 5%, transparent);
     position: relative;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s ease,
+      border-color 0.3s ease,
+      background-color 0.3s ease;
   }
 
   .post-nav-link:hover {
@@ -628,5 +653,4 @@ const nextPost =
       transparent
     );
   }
-
 </style>
