@@ -14,7 +14,7 @@ const READ_MODE_SHORTCUT = "r";
       <button
         id="read-mode-toggle"
         type="button"
-        class="read-mode-toggle"
+        class="read-mode-toggle group"
         data-read-mode-toggle
         data-pagefind-ignore
         aria-pressed="false"
@@ -23,7 +23,7 @@ const READ_MODE_SHORTCUT = "r";
         title={`阅读模式（快捷键 ${READ_MODE_SHORTCUT}）`}
       >
         <svg
-          class="size-3.5 text-accent/70"
+          class="size-3.5 text-accent/70 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-110"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
