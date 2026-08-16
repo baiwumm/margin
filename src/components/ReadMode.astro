@@ -168,6 +168,14 @@ const READ_MODE_SHORTCUT = "r";
     const bar = document.querySelector<HTMLElement>("[data-read-mode-bar]");
     if (!toggleBtn || !bar) return;
 
+    // The bar must leave `.post-header-card`: that card's `backdrop-filter`
+    // turns it into the containing block for `position: fixed` descendants,
+    // which would anchor the toolbar to the card instead of the viewport.
+    // `<body>` has no transform/filter, so the toolbar stays page-fixed.
+    if (bar.parentElement !== document.body) {
+      document.body.appendChild(bar);
+    }
+
     const isActive = () => root.hasAttribute("data-read-mode");
 
     const isTyping = () => {
