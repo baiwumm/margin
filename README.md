@@ -4,7 +4,7 @@ Heavily customized version of the [AstroPaper](https://github.com/satnaing/astro
 
 **🌐 Live demo:** [devosfera.vercel.app](https://devosfera.vercel.app)
 
-![Devosfera OG](public/devosfera-og.webp)
+![Default OG](public/default-og.webp)
 
 > **Note:** This project is primarily my personal blog. If anyone wishes to use it, feel free to delete all entries and edit the settings freely.
 

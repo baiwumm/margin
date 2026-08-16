@@ -180,4 +180,4 @@ astro.config.ts        # 站点 / 集成 / Markdown / Shiki / 字体 / env schem
 - **提交历史很浅（当前仅 2 个提交）**：基本没有可回退的旧版本；重大改动前建议先提交或备份当前状态。
 - **pnpm 原生依赖构建白名单**：`pnpm-workspace.yaml` 的 `allowBuilds` / `onlyBuiltDependencies` 已放行 esbuild 与 sharp；新增带原生构建脚本的依赖时必须同步该白名单（且按「修改原则」先征得用户同意）。
 - **tsconfig 中的 `jsx: "react-jsx"` 是上游遗留**（项目无 React 依赖），不要据此引入 React 组件。
-- 不要删除 `public/` 下被页面引用的资源（favicon、`devosfera-og.webp`、`audio/` 等）。
+- 不要删除 `public/` 下被页面引用的资源（favicon、`default-og.webp`、`audio/` 等）。

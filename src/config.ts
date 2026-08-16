@@ -20,7 +20,7 @@ export const SITE = {
   profile: getEnv("PUBLIC_SOCIAL_GITHUB"), // set in .env
   desc: "边白 · 记录代码、思考与灵感",
   title: "Margin",
-  ogImage: "devosfera-og.webp", // located in the public folder
+  ogImage: "default-og.webp", // located in the public folder
   lightAndDarkMode: true,
   postPerIndex: 6,
   postPerPage: 12,
