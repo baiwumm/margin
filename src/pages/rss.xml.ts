@@ -16,10 +16,12 @@ export async function GET() {
     title: SITE.title,
     description: SITE.desc,
     site: SITE.website,
+    stylesheet: "/rss.xsl",
     items: sortedPosts.map(entry => ({
       link: getEntryPath(entry),
       title: entry.data.title,
       description: entry.data.description,
+      categories: "tags" in entry.data ? entry.data.tags : [],
       pubDate: new Date(
         "modDatetime" in entry.data && entry.data.modDatetime
           ? entry.data.modDatetime
