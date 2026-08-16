@@ -69,7 +69,7 @@ export const SITE = {
   dynamicOgImage: true,
   dir: "ltr", // "rtl" | "auto"
   lang: "zh-CN", // html lang code. Set this empty and default will be "en"
-  timezone: "America/Guatemala", // Default global timezone (IANA format) https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  timezone: "Asia/Shanghai", // Default global timezone (IANA format) https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   introAudio: {
     enabled: true, // show/hide intro player in home and compact player while navigating
     // src: path to file (relative to /public or absolute URL). Example: "/intro.mp3" or "https://example.com/stream"
