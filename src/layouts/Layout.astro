@@ -7,7 +7,6 @@ import SearchModal from "@/components/SearchModal.astro";
 import ShortcutsPanel from "@/components/ShortcutsPanel.astro";
 import BackToTopButton from "@/components/BackToTopButton.astro";
 import "@/styles/global.css";
-import "@/assets/fonts/maple-mono-cn/maple-mono-cn.css";
 
 type Props = {
   title?: string;
@@ -120,6 +119,7 @@ const showGrain = SITE.backdropEffects.grain;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#10131a" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
@@ -130,13 +130,16 @@ const showGrain = SITE.backdropEffects.grain;
 
     <!-- Load Fonts -->
     <!-- Only preload the primary body font. Others load async to avoid bandwidth contention. -->
+    <link
+      rel="stylesheet"
+      href="/giscus/fonts/maple-mono-cn/maple-mono-cn.css"
+    />
     <Font
       cssVariable="--font-wotfard"
       preload={[{ subset: "latin", weight: 400, style: "normal" }]}
     />
     <Font cssVariable="--font-sriracha" />
     <Font cssVariable="--font-firacode" />
-    <Font cssVariable="--font-cascadia-code" />
 
     <!-- General Meta Tags -->
     <title>{title}</title>
@@ -233,6 +236,14 @@ const showGrain = SITE.backdropEffects.grain;
 
         // Set theme immediately to prevent flash
         document.firstElementChild?.setAttribute("data-theme", themeValue);
+
+        // Sync browser chrome color with the theme immediately (no flash)
+        document
+          .querySelector("meta[name='theme-color']")
+          ?.setAttribute(
+            "content",
+            themeValue === "dark" ? "#10131a" : "#f2f5ec"
+          );
 
         // Restore accent color immediately to prevent flash
         document.firstElementChild?.setAttribute(
@@ -415,3 +426,42 @@ const showGrain = SITE.backdropEffects.grain;
     </script>
   )
 }
+
+<script>
+  let cardGlowCleanup: AbortController | null = null;
+
+  document.addEventListener("astro:page-load", () => {
+    // Cleanup previous listeners (View Transitions navigation)
+    if (cardGlowCleanup) cardGlowCleanup.abort();
+    cardGlowCleanup = new AbortController();
+    const { signal } = cardGlowCleanup;
+
+    // 触摸设备与减少动态效果偏好下不跟踪鼠标
+    if (
+      window
+        .matchMedia("(pointer: coarse), (prefers-reduced-motion: reduce)")
+        .matches
+    ) {
+      return;
+    }
+
+    // Card / GalleryCard 的鼠标跟随辉光
+    document.querySelectorAll<HTMLElement>(".card-glow").forEach(card => {
+      let ticking = false;
+      card.addEventListener(
+        "mousemove",
+        (e: MouseEvent) => {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(() => {
+            const rect = card.getBoundingClientRect();
+            card.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+            card.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+            ticking = false;
+          });
+        },
+        { signal, passive: true }
+      );
+    });
+  });
+</script>
