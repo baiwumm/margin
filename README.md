@@ -1,10 +1,19 @@
-# Margin
+# 🖥️ Margin
 
 白雾茫茫丶的个人技术博客 + 图片画廊，基于 [AstroPaper](https://github.com/satnaing/astro-paper) 深度二次开发，纯静态生成（SSG）。
 
 在线地址：[https://baiwumm.com](https://baiwumm.com)
 
-## 特性
+![Version](https://img.shields.io/badge/version-v1.2.0-1158d1)
+![License](https://img.shields.io/badge/license-MIT-1f9d63)
+![Astro](https://img.shields.io/badge/Astro-7-ff5d01)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-38bdf8)
+![pnpm](https://img.shields.io/badge/pnpm-9-f69220)
+
+![首页预览](screenshots/home.webp)
+
+## ✨ 特性
 
 - 终端 / 赛博朋克视觉：Aurora 光效、玻璃拟态、网格 + 噪点背景、鼠标辉光
 - 全局搜索（⌘K / Ctrl+K）：Pagefind 静态索引，弹窗、搜索页、文章列表三处入口
@@ -15,11 +24,11 @@
 - 阅读模式（`r` 键）、首页音频播放器、Giscus 评论、回到顶部进度环
 - 文章与画廊混合内容流：首页 / 文章列表 / 归档 / 标签 / RSS 统一排序
 
-## 技术栈
+## 🛠️ 技术栈
 
 Astro 6（SSG）· TypeScript（strict）· Tailwind CSS 4 · MDX · Shiki 代码高亮 · Pagefind · Satori · dayjs · pnpm
 
-## 开发
+## 🚀 开发
 
 要求 Node.js 20+ 与 pnpm。
 
@@ -36,7 +45,7 @@ pnpm run format     # Prettier 格式化
 > Docker 部署参考 `Dockerfile` / `docker-compose.yml`。
 > 仓库内 `AGENTS.md` 记录了完整的开发规范与注意事项。
 
-## 目录结构
+## 📁 目录结构
 
 ```
 public/             # 静态资源（favicon、giscus 字体等）
@@ -52,7 +61,7 @@ src/
 astro.config.ts     # 站点配置、字体、Shiki、集成
 ```
 
-## 字体
+## 🔤 字体
 
 | 用途 | 字体 |
 | --- | --- |
@@ -63,9 +72,9 @@ astro.config.ts     # 站点配置、字体、Shiki、集成
 
 字体统一存放在 `public/giscus/fonts/`，主站与 Giscus 评论共用一份，避免重复。
 
-## 写内容
+## 📝 写内容
 
-### 文章
+### 📝 文章
 
 在 `src/data/blog/` 新建 `<slug>.md` / `.mdx`，frontmatter：
 
@@ -86,7 +95,7 @@ timezone: "Asia/Shanghai" # 可选，覆盖 SITE.timezone
 - MDX 可直接使用组件；目录（TOC）由标题自动生成，无需手动添加
 - 代码块支持 `// [!code highlight]`、`// [!code ++]` / `// [!code --]`，语言后追加 `file=文件名` 可显示文件名
 
-### 画廊
+### 🖼️ 画廊
 
 在 `src/data/galleries/<slug>/` 放 `index.md` + 图片，slug 即 `/galleries/<slug>` 路由；图片按文件名排序（数字前缀控制顺序），构建期自动优化。详见 [GALLERIES.md](GALLERIES.md)。
 
@@ -98,12 +107,12 @@ MDX 内嵌画廊（无需 import）：
 
 `slug` 必须与 `src/data/galleries/` 下的文件夹名完全一致，否则会渲染错误提示。
 
-## 配置
+## ⚙️ 配置
 
 - 站点配置集中在 `src/config.ts` 的 `SITE`：标题、描述、时区、功能开关（画廊 / 音频 / 阅读模式 / 封面图等）、分页数量
 - 社交链接与 Giscus 评论参数来自环境变量（不硬编码个人数据）：复制 `.env.example` 为 `.env` 并填写；未设置的项自动隐藏对应入口
 - Giscus 需配置 `PUBLIC_GISCUS_REPO` / `PUBLIC_GISCUS_REPO_ID` / `PUBLIC_GISCUS_CATEGORY` / `PUBLIC_GISCUS_CATEGORY_ID`，并在 `SITE.comments.enabled` 开启
 
-## License
+## 📄 License
 
 基于 [AstroPaper](https://github.com/satnaing/astro-paper)（MIT）二次开发。
