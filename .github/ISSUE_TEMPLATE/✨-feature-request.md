@@ -1,6 +1,6 @@
 ---
 name: "✨ Feature Request"
-about: Suggest an idea for improving AstroPaper
+about: Suggest an idea for improving Margin
 title: "[Feature Request]: "
 labels: enhancement
 assignees: ""

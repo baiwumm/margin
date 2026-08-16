@@ -2,7 +2,7 @@
 
 Margin（原 Devosfera）：基于 AstroPaper 深度二次开发的个人博客（纯静态站点，作者：白雾茫茫丶，域名：https://baiwumm.com）。项目定位是「个人技术博客 + 图片画廊」，当前主要目标是在保持静态生成、页面性能与既有视觉体系（终端/赛博朋克风格、玻璃拟态、Aurora 光效）的前提下，持续扩展和维护博客内容、画廊、全局搜索、SEO 与 OG 图等既有能力，不做架构性重写。
 
-关键事实：仓库提交历史很浅（当前仅 2 个提交）、无自动化测试、无 CI workflow；所有改动依赖 `astro check` + 构建与人工验证。当前处于「先理解、后修改」的长期 AI 协作模式，任何修改前先阅读本文件与相关代码。
+关键事实：仓库提交历史较短（当前约 70 个提交）、无自动化测试、无 CI workflow；所有改动依赖 `astro check` + 构建与人工验证。当前处于「先理解、后修改」的长期 AI 协作模式，任何修改前先阅读本文件与相关代码。
 
 # 修改原则
 
@@ -124,7 +124,7 @@ astro.config.ts        # 站点 / 集成 / Markdown / Shiki / 字体 / env schem
 
 # Content Guidelines
 
-- 本项目只用中文：界面文案、内容、元信息、日期一律使用中文（`SITE.lang` 为 `zh-CN`），不要新增英文界面文案；注意 `archives` 页的月份名是硬编码西班牙语（历史遗留），改文案时一并改为中文；提交信息按「提交规则」以中文优先。
+- 本项目只用中文：界面文案、内容、元信息、日期一律使用中文（`SITE.lang` 为 `zh-CN`），不要新增英文界面文案；注意 `archives` 页月份名此前为硬编码西班牙语，现已改为中文，改动时保持中文；提交信息按「提交规则」以中文优先。
 - 不硬编码个人数据：社交链接、编辑 URL 一律走 `PUBLIC_*` 环境变量；作者名等默认值来自 `SITE`。
 - MDX 允许自定义 JSX（已有先例），类名使用 Tailwind 语义类或组件 `<style>`，不要引入内联样式库。
 - `GalleryEmbed` 的 slug 必须与 `src/data/galleries/` 下的文件夹名完全一致；引用不存在的 slug 会渲染错误提示块。
@@ -172,12 +172,12 @@ astro.config.ts        # 站点 / 集成 / Markdown / Shiki / 字体 / env schem
 
 - **搜索索引只在 build 后存在**：`public/pagefind` 被 gitignore，全新 clone 后 dev 环境搜索不可用，需先 `pnpm run build`；dev 下页面会显示「先 build」提示。
 - **画廊图片 glob 在 4 处重复**：`src/pages/galleries/index.astro`、`src/pages/galleries/[gallery].astro`、`src/components/Card.astro`、`src/components/GalleryEmbed.astro`；新增图片格式（如 `.HEIC`）需要四处同步。
-- **已知缺陷**：`src/data/blog/urban-city-photography.mdx` 中 `<GalleryEmbed slug="fotografia-urbana">` 与真实画廊目录 `urban-photography` 不匹配，会渲染「Gallery not found」错误块；修复或创作新内容时避免此类不一致。
+- **已知缺陷**：此前 `urban-city-photography.mdx` 中 `<GalleryEmbed slug="fotografia-urbana">` 与真实画廊目录 `urban-photography` 不匹配的问题，已随该文章删除而消失；创作新内容时仍须保证 `GalleryEmbed` 的 slug 与画廊文件夹名完全一致，避免渲染「Gallery not found」错误块。
 - **主题初始化**：`Layout.astro` 内联 FOUC 脚本默认跟随系统偏好，而 `src/scripts/theme.ts` 内部默认值为 `dark`，正常运行依赖内联脚本先执行；改动初始化顺序会引入闪变（FOUC）。
 - **搜索索引的复制是跨平台的**：`build` 脚本用 Node 的 `fs.cpSync` 把 `dist/pagefind` 复制到 `public/pagefind`（Windows / Linux 均可），dev 下搜索需先 build 一次。
 - **生产构建依赖 devDependencies**：`@tailwindcss/typography`、`@pagefind/default-ui` 位于 devDependencies 但生产构建需要，CI 安装不要用 `--prod`。
 - **无自动化测试**：改动靠人工验证；View Transitions 下最常见的回归是事件监听器重复绑定。
-- **提交历史很浅（当前仅 2 个提交）**：基本没有可回退的旧版本；重大改动前建议先提交或备份当前状态。
+- **提交历史较短（当前约 70 个提交）**：基本没有可回退的旧版本；重大改动前建议先提交或备份当前状态。
 - **pnpm 原生依赖构建白名单**：`pnpm-workspace.yaml` 的 `allowBuilds` / `onlyBuiltDependencies` 已放行 esbuild 与 sharp；新增带原生构建脚本的依赖时必须同步该白名单（且按「修改原则」先征得用户同意）。
 - **tsconfig 中的 `jsx: "react-jsx"` 是上游遗留**（项目无 React 依赖），不要据此引入 React 组件。
 - 不要删除 `public/` 下被页面引用的资源（favicon、`default-og.webp`、`audio/` 等）。

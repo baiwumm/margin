@@ -1,276 +1,109 @@
-# Devosfera Blog
+# Margin
 
-Heavily customized version of the [AstroPaper](https://github.com/satnaing/astro-paper) theme with a new aesthetic, image galleries, global search modal, and dozens of visual and interactive improvements.
+白雾茫茫丶的个人技术博客 + 图片画廊，基于 [AstroPaper](https://github.com/satnaing/astro-paper) 深度二次开发，纯静态生成（SSG）。
 
-**🌐 Live demo:** [devosfera.vercel.app](https://devosfera.vercel.app)
+在线地址：[https://baiwumm.com](https://baiwumm.com)
 
-![Default OG](public/default-og.webp)
+## 特性
 
-> **Note:** This project is primarily my personal blog. If anyone wishes to use it, feel free to delete all entries and edit the settings freely.
+- 终端 / 赛博朋克视觉：Aurora 光效、玻璃拟态、网格 + 噪点背景、鼠标辉光
+- 全局搜索（⌘K / Ctrl+K）：Pagefind 静态索引，弹窗、搜索页、文章列表三处入口
+- 图片画廊：构建期图片优化、原生 `<dialog>` lightbox、MDX 内嵌 `<GalleryEmbed>`
+- 动态 OG 图：Satori + resvg 生成站点 / 文章 / 标签三类 OG 图片
+- 完整 SEO：canonical、OpenGraph、Twitter Card、JSON-LD、Sitemap、RSS（含 XSL 样式页）
+- 明暗双主题 + 5 种强调色（蓝 / 绿 / 紫 / 橙 / Rose）
+- 阅读模式（`r` 键）、首页音频播放器、Giscus 评论、回到顶部进度环
+- 文章与画廊混合内容流：首页 / 文章列表 / 归档 / 标签 / RSS 统一排序
 
-> [!IMPORTANT]
-> **Social links and personal URLs are no longer hardcoded.**
-> They are loaded from environment variables so that forks of this repo do not expose the original author's personal data.
-> Copy `.env.example` → `.env` and fill in your own values before running the project. See the [Configuration](#%EF%B8%8F-configuration) section for details.
+## 技术栈
 
----
+Astro 6（SSG）· TypeScript（strict）· Tailwind CSS 4 · MDX · Shiki 代码高亮 · Pagefind · Satori · dayjs · pnpm
 
-## Table of contents
+## 开发
 
-1. [Features](#-features)
-2. [Project structure](#-project-structure)
-3. [Installation and local development](#-installation-and-local-development)
-4. [Commands](#-commands)
-5. [Creating content](#-creating-content)
-   - [Posts](#posts-srcdatablog)
-   - [Image galleries](#galleries-srcdatagalleries)
-6. [GalleryEmbed component](#%EF%B8%8F-galleryembed-component)
-7. [Configuration](#%EF%B8%8F-configuration)
-8. [Upstream issues resolved](#-upstream-issues-resolved)
-9. [License](#-license)
-
----
-
-## ✨ Features
-
-### Core (inherited from AstroPaper)
-
-- Type-safe Markdown, good performance, accessible and responsive
-- Full SEO (meta tags, Open Graph, sitemap, RSS), light/dark mode
-- Dynamically generated OG images with Satori
-
-### Modern design
-
-- Hero with animated prompt configurable from `heroTerminalPrompt` in `src/config.ts` (default: `~/ready-to-go $`)
-- Global backdrop: grid + cursor glow + noise texture (all pages) optional and configurable from `src/config.ts`
-- Glassmorphism on navbar, cards and modals
-
-### Custom typography
-
-| Role          | Font                      |
-| :------------ | :------------------------ |
-| Body          | `Wotfard` (local)         |
-| Code / Mono   | `Cascadia Code` (local)   |
-| Italics / H3  | `Sriracha` (Local) |
-
-### Global search (⌘K)
-
-- Modal via `⌘K` / `Ctrl+K` powered by **Pagefind** (static index) and full keyboard navigation (if you want to test it locally, run `pnpm run build` first and after that `pnpm run dev` or `pnpm run preview` since the index is only generated in production)
-
-### Image galleries (`/galleries`)
-
-- Albums in `src/data/galleries/<slug>/`; images optimized at build-time (srcset, WebP, lazy)
-- Native lightbox with `<dialog>`, redesigned fullscreen layout, keyboard navigation and edge-aware prev/next controls
-- `<GalleryEmbed>` to embed galleries inside MDX posts without importing
-- Controlled by `showGalleries` in `src/config.ts` (also gates gallery inclusion in mixed feeds) — see [GALLERIES.md](GALLERIES.md)
-
-### Unified mixed feed (posts + galleries)
-
-- Optional mixed feed controlled by `showGalleriesInIndex` in `src/config.ts` (effective only if `showGalleries` is `true`)
-- When both flags are enabled, gallery entries are included in `/`, `/posts`, `/archives`, `/tags`, and `/rss.xml`
-- Shared URL/date helpers keep routing and publish-date sorting consistent across all listing pages
-- Gallery entries include a visual badge in cards and archive timeline items
-
-### Performance and maintainability improvements
-
-- Parallel collection loading in key routes using `Promise.all`
-- Optimized sorting and tag extraction logic for larger content sets
-- Stronger shared typing across blog/gallery entries (removed weak `any` usage)
-- Reduced duplicated route/slug logic by centralizing entry helpers
-
-### Branded audio player
-
-- Intro audio player in the hero with terminal aesthetic (wave bars, progress bar)
-- Fully togglable and configurable from `src/config.ts`
-
-### Redesigned pages
-
-| Page        | Highlights                                          |
-| :---------- | :-------------------------------------------------- |
-| `/` Home    | Terminal hero, featured grid, section counters, optional mixed feed |
-| `/archives` | Vertical timeline with glow, includes gallery entries |
-| `/tags`     | Grid with proportional progress bar                 |
-| `/search`   | Reactive aurora, restyled Pagefind                  |
-| Posts       | Paginated mixed feed (posts + galleries), inline Pagefind search |
-
----
-
-## 🚀 Project structure
-
-```
-/
-├── public/
-│   ├── audio/             # Audio files (intro, etc.)
-│   └── pagefind/          # Search index (generated at build)
-├── src/
-│   ├── assets/            # Local fonts, SVG icons and logo
-│   ├── components/        # Reusable Astro components
-│   ├── data/
-│   │   ├── blog/          # Posts .md / .mdx
-│   │   └── galleries/     # Galleries (one folder per album)
-│   ├── layouts/           # Root layout, PostDetails, etc.
-│   ├── pages/             # Astro routes
-│   ├── styles/            # global.css, typography.css
-│   └── utils/             # Filters, OG with Satori, Shiki transformers
-└── astro.config.ts
-```
-
----
-
-## 👨🏻‍💻 Installation and local development
-
-**Requirements:** Node.js 20+ and pnpm.
+要求 Node.js 20+ 与 pnpm。
 
 ```bash
-# 1. Install dependencies
-pnpm install
-
-# 2. Development server
-pnpm run dev
-# → http://localhost:4321
+pnpm install        # 安装依赖
+pnpm run dev        # 本地开发 http://localhost:4321
+pnpm run build      # 类型检查 + 构建 + Pagefind 索引
+pnpm run preview    # 预览生产构建
+pnpm run lint       # ESLint
+pnpm run format     # Prettier 格式化
 ```
 
-The Pagefind search index is **only available in the production build**. To test it locally:
+> 搜索索引只在 `pnpm run build` 后生成（会复制到 `public/pagefind`），全新克隆后先 build 一次，dev 下搜索才可用。
+> Docker 部署参考 `Dockerfile` / `docker-compose.yml`。
+> 仓库内 `AGENTS.md` 记录了完整的开发规范与注意事项。
 
-```bash
-pnpm run build && pnpm run preview/dev
+## 目录结构
+
+```
+public/             # 静态资源（favicon、giscus 字体等）
+src/
+  assets/           # 字体、图标、logo
+  components/       # 可复用组件
+  data/blog/        # 文章（.md / .mdx）
+  data/galleries/   # 画廊（每目录一个，含 index.md + 图片）
+  layouts/          # Layout / Main / PostDetails / AboutLayout
+  pages/            # 路由与端点（og / rss / robots）
+  styles/           # global.css / typography.css / hero-aurora.css
+  utils/            # 内容处理、OG 生成、工具函数
+astro.config.ts     # 站点配置、字体、Shiki、集成
 ```
 
-### Docker
+## 字体
 
-```bash
-docker build -t devosfera-blog .
-docker run -p 4321:80 devosfera-blog
-```
+| 用途 | 字体 |
+| --- | --- |
+| 正文 | Maple Mono CN（本地子集化，Wotfard 兜底） |
+| 代码 / 等宽 / 终端风 | Fira Code |
+| 斜体 / 装饰 | Sriracha |
+| OG 图（构建期） | Wotfard + Maple Mono CN（TTF） |
 
----
+字体统一存放在 `public/giscus/fonts/`，主站与 Giscus 评论共用一份，避免重复。
 
-## 🧞 Commands
+## 写内容
 
-| Command            | Action                                                   |
-| :----------------- | :------------------------------------------------------- |
-| `pnpm install`     | Install dependencies                                     |
-| `pnpm run dev`     | Local dev server at `localhost:4321`                     |
-| `pnpm run build`   | Production build (`astro check` + build + Pagefind)      |
-| `pnpm run preview` | Preview the production build                             |
-| `pnpm run format`  | Format with Prettier                                     |
-| `pnpm run lint`    | Lint with ESLint                                         |
+### 文章
 
-> `pnpm run build` internally runs `pagefind --site dist && cp -r dist/pagefind public/`. The search index ends up in `public/pagefind/` ready for preview.
-
----
-
-## 📝 Creating content
-
-### Posts (`src/data/blog/`)
-
-Create a `.md` or `.mdx` file with the following frontmatter:
+在 `src/data/blog/` 新建 `<slug>.md` / `.mdx`，frontmatter：
 
 ```yaml
 ---
-title: "Post title"
-pubDatetime: 2026-01-15T10:00:00Z   # required — ISO 8601 with timezone
-description: "Short description for SEO and cards"
-tags: ["astro", "dev"]
-featured: false       # highlight on the home page
-draft: false          # hidden in production
-timezone: "America/Guatemala"  # overrides SITE.timezone
-hideEditPost: false
+title: "文章标题"
+pubDatetime: 2026-01-15T10:00:00+08:00   # 必填，ISO 8601
+description: "SEO 与卡片摘要"               # 必填
+tags: ["astro"]
+featured: false          # 首页精选（金色卡片）
+draft: false             # 草稿（生产构建隐藏）
+modDatetime: 2026-02-01T10:00:00+08:00    # 可选，实质更新时补充
+timezone: "Asia/Shanghai" # 可选，覆盖 SITE.timezone
 ---
 ```
 
-**MDX**: JSX components can be used directly. `<GalleryEmbed>` is available without importing it (see next section).
+- 文章 slug 即文件名，路由自动生成；标签、RSS、Sitemap、搜索、分页自动纳入
+- MDX 可直接使用组件；目录（TOC）由标题自动生成，无需手动添加
+- 代码块支持 `// [!code highlight]`、`// [!code ++]` / `// [!code --]`，语言后追加 `file=文件名` 可显示文件名
 
-**Table of Contents**: 文章目录由标题自动生成，显示在正文右侧并吸顶，无需在正文添加标记（旧的 `## Table of contents` 标记会自动移除）。
+### 画廊
 
-**Annotated code blocks** (via Shiki transformers):
+在 `src/data/galleries/<slug>/` 放 `index.md` + 图片，slug 即 `/galleries/<slug>` 路由；图片按文件名排序（数字前缀控制顺序），构建期自动优化。详见 [GALLERIES.md](GALLERIES.md)。
 
-```
-// [!code highlight]      → highlight the line
-// [!code ++]             → added line (diff)
-// [!code --]             → removed line (diff)
-// fileName: file.ts      → display the filename above the block
-```
-
----
-
-### Galleries (`src/data/galleries/`)
-
-Quick setup:
-
-1. Create a folder in `src/data/galleries/<slug>/`.
-2. Add `index.md` (gallery metadata) and image files.
-3. Use numeric prefixes (`01-`, `02-`, …) if you want to control image order.
-4. The folder slug becomes the route: `/galleries/<slug>`.
-
-For full details (frontmatter fields, cover behavior, alt generation, and image optimization), see [GALLERIES.md](GALLERIES.md).
-
----
-
-## 🖼️ GalleryEmbed component
-
-Embed a gallery inside any `.mdx` post — **no import needed**:
+MDX 内嵌画廊（无需 import）：
 
 ```mdx
-<GalleryEmbed slug="my-trip-to-tokyo" />
+<GalleryEmbed slug="画廊文件夹名" />
 ```
 
-Optional props: `limit` (`0` = all), `cols` (`2 | 3 | 4`), `showLink` (`true/false`).
+`slug` 必须与 `src/data/galleries/` 下的文件夹名完全一致，否则会渲染错误提示。
 
-For advanced usage, full props reference, lightbox behavior, and invalid slug fallback, see [GALLERIES.md](GALLERIES.md#galleryembed--gallery-inside-mdx-posts).
+## 配置
 
----
+- 站点配置集中在 `src/config.ts` 的 `SITE`：标题、描述、时区、功能开关（画廊 / 音频 / 阅读模式 / 封面图等）、分页数量
+- 社交链接与 Giscus 评论参数来自环境变量（不硬编码个人数据）：复制 `.env.example` 为 `.env` 并填写；未设置的项自动隐藏对应入口
+- Giscus 需配置 `PUBLIC_GISCUS_REPO` / `PUBLIC_GISCUS_REPO_ID` / `PUBLIC_GISCUS_CATEGORY` / `PUBLIC_GISCUS_CATEGORY_ID`，并在 `SITE.comments.enabled` 开启
 
-## ⚙️ Configuration
+## License
 
-All site configuration lives in `src/config.ts` (the `SITE` constant). It includes general settings (title, description, timezone), feature toggles (galleries, audio player, mixed feed), and content limits (posts per page, gallery embed limit).
-
-Social links and "Share" links are defined in `src/constants.ts`.
-
-> [!WARNING]
-> **Breaking change — social links moved to environment variables.**
->
-> Previously, social URLs (GitHub, X, LinkedIn, email) and the "Edit this post" URL were hardcoded in `src/constants.ts` and `src/config.ts`. This caused every fork of the repo to expose the original author's personal data publicly, leading to unwanted spam.
->
-> **What changed:**
->
-> | Variable | What it controls |
-> | :--- | :--- |
-> | `PUBLIC_SOCIAL_GITHUB` | GitHub profile link & JSON-LD author URL |
-> | `PUBLIC_SOCIAL_X` | X / Twitter profile link |
-> | `PUBLIC_SOCIAL_LINKEDIN` | LinkedIn profile link |
-> | `PUBLIC_SOCIAL_EMAIL` | Contact email (shown as `mailto:` link) |
-> | `PUBLIC_EDIT_POST_URL` | "Edit this post" button base URL |
->
-> **To restore your socials after forking or updating:**
->
-> ```bash
-> cp .env.example .env
-> # fill in your own values in .env
-> ```
->
-> For production deployments (Vercel, Netlify, etc.), add these variables in your platform's environment settings.
-> Any variable left **unset** simply hides that social link — no errors, no broken UI.
-
----
-
-## 🐛 Upstream issues resolved
-
-Bugs and feature requests from the official [AstroPaper](https://github.com/satnaing/astro-paper) repository implemented in this version:
-
-| Issue                                                      | Description                                                                                                                                                                                                             | Files                                        | Credits                                                                                                                                                   |
-| :--------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [#614](https://github.com/satnaing/astro-paper/issues/614) | **Back to Top shifts the pagination button** when `ShareLinks` is empty                                                                                                                                                 | `BackToTopButton.astro`                      | —                                                                                                                                                         |
-| [#574](https://github.com/satnaing/astro-paper/issues/574) | **Markdown tables overflow the layout on mobile** — fixed with `w-full table-auto` and `word-wrap` on cells                                                                                                             | `typography.css`                             | [@GladerJ](https://github.com/GladerJ) — [solution](https://github.com/satnaing/astro-paper/issues/574#issuecomment-3427381261)                           |
-| [#569](https://github.com/satnaing/astro-paper/issues/569) | **Back to Top inconsistent on desktop** — unified circular design with progress ring and `fixed` positioning                                                                                                            | `BackToTopButton.astro`, `PostDetails.astro` | —                                                                                                                                                         |
-| [#566](https://github.com/satnaing/astro-paper/issues/566) | **Share links don't open in a new tab** — added `target="_blank"` and `rel="noopener noreferrer"`                                                                                                                       | `ShareLinks.astro`                           | [PR #611](https://github.com/satnaing/astro-paper/pull/611) by [@zerone0x](https://github.com/zerone0x)                                                   |
-| [#131](https://github.com/satnaing/astro-paper/issues/131) | **No MDX support** — added `@astrojs/mdx` integration with `extendMarkdownConfig: true`                                                                                                                                | `astro.config.ts`, `content.config.ts`       | —                                                                                                                                                         |
-| [#495](https://github.com/satnaing/astro-paper/issues/495) | **Inconsistent post filtering by timezone** — fixed using `dayjs` + `utc`/`timezone` plugins; also fixed a bug in the reference solution that used `.millisecond()` instead of `.valueOf()`                            | `postFilter.ts`                              | [@kj-9](https://github.com/kj-9) — [reference fix](https://github.com/satnaing/astro-paper/compare/main...kj-9:astro-paper:fix-post-filter-date)          |
-| [#553](https://github.com/satnaing/astro-paper/issues/553) | **No galleries section** — implemented full `/galleries` section with lightbox, `GalleryEmbed`, image optimization and `showGalleries` flag. See [GALLERIES.md](GALLERIES.md)                                           | multiple — see GALLERIES.md                  | —                                                                                                                                                         |
-
----
-
-## 📜 License
-
-Based on [AstroPaper](https://github.com/satnaing/astro-paper) by [Sat Naing](https://satnaing.dev), licensed under MIT.
-Customizations © [0xdres](https://github.com/0xdres).
+基于 [AstroPaper](https://github.com/satnaing/astro-paper)（MIT）二次开发。
