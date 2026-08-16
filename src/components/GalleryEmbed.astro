@@ -212,7 +212,14 @@ const gridClass = {
 </dialog>
 
 <script>
+  let galleryCleanup: AbortController | null = null;
+
   function initEmbeds() {
+    // 清理上一次初始化绑定的事件，避免 View Transitions 下监听器累积
+    if (galleryCleanup) galleryCleanup.abort();
+    galleryCleanup = new AbortController();
+    const { signal } = galleryCleanup;
+
     // Initialize all gallery-embeds present on the page
     document
       .querySelectorAll<HTMLElement>("[data-gallery-embed]")
@@ -256,31 +263,40 @@ const gridClass = {
 
         // Image buttons
         items.forEach((btn, idx) => {
-          // Prevent duplicated listeners on re-init
-          btn.addEventListener("click", () => open(idx), { once: false });
+          btn.addEventListener("click", () => open(idx), { signal });
         });
 
         // Lightbox controls
-        lb.querySelector("[data-lb-close]")?.addEventListener("click", close);
-        lb.querySelector("[data-lb-prev]")?.addEventListener("click", () =>
-          open(current - 1)
-        );
-        lb.querySelector("[data-lb-next]")?.addEventListener("click", () =>
-          open(current + 1)
-        );
+        lb
+          .querySelector("[data-lb-close]")
+          ?.addEventListener("click", close, { signal });
+        lb
+          .querySelector("[data-lb-prev]")
+          ?.addEventListener("click", () => open(current - 1), { signal });
+        lb
+          .querySelector("[data-lb-next]")
+          ?.addEventListener("click", () => open(current + 1), { signal });
 
         // Close when clicking the backdrop
-        lb.addEventListener("click", e => {
-          if (e.target === dialog) close();
-        });
+        lb.addEventListener(
+          "click",
+          e => {
+            if (e.target === dialog) close();
+          },
+          { signal }
+        );
 
         // Keyboard — only if THIS lightbox is open
-        document.addEventListener("keydown", e => {
-          if (!dialog.open) return;
-          if (e.key === "Escape") close();
-          if (e.key === "ArrowLeft") open(current - 1);
-          if (e.key === "ArrowRight") open(current + 1);
-        });
+        document.addEventListener(
+          "keydown",
+          e => {
+            if (!dialog.open) return;
+            if (e.key === "Escape") close();
+            if (e.key === "ArrowLeft") open(current - 1);
+            if (e.key === "ArrowRight") open(current + 1);
+          },
+          { signal }
+        );
       });
   }
 

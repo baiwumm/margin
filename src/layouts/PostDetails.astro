@@ -375,7 +375,9 @@ const nextPost =
   <Footer />
 </Layout>
 
-<script is:inline data-astro-rerun>
+<script>
+  let postScriptCleanup: AbortController | null = null;
+
   /** Create a progress indicator
    *  at the top */
   function createProgressBar() {
@@ -394,34 +396,28 @@ const nextPost =
     progressContainer.appendChild(progressBar);
     document.body.appendChild(progressContainer);
   }
-  createProgressBar();
 
-  /** Update the progress bar
-   *  when user scrolls */
-  function updateScrollProgress() {
+  /** Update the progress bar when user scrolls */
+  function bindScrollProgress(signal: AbortSignal) {
     const myBar = document.getElementById("myBar"); // cache ref once
     if (!myBar) return;
 
     let ticking = false;
-    document.addEventListener(
-      "scroll",
-      () => {
-        if (!ticking) {
-          requestAnimationFrame(() => {
-            const winScroll = document.documentElement.scrollTop;
-            const height =
-              document.documentElement.scrollHeight -
-              document.documentElement.clientHeight;
-            myBar.style.width = (winScroll / height) * 100 + "%";
-            ticking = false;
-          });
-          ticking = true;
-        }
-      },
-      { passive: true } // lets the browser optimise scroll handling
-    );
+    const update = () => {
+      const winScroll = document.documentElement.scrollTop;
+      const height =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight;
+      myBar.style.width = (winScroll / height) * 100 + "%";
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+    document.addEventListener("scroll", onScroll, { passive: true, signal });
   }
-  updateScrollProgress();
 
   /** Attaches links to headings in the document,
    *  allowing sharing of sections easily */
@@ -430,6 +426,8 @@ const nextPost =
       document.querySelectorAll("h2, h3, h4, h5, h6")
     );
     for (const heading of headings) {
+      // Guard: 避免同一标题重复插入锚点
+      if (heading.querySelector(".heading-link")) continue;
       heading.classList.add("group");
       const link = document.createElement("a");
       link.className =
@@ -444,13 +442,15 @@ const nextPost =
       heading.appendChild(link);
     }
   }
-  addHeadingLinks();
 
   /** Attaches copy buttons to code blocks in the document,
    * allowing users to copy code easily. */
   function attachCopyButtons() {
     const copyButtonLabel = "Copy";
-    const codeBlocks = Array.from(document.querySelectorAll("pre"));
+    const codeBlocks = Array.from(document.querySelectorAll("pre")).filter(
+      cb => !cb.querySelector(".copy-code")
+    );
+    if (codeBlocks.length === 0) return;
 
     // Pass 1: read all computed styles before touching the DOM
     // (avoids a forced reflow on every iteration of the loop)
@@ -467,7 +467,7 @@ const nextPost =
 
       const copyButton = document.createElement("button");
       copyButton.className = `copy-code absolute end-3 ${topClasses[i]} rounded bg-muted border border-muted px-2 py-1 text-xs leading-4 text-foreground font-medium`;
-      copyButton.innerHTML = copyButtonLabel;
+      copyButton.innerText = copyButtonLabel;
       codeBlock.setAttribute("tabindex", "0");
       codeBlock.appendChild(copyButton);
 
@@ -476,25 +476,38 @@ const nextPost =
       wrapper.appendChild(codeBlock);
 
       copyButton.addEventListener("click", async () => {
-        await copyCode(codeBlock, copyButton);
+        const code = codeBlock.querySelector("code");
+        const text = code?.innerText ?? "";
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          // 剪贴板不可用（非安全上下文/权限被拒）时保持原状
+        }
+
+        // visual feedback that task is completed
+        copyButton.innerText = "Copied";
+
+        setTimeout(() => {
+          copyButton.innerText = copyButtonLabel;
+        }, 700);
       });
     });
-
-    async function copyCode(block, button) {
-      const code = block.querySelector("code");
-      const text = code?.innerText;
-
-      await navigator.clipboard.writeText(text ?? "");
-
-      // visual feedback that task is completed
-      button.innerText = "Copied";
-
-      setTimeout(() => {
-        button.innerText = copyButtonLabel;
-      }, 700);
-    }
   }
-  attachCopyButtons();
+
+  function initPostScripts() {
+    // Cleanup previous listeners (View Transitions navigation)
+    if (postScriptCleanup) postScriptCleanup.abort();
+    postScriptCleanup = new AbortController();
+    const { signal } = postScriptCleanup;
+
+    createProgressBar();
+    bindScrollProgress(signal);
+    addHeadingLinks();
+    attachCopyButtons();
+  }
+
+  document.addEventListener("astro:page-load", initPostScripts);
+  initPostScripts();
 
   /* Go to page start after page swap */
   document.addEventListener("astro:after-swap", () =>
