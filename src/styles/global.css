@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./typography.css";
+@import "./hero-aurora.css";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
@@ -12,10 +13,13 @@ html[data-theme="light"] {
   --accent-green: #1f9d63;
   --accent-purple: #7c3aed;
   --accent-orange: #ea580c;
-  --accent-red: #dc2626;
+  --accent-rose: #dc2626;
   --accent: var(--accent-blue);
   --muted: #bbc789;
   --border: #7cadff;
+  /* 语义色：精选（琥珀系）与画廊（紫罗兰系）卡片，浅色主题用更深的值保证对比度 */
+  --featured: #b56007;
+  --gallery: #6d28d9;
 }
 
 html[data-theme="dark"] {
@@ -25,27 +29,44 @@ html[data-theme="dark"] {
   --accent-green: #34d399;
   --accent-purple: #a78bfa;
   --accent-orange: #fb923c;
-  --accent-red: #f87171;
+  --accent-rose: #f87171;
   --accent: var(--accent-blue);
   --muted: #212f3f;
   --border: #2264e3;
+  /* 语义色：精选（金色系）与画廊（紫色系）卡片，深色主题用更亮的值 */
+  --featured: #f59e0b;
+  --gallery: #a855f7;
 }
 
-/* Accent color variants (light/dark values resolved via the palette vars above) */
+/* Accent color variants (light/dark values resolved via the palette vars above)
+   精选 / 画廊的语义色随 accent 轮转（参考作者 Devosfera 的色轮：精选取 accent 后两格、画廊取后三格） */
+html[data-accent="blue"] {
+  --featured: #b56007;
+  --gallery: #6d28d9;
+}
+
 html[data-accent="green"] {
   --accent: var(--accent-green);
+  --featured: #be185d;
+  --gallery: #1158d1;
 }
 
 html[data-accent="purple"] {
   --accent: var(--accent-purple);
+  --featured: #0d7a5f;
+  --gallery: #b56007;
 }
 
 html[data-accent="orange"] {
   --accent: var(--accent-orange);
+  --featured: #6d28d9;
+  --gallery: #be185d;
 }
 
-html[data-accent="red"] {
-  --accent: var(--accent-red);
+html[data-accent="rose"] {
+  --accent: var(--accent-rose);
+  --featured: #1158d1;
+  --gallery: #0d7a5f;
 }
 
 /* Shared nav menu controls (Header dropdown + MobileMenu) */
@@ -124,6 +145,8 @@ html[data-accent="red"] {
   --color-accent: var(--accent);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-featured: var(--featured);
+  --color-gallery: var(--gallery);
 }
 
 .italic,

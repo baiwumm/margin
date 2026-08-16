@@ -48,7 +48,7 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
           <span class="sr-only">{SITE.title}</span>
         </a>
         <p
-          class="max-w-xs text-center font-firacode text-[11px] leading-relaxed tracking-wide text-foreground/55 sm:text-start"
+          class="max-w-xs text-center font-app text-[11px] leading-relaxed tracking-wide text-foreground/55 sm:text-start"
         >
           {SITE.desc}
         </p>
@@ -58,7 +58,7 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
       <nav class="flex flex-col items-center gap-3 sm:items-end" aria-labelledby={socialHeadingId}>
         <p
           id={socialHeadingId}
-          class="font-firacode text-[10px] tracking-wider text-foreground/55 uppercase select-none"
+          class="font-app text-[10px] tracking-wider text-foreground/55 uppercase select-none"
           >Connect</p
         >
         <ul class="flex items-center gap-2" role="list">
@@ -94,7 +94,7 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
     <div
       class="mt-4 flex flex-col items-center justify-between gap-2 sm:flex-row"
     >
-      <p class="font-firacode text-[11px] tracking-wide text-foreground/50">
+      <p class="font-app text-[11px] tracking-wide text-foreground/50">
         &copy; {currentYear}{" "}
         {githubHref ? (
           <a
@@ -113,7 +113,7 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
       <div
         class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1"
       >
-        <p class="font-firacode text-[11px] tracking-wide text-foreground/45">
+        <p class="font-app text-[11px] tracking-wide text-foreground/45">
           Made with <span class="text-accent">&#9829;</span> and lots of
           coffee
         </p>
@@ -172,7 +172,7 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
     border-radius: 9999px;
     border: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
     background: color-mix(in srgb, var(--foreground) 3%, transparent);
-    font-family: var(--font-firacode);
+    font-family: var(--font-app);
     font-size: 11px;
     letter-spacing: 0.08em;
     color: color-mix(in srgb, var(--foreground) 55%, transparent);

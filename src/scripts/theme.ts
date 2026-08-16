@@ -40,8 +40,6 @@ function setPreference(): void {
 function reflectPreference(): void {
   document.firstElementChild?.setAttribute("data-theme", themeValue);
 
-  document.querySelector("#theme-btn")?.setAttribute("aria-label", themeValue);
-
   // Sync segmented theme options (Light / Dark)
   document.querySelectorAll("[data-theme-option]").forEach(btn => {
     const isActive = btn.getAttribute("data-theme-option") === themeValue;
@@ -99,29 +97,6 @@ reflectAccent();
 function setThemeFeature(): void {
   // set on load so screen readers can get the latest value on the button
   reflectPreference();
-
-  // now this script can find and listen for clicks on the control
-  const toggleTheme = () => {
-    themeValue = themeValue === LIGHT ? DARK : LIGHT;
-    window.theme?.setTheme(themeValue);
-    setPreference();
-  };
-
-  const themeBtn = document.querySelector("#theme-btn");
-  const themeBtnMobile = document.querySelector("#theme-btn-mobile");
-
-  // Remove previous listeners to avoid duplicates on view transitions
-  const freshBtn = themeBtn?.cloneNode(true) as Element | null;
-  if (themeBtn && freshBtn) {
-    themeBtn.replaceWith(freshBtn);
-    freshBtn.addEventListener("click", toggleTheme);
-  }
-
-  const freshBtnMobile = themeBtnMobile?.cloneNode(true) as Element | null;
-  if (themeBtnMobile && freshBtnMobile) {
-    themeBtnMobile.replaceWith(freshBtnMobile);
-    freshBtnMobile.addEventListener("click", toggleTheme);
-  }
 
   // Segmented theme options (Light / Dark)
   document.querySelectorAll("[data-theme-option]").forEach(btn => {

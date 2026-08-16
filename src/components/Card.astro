@@ -99,25 +99,25 @@ if (SITE.showCoverImages) {
 
     // Featured generic posts styling
     !isGallery && featured && [
-      "border-amber-500/30 bg-amber-500/5",
-      "hover:border-amber-500/50 hover:bg-amber-500/10 focus-within:border-amber-500/50 focus-within:bg-amber-500/10",
-      "hover:shadow-amber-500/10 focus-within:shadow-amber-500/10",
-      "shadow-[0_0_20px_-5px_rgba(245,158,11,0.15)]",
+      "border-featured/30 bg-featured/5",
+      "hover:border-featured/50 hover:bg-featured/10 focus-within:border-featured/50 focus-within:bg-featured/10",
+      "hover:shadow-featured/10 focus-within:shadow-featured/10",
+      "featured-glow",
     ],
 
     // Gallery variant styling
     isGallery && !featured && [
-      "border-purple-500/20 bg-purple-500/5",
-      "hover:border-purple-500/40 hover:bg-purple-500/10 focus-within:border-purple-500/40 focus-within:bg-purple-500/10",
-      "hover:shadow-purple-500/10 focus-within:shadow-purple-500/10",
+      "border-gallery/20 bg-gallery/5",
+      "hover:border-gallery/40 hover:bg-gallery/10 focus-within:border-gallery/40 focus-within:bg-gallery/10",
+      "hover:shadow-gallery/10 focus-within:shadow-gallery/10",
     ],
 
     // Featured gallery styling
     isGallery && featured && [
-      "border-purple-500/40 bg-purple-500/10",
-      "hover:border-purple-500/60 hover:bg-purple-500/15 focus-within:border-purple-500/60 focus-within:bg-purple-500/15",
-      "hover:shadow-purple-500/20 focus-within:shadow-purple-500/20",
-      "shadow-[0_0_20px_-5px_rgba(168,85,247,0.15)]",
+      "border-gallery/40 bg-gallery/10",
+      "hover:border-gallery/60 hover:bg-gallery/15 focus-within:border-gallery/60 focus-within:bg-gallery/15",
+      "hover:shadow-gallery/20 focus-within:shadow-gallery/20",
+      "gallery-glow",
     ],
   ]}
 >
@@ -164,9 +164,9 @@ if (SITE.showCoverImages) {
       class:list={[
         "text-lg font-semibold text-foreground transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm",
         isGallery 
-          ? "group-hover/card:text-purple-400 focus-visible:ring-purple-500" 
+          ? "group-hover/card:text-gallery focus-visible:ring-gallery" 
           : featured 
-            ? "group-hover/card:text-amber-500 focus-visible:ring-amber-500"
+            ? "group-hover/card:text-featured focus-visible:ring-featured"
             : "group-hover/card:text-accent focus-visible:ring-accent"
       ]}
       aria-labelledby={headingId}
@@ -177,7 +177,7 @@ if (SITE.showCoverImages) {
         {isGallery && (
           <span
             aria-hidden="true"
-            class="inline-flex items-center justify-center rounded-md bg-purple-500/10 p-1 text-purple-400/80 ring-1 ring-purple-500/20"
+            class="inline-flex items-center justify-center rounded-md bg-gallery/10 p-1 text-gallery/80 ring-1 ring-gallery/20"
           >
             <IconGallery class="size-4" />
           </span>
@@ -219,9 +219,9 @@ if (SITE.showCoverImages) {
                 "text-xs font-medium",
                 "border transition-colors duration-200",
                 isGallery
-                  ? "border-purple-500/25 bg-purple-500/8 text-purple-400/80 hover:border-purple-500/50 hover:bg-purple-500/15 hover:text-purple-400"
+                  ? "border-gallery/25 bg-gallery/8 text-gallery/80 hover:border-gallery/50 hover:bg-gallery/15 hover:text-gallery"
                   : featured
-                    ? "border-amber-500/25 bg-amber-500/8 text-amber-500/80 hover:border-amber-500/50 hover:bg-amber-500/15 hover:text-amber-500"
+                    ? "border-featured/25 bg-featured/8 text-featured/80 hover:border-featured/50 hover:bg-featured/15 hover:text-featured"
                     : "border-border/30 bg-muted/15 text-foreground/60 hover:border-accent/40 hover:bg-accent/10 hover:text-accent",
               ]}
             >
@@ -237,6 +237,17 @@ if (SITE.showCoverImages) {
 <style>
   .card-glow {
     contain: paint;
+  }
+
+  /* 精选 / 画廊卡片的常驻辉光（颜色走语义 token） */
+  .featured-glow {
+    box-shadow: 0 0 20px -5px
+      color-mix(in srgb, var(--featured) 15%, transparent);
+  }
+
+  .gallery-glow {
+    box-shadow: 0 0 20px -5px
+      color-mix(in srgb, var(--gallery) 15%, transparent);
   }
 
   .card-glow-effect {
