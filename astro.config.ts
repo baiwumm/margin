@@ -35,7 +35,7 @@ export default defineConfig({
     rehypePlugins: [rehypeExternalLinks],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
-      themes: { light: "min-light", dark: "github-dark-default" },
+      themes: { light: "github-light", dark: "github-dark" },
       defaultColor: false,
       wrap: false,
       transformers: [
