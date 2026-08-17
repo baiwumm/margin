@@ -9,8 +9,10 @@ async function loadGoogleFonts(): Promise<
   const fontData = fs.readFileSync(fontPath);
 
   // CJK-capable subset of Maple Mono CN (the site's page font), used so
-  // Chinese text renders correctly in OG images. Generated via subset-font
-  // from MapleMono-CN-Regular.ttf (SIL OFL 1.1).
+  // Chinese text renders correctly in OG images. Generated via fonttools
+  // pyftsubset from MapleMono-CN-Regular.ttf (v7.0-beta36, SIL OFL 1.1):
+  // GB2312 full charset + ASCII/punctuation + all chars used by current
+  // site content (titles / tags / descriptions / author).
   const maplePath = path.resolve("./src/assets/fonts/maple-mono-cn-og.ttf");
   const mapleData = fs.readFileSync(maplePath);
 
