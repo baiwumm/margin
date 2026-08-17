@@ -361,6 +361,12 @@ The detail page includes a **native lightbox using `<dialog>`** — no external 
 | `Esc` | Close the lightbox |
 | Click outside the image | Close the lightbox |
 | `‹` and `›` buttons | Touch/click navigation |
+| Toolbar buttons | Zoom in / out, reset, rotate 90° (also embedded lightbox) |
+| Mouse wheel over the image | Zoom in / out (centered) |
+| Drag when zoomed | Pan the image |
+| Double-click | Toggle 2× zoom |
+| Pinch on touch devices | Zoom in / out |
+| `+` / `-` / `0` / `r` | Zoom in / out / reset / rotate 90° |
 
 ### Technical details
 
@@ -434,9 +440,9 @@ Gallery integration in `/tags` and `/rss.xml` currently follows the same gate as
 
 If finer control is needed, add dedicated flags (for example `showGalleriesInTags` and `showGalleriesInRss`) and apply them in the corresponding routes.
 
-### D. Lightbox with zoom
+### D. Lightbox with zoom ✅ **Implemented**
 
-Replace the lightbox `<img>` with a library like [PhotoSwipe](https://photoswipe.com/) for pinch-to-zoom support on mobile. PhotoSwipe accepts `ImageMetadata` and does not require bundling extra images.
+Native zoom / rotate controls (toolbar buttons, mouse wheel, keyboard shortcuts, drag-to-pan, double-click and touch pinch) were added directly on top of the existing `<dialog>` lightbox in `[gallery].astro` and `GalleryEmbed.astro` — no external library required. A `PhotoSwipe` replacement is no longer planned.
 
 ### E. Cover with video
 
