@@ -9,6 +9,7 @@ import ShareLinks from "@/components/ShareLinks.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import ReadMode from "@/components/ReadMode.astro";
 import GalleryEmbed from "@/components/GalleryEmbed.astro";
+import PostLightbox from "@/components/PostLightbox.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
 import Comments from "@/components/Comments.astro";
 import { getPath } from "@/utils/getPath";
@@ -270,6 +271,8 @@ const nextPost =
         )
       }
     </div>
+
+    <PostLightbox />
 
     <Comments />
 
