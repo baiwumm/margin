@@ -528,14 +528,6 @@ const gallerySchema = {
       }
     });
 
-    lightbox.addEventListener("click", e => {
-      const target = e.target as HTMLElement;
-      // Close if click is outside the image, buttons and text
-      if (!target.closest("img, button, .lightbox-caption, .lightbox-counter")) {
-        close();
-      }
-    });
-
     document.addEventListener("keydown", e => {
       if (!lb.open) return;
       if (e.key === "Escape") close();
@@ -732,11 +724,11 @@ const gallerySchema = {
   }
 
   .lightbox-stage.slide-in-left {
-    animation: lb-slide-left 0.3s ease-out;
+    animation: lb-slide-left 0.45s ease-out;
   }
 
   .lightbox-stage.slide-in-right {
-    animation: lb-slide-right 0.3s ease-out;
+    animation: lb-slide-right 0.45s ease-out;
   }
 
   @keyframes lb-slide-left {

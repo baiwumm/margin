@@ -540,15 +540,6 @@ const gridClass = {
           );
         }
 
-        // Close when clicking the backdrop
-        lb.addEventListener(
-          "click",
-          e => {
-            if (e.target === dialog) close();
-          },
-          { signal }
-        );
-
         // Keyboard — only if THIS lightbox is open
         document.addEventListener(
           "keydown",
@@ -823,11 +814,11 @@ const gridClass = {
   }
 
   .lightbox-stage.slide-in-left {
-    animation: lb-slide-left 0.3s ease-out;
+    animation: lb-slide-left 0.45s ease-out;
   }
 
   .lightbox-stage.slide-in-right {
-    animation: lb-slide-right 0.3s ease-out;
+    animation: lb-slide-right 0.45s ease-out;
   }
 
   @keyframes lb-slide-left {
