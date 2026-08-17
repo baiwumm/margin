@@ -1,0 +1,180 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
+import { projects } from "@/data/projects";
+import { getProjectStats } from "@/utils/projectStats";
+import { SITE } from "@/config";
+
+const effectiveProjects = await getProjectStats(projects);
+const featuredProjects = effectiveProjects.filter(({ featured }) => featured);
+const regularProjects = effectiveProjects.filter(({ featured }) => !featured);
+const totalProjects = effectiveProjects.length;
+const totalStars = effectiveProjects.reduce(
+  (sum, { stars }) => sum + (stars ?? 0),
+  0
+);
+const totalForks = effectiveProjects.reduce(
+  (sum, { forks }) => sum + (forks ?? 0),
+  0
+);
+---
+
+<Layout
+  title={`Projects | ${SITE.title}`}
+  description="我的开源项目与作品，涵盖全栈后台、设计工具与热点聚合平台。"
+>
+  <Header />
+  <Breadcrumb />
+
+  <main id="main-content" class="app-layout pb-4">
+    <!-- Hero -->
+    <div class="projects-hero" data-projects-hero>
+      <div class="aurora-orb aurora-orb-1"></div>
+      <div class="aurora-orb aurora-orb-2"></div>
+      <div class="aurora-orb aurora-orb-3"></div>
+      <div class="aurora-mouse" data-projects-mouse></div>
+
+      <div class="relative z-10">
+        <!-- Terminal prompt badge -->
+        <div
+          class="mb-4 inline-flex items-center gap-2 rounded-full border border-border/40 bg-muted/20 px-3.5 py-1.5 font-firacode text-xs sm:text-sm"
+        >
+          <span class="text-accent">~</span>
+          <span>/projects</span>
+          <span class="opacity-40">$</span>
+          <span class="opacity-60">ls -la</span>
+        </div>
+
+        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
+          <span class="glow-text">Projects</span>
+        </h1>
+        <p class="mt-3 max-w-lg text-foreground/70 italic">
+          我的开源项目与作品。
+        </p>
+        <div class="mt-4 flex flex-wrap items-center gap-2">
+          <span class="hero-badge">{totalProjects} 个开源项目</span>
+          {totalStars > 0 && <span class="hero-badge">{totalStars} Stars</span>}
+          {totalForks > 0 && <span class="hero-badge">{totalForks} Forks</span>}
+        </div>
+      </div>
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="w-full">
+      {
+        effectiveProjects.length === 0 ? (
+          <div class="empty-state">
+            <h3 class="empty-title">还没有开源项目</h3>
+            <p class="empty-desc">稍后再来看看，这里会有新的项目。</p>
+          </div>
+        ) : (
+          <ul
+            data-pagefind-body
+            class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 [&>li]:my-0"
+          >
+            {featuredProjects.map(project => (
+              <ProjectCard {...project} />
+            ))}
+            {regularProjects.map(project => (
+              <ProjectCard {...project} />
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  let cleanupController: AbortController | null = null;
+
+  function initProjectsPage() {
+    if (cleanupController) cleanupController.abort();
+    cleanupController = new AbortController();
+    const { signal } = cleanupController;
+
+    // Hero mouse glow
+    const hero = document.querySelector("[data-projects-hero]") as HTMLElement;
+    const heroMouse = document.querySelector(
+      "[data-projects-mouse]"
+    ) as HTMLElement;
+
+    if (hero && heroMouse) {
+      hero.addEventListener(
+        "mousemove",
+        e => {
+          requestAnimationFrame(() => {
+            const rect = hero.getBoundingClientRect();
+            heroMouse.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+            heroMouse.style.setProperty("--my", `${e.clientY - rect.top}px`);
+            heroMouse.style.opacity = "1";
+          });
+        },
+        { signal }
+      );
+
+      hero.addEventListener(
+        "mouseleave",
+        () => {
+          heroMouse.style.opacity = "0";
+        },
+        { signal }
+      );
+    }
+  }
+
+  document.addEventListener("astro:page-load", initProjectsPage);
+</script>
+
+<style>
+  .projects-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2rem;
+    background: color-mix(
+      in srgb,
+      var(--color-foreground) 3%,
+      var(--color-background)
+    );
+    border: 1px solid color-mix(in srgb, var(--color-accent) 12%, transparent);
+  }
+
+  @media (min-width: 640px) {
+    .projects-hero {
+      padding: 3rem;
+    }
+  }
+
+  /* Empty State */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-radius: 1.5rem;
+    border: 2px dashed color-mix(in srgb, var(--border) 40%, transparent);
+    background: color-mix(in srgb, var(--background) 50%, transparent);
+    backdrop-filter: blur(12px);
+  }
+
+  .empty-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-foreground);
+  }
+
+  .empty-desc {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    opacity: 0.6;
+  }
+</style>

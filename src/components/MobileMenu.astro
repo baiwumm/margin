@@ -47,6 +47,21 @@ const isActive = (path: string) => {
             <span class="mobile-nav-indicator"></span>
             <span>About</span>
           </a>
+          {
+            SITE.showProjects && (
+              <a
+                href="/projects"
+                class:list={[
+                  "mobile-nav-link",
+                  { active: isActive("/projects") },
+                ]}
+                style="--i:2"
+              >
+                <span class="mobile-nav-indicator" />
+                <span>Projects</span>
+              </a>
+            )
+          }
         </nav>
 
         <div class="mobile-menu-divider"></div>
