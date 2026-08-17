@@ -88,7 +88,7 @@ const gallerySchema = {
 ---
 
 <Layout
-  title={`${title} | Galleries | ${SITE.title}`}
+  title={`${title} | 画廊 | ${SITE.title}`}
   description={description}
   structuredData={gallerySchema}
 >
@@ -105,7 +105,7 @@ const gallerySchema = {
           <div class="mb-5 inline-flex items-center gap-2 text-accent">
             <IconGallery class="size-5" />
             <span class="font-firacode text-xs font-bold tracking-[0.2em] uppercase opacity-90">
-              Collection // {images.length} {images.length === 1 ? "photo" : "photos"}
+              画廊 // {images.length} 张图片
             </span>
           </div>
           
@@ -169,14 +169,14 @@ const gallerySchema = {
           class="gallery-grid mt-6"
           id="gallery-grid"
           role="list"
-          aria-label={`Images of ${title}`}
+          aria-label={`图片：${title}`}
         >
           {images.map((img, idx) => (
             <li>
               <button
                 class="gallery-item group"
                 data-index={idx}
-                aria-label={`View image: ${img.alt}`}
+                aria-label={`查看图片：${img.alt}`}
                 type="button"
               >
                 <Image
@@ -196,7 +196,7 @@ const gallerySchema = {
         </ul>
       ) : (
         <p class="mt-12 text-center text-foreground/50 italic">
-          This gallery has no images yet.
+          该画廊暂无图片。
         </p>
       )
     }
@@ -205,17 +205,17 @@ const gallerySchema = {
 </Layout>
 
 <!-- Lightbox dialog -->
-<dialog id="lightbox" class="lightbox" aria-label="Image viewer" aria-modal="true">
+<dialog id="lightbox" class="lightbox" aria-label="图片查看器" aria-modal="true">
   <div class="lightbox-layout">
     <div class="lightbox-topbar">
       <span id="lightbox-counter" class="lightbox-counter font-firacode"></span>
-      <button class="lightbox-btn" id="lightbox-close" aria-label="Close" title="Close (Esc)" type="button">
+      <button class="lightbox-btn" id="lightbox-close" aria-label="关闭" title="关闭（Esc）" type="button">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
 
     <div class="lightbox-main">
-      <button class="lightbox-btn lightbox-nav" id="lightbox-prev" aria-label="Previous" title="Previous (Left Arrow)" type="button">
+      <button class="lightbox-btn lightbox-nav" id="lightbox-prev" aria-label="上一张" title="上一张（←）" type="button">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
       </button>
       
@@ -224,7 +224,7 @@ const gallerySchema = {
         <p id="lightbox-caption" class="lightbox-caption text-foreground/80"></p>
       </div>
 
-      <button class="lightbox-btn lightbox-nav" id="lightbox-next" aria-label="Next" title="Next (Right Arrow)" type="button">
+      <button class="lightbox-btn lightbox-nav" id="lightbox-next" aria-label="下一张" title="下一张（→）" type="button">
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </button>
     </div>

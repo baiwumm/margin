@@ -55,7 +55,7 @@ const galleries = rawGalleries
   });
 ---
 
-<Layout title={`Galleries | ${SITE.title}`}>
+<Layout title={`画廊 | ${SITE.title}`}>
   <Header />
   <Breadcrumb />
   <main id="main-content" class="app-layout pb-12">
@@ -67,16 +67,13 @@ const galleries = rawGalleries
       <div class="aurora-mouse" data-archive-mouse></div>
       <div class="relative z-10">
         <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
-          <span class="glow-text">Galleries</span>
+          <span class="glow-text">画廊</span>
         </h1>
         <p class="mt-3 max-w-lg text-foreground/70 italic">
-          Image collections to share moments and projects.
+          图片合集，记录瞬间与项目。
         </p>
         <div class="mt-4 flex flex-wrap items-center gap-2">
-          <span class="hero-badge"
-            >{galleries.length}
-            {galleries.length === 1 ? "gallery" : "galleries"}</span
-          >
+          <span class="hero-badge">{galleries.length} 个画廊</span>
         </div>
       </div>
     </div>
@@ -85,7 +82,7 @@ const galleries = rawGalleries
     {
       galleries.length === 0 ? (
         <p class="mt-12 text-center text-foreground/50 italic">
-          No galleries published yet.
+          暂无画廊，敬请期待。
         </p>
       ) : (
         <ul
