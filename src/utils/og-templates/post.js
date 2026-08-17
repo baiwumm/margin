@@ -3,6 +3,9 @@ import { SITE } from "@/config";
 import loadGoogleFonts from "../loadGoogleFont";
 
 export default async post => {
+  // Get the clean hostname (e.g. mydomain.com)
+  const hostname = new URL(SITE.website).hostname;
+
   return satori(
     {
       type: "div",
@@ -60,7 +63,7 @@ export default async post => {
                     color: "#e2e8f0",
                     letterSpacing: "2px",
                   },
-                  children: SITE.title.split("·")[0].trim() + ".com",
+                  children: hostname,
                 },
               },
             },
