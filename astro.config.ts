@@ -9,6 +9,7 @@ import {
 } from "@shikijs/transformers";
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { remarkRemoveTocMarker } from "./src/utils/remarkRemoveTocMarker";
+import { rehypeExternalLinks } from "./src/utils/rehypeExternalLinks";
 import { SITE } from "./src/config";
 
 // https://astro.build/config
@@ -31,6 +32,7 @@ export default defineConfig({
   ],
   markdown: {
     remarkPlugins: [remarkRemoveTocMarker],
+    rehypePlugins: [rehypeExternalLinks],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
       themes: { light: "min-light", dark: "github-dark-default" },
