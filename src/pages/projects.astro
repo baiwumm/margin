@@ -4,6 +4,7 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import ProjectCard from "@/components/ProjectCard.astro";
+import ContributionCalendar from "@/components/ContributionCalendar.astro";
 import { projects } from "@/data/projects";
 import { getProjectStats } from "@/utils/projectStats";
 import { SITE } from "@/config";
@@ -61,6 +62,9 @@ const totalForks = effectiveProjects.reduce(
         </div>
       </div>
     </div>
+
+    <!-- GitHub 贡献日历 -->
+    <ContributionCalendar />
 
     <!-- Projects Grid -->
     <div class="w-full">

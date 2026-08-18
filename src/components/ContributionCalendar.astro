@@ -1,0 +1,369 @@
+---
+/**
+ * ContributionCalendar — GitHub 贡献日历（Projects 页面，项目卡片上方）。
+ *
+ * - 构建期（SSR）由 GitHub GraphQL 拉取用户一整年贡献数据，纯静态渲染；
+ * - 布局对齐 GitHub 官方日历：每列是一周、每行是一天，53 列 × 7 行，未来日期留空；
+ * - 网格随容器宽度自适应撑满（flex-1 + aspect-square），窄屏以最小宽度横向滚动；
+ * - 颜色全部由 CSS 变量推导（var(--accent) 强度分级），自动跟随主题色轮换与 light/dark；
+ * - 悬停 tooltip 为自定义玻璃拟态样式（终端等宽字体 + accent 高亮），同样跟随主题；
+ * - 无 Token / 请求失败时渲染空，页面其余部分不受影响，构建不中断。
+ */
+import { getContributionCalendar } from "@/utils/githubContributions";
+import IconGitHub from "@/assets/icons/IconGitHub.svg";
+
+const calendar = await getContributionCalendar();
+
+// 布局常量（px）
+const GAP = 4; // 格子间距
+const DAY_COL = 22; // 左侧星期标签列宽
+const MIN_W = 720; // 日历最小宽度，低于此宽度时容器横向滚动
+
+// 月份 → 起始列映射，供月份标签行定位（标签允许溢出到后续空列）
+const monthAtColumn = new Map<number, string>(
+  (calendar?.monthLabels ?? []).map(({ label, column }) => [column, label])
+);
+---
+
+{
+  calendar && (
+    <section
+      class="card-glow group/gh relative mb-8 rounded-2xl border border-border/25 bg-muted/10 backdrop-blur-sm transition-[border-color,box-shadow] duration-300 hover:border-accent/40 hover:shadow-accent/10"
+      data-gh-section
+      aria-label={`GitHub 贡献日历（${calendar.login}，过去一年共 ${calendar.totalContributions} 次贡献）`}
+    >
+      <!-- 鼠标跟随辉光（--mouse-x / --mouse-y 由 Layout 的 .card-glow 全局绑定） -->
+      <div
+        class="card-glow-effect pointer-events-none absolute inset-0 z-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover/gh:opacity-100 motion-reduce:transition-none"
+        aria-hidden="true"
+      ></div>
+
+      <div class="relative z-5 p-4 sm:p-6">
+        <!-- 头部：标题 + 总数徽章 + 主页链接 -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <span
+              class="flex size-8 items-center justify-center rounded-lg border border-accent/20 bg-accent/10 text-accent"
+              aria-hidden="true"
+            >
+              <IconGitHub class="size-4" />
+            </span>
+            <div>
+              <h2 class="font-firacode text-sm font-semibold text-foreground">
+                GitHub 贡献
+              </h2>
+              <p class="text-xs text-foreground/50">
+                {calendar.login} · 过去一年
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="hero-badge">{calendar.totalContributions} 次贡献</span>
+            <a
+              href={`https://github.com/${calendar.login}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 rounded-full border border-border/30 px-3 py-1 text-xs text-foreground/60 transition-colors hover:border-accent/40 hover:text-accent focus-visible:outline-none"
+            >
+              主页
+              <svg
+                class="size-3"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M7 17 17 7" />
+                <path d="M7 7h10v10" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 日历主体：与容器同宽，窄屏横向滚动。
+             pr/pb 内边距吸收格子 hover 放大（scale 1.3）产生的溢出，避免滚动条闪现 -->
+        <div class="mt-4 overflow-x-auto pb-1">
+          <div class="w-full pr-1.5 pb-1" style={`min-width: ${MIN_W}px`}>
+            <!-- 月份标签：与下方网格同构（同宽星期列 + 53 个等宽列），标签溢出到后续空列 -->
+            <div class="flex" style={`gap: ${GAP}px`}>
+              <div class="shrink-0" style={`width: ${DAY_COL}px`}></div>
+              {calendar.weeks.map((_, column) => (
+                <div class="min-w-0 flex-1">
+                  {monthAtColumn.get(column) && (
+                    <span
+                      class="block whitespace-nowrap font-firacode text-[10px] leading-none text-foreground/45"
+                    >
+                      {monthAtColumn.get(column)}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div class="mt-1 flex" style={`gap: ${GAP}px`}>
+              <!-- 星期标签：一 / 三 / 五（随网格高度自适应对齐） -->
+              <div
+                class="flex shrink-0 flex-col"
+                style={`width: ${DAY_COL}px; gap: ${GAP}px`}
+                aria-hidden="true"
+              >
+                {Array.from({ length: 7 }, (_, row) => (
+                  <span
+                    class="flex flex-1 items-center font-firacode text-[10px] leading-none text-foreground/45"
+                  >
+                    {row === 1 ? "一" : row === 3 ? "三" : row === 5 ? "五" : ""}
+                  </span>
+                ))}
+              </div>
+
+              <!-- 贡献格子：每列一周、每行一天，等宽撑满；本周未来日期不渲染 -->
+              {calendar.weeks.map(week => (
+                <div class="flex min-w-0 flex-1 flex-col" style={`gap: ${GAP}px`}>
+                  {week.map(day =>
+                    day ? (
+                      <span
+                        class:list={[
+                          "gh-cell block w-full shrink-0 aspect-square",
+                          `gh-level-${day.level}`,
+                        ]}
+                        data-gh-cell
+                        data-date={day.date}
+                        data-count={day.count}
+                        aria-label={`${day.date}：${day.count} 次贡献`}
+                        role="img"
+                      />
+                    ) : null
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- 图例 -->
+        <div class="mt-2.5 flex items-center justify-end">
+          <span class="mr-1 text-[10px] text-foreground/50">少</span>
+          {[0, 1, 2, 3, 4].map(level => (
+            <span
+              class={`gh-cell gh-level-${level} mx-[1.5px] size-[10px]`}
+              aria-hidden="true"
+            />
+          ))}
+          <span class="ml-1 text-[10px] text-foreground/50">多</span>
+        </div>
+      </div>
+
+      <!-- 自定义 tooltip（相对 section 定位，玻璃拟态；font-app = 项目主字体 Maple Mono CN） -->
+      <div
+        class="gh-tooltip font-app"
+        data-gh-tooltip
+        role="tooltip"
+        aria-hidden="true"
+      ></div>
+    </section>
+  )
+}
+
+<script>
+  let tooltipCleanup: AbortController | null = null;
+
+  const formatDate = (date: string): string => {
+    const [year, month, day] = date.split("-").map(Number);
+    return `${year}年${month}月${day}日`;
+  };
+
+  const positionTooltip = (
+    section: HTMLElement,
+    cell: HTMLElement,
+    tooltip: HTMLElement
+  ): void => {
+    const sectionRect = section.getBoundingClientRect();
+    const rect = cell.getBoundingClientRect();
+    const tw = tooltip.offsetWidth;
+    const th = tooltip.offsetHeight;
+
+    // 相对 section 的水平位置，居中于格子并限制在 section 内
+    let left = rect.left - sectionRect.left + rect.width / 2 - tw / 2;
+    left = Math.max(6, Math.min(left, sectionRect.width - tw - 6));
+
+    // 优先显示在格子上方，空间不足时翻转到下方
+    let top = rect.top - sectionRect.top - th - 8;
+    let placement = "above";
+    if (top < 6) {
+      top = rect.bottom - sectionRect.top + 8;
+      placement = "below";
+    }
+    // 底部兜底：避免超出视口
+    const maxTop = window.innerHeight - sectionRect.top - th - 8;
+    top = Math.min(top, maxTop);
+
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+    tooltip.dataset.placement = placement;
+  };
+
+  function initContributionTooltip() {
+    if (tooltipCleanup) tooltipCleanup.abort();
+    tooltipCleanup = new AbortController();
+    const { signal } = tooltipCleanup;
+
+    const section = document.querySelector<HTMLElement>("[data-gh-section]");
+    const tooltip = document.querySelector<HTMLElement>("[data-gh-tooltip]");
+    if (!section || !tooltip) return;
+
+    const hide = () => tooltip.classList.remove("gh-tooltip-visible");
+
+    section.querySelectorAll<HTMLElement>("[data-gh-cell]").forEach(cell => {
+      cell.addEventListener(
+        "mouseenter",
+        () => {
+          const date = cell.dataset.date;
+          const count = cell.dataset.count;
+          if (!date || count === undefined) return;
+
+          const dateEl = document.createElement("span");
+          dateEl.className = "gh-tooltip-date";
+          dateEl.textContent = formatDate(date);
+
+          const countEl = document.createElement("span");
+          countEl.className = "gh-tooltip-count";
+          countEl.textContent = `${count} 次贡献`;
+
+          tooltip.replaceChildren(dateEl, countEl);
+          positionTooltip(section, cell, tooltip);
+          tooltip.classList.add("gh-tooltip-visible");
+        },
+        { signal }
+      );
+      cell.addEventListener("mouseleave", hide, { signal });
+    });
+
+    // 滚动时隐藏，避免 tooltip 停留在错误位置
+    window.addEventListener("scroll", hide, { signal, passive: true });
+  }
+
+  document.addEventListener("astro:page-load", initContributionTooltip);
+</script>
+
+<style>
+  .card-glow-effect {
+    background: radial-gradient(
+      350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      color-mix(in oklab, var(--accent) 8%, transparent) 0%,
+      color-mix(in oklab, var(--accent) 4%, transparent) 30%,
+      color-mix(in oklab, var(--accent) 0.8%, transparent) 60%,
+      transparent 80%
+    );
+    will-change: opacity;
+  }
+
+  /* 贡献格子：颜色走 accent 语义色，随主题色轮换与 light/dark 自动切换。
+     尺寸由模板按需指定（网格格 w-full+aspect-square，图例格 size-[10px]） */
+  .gh-cell {
+    border-radius: 3px;
+    outline: 1px solid color-mix(in srgb, var(--foreground) 6%, transparent);
+    transition: transform 0.1s ease;
+  }
+
+  .gh-cell:hover {
+    transform: scale(1.3);
+  }
+
+  .gh-level-0 {
+    background: color-mix(in srgb, var(--accent) 8%, var(--background));
+  }
+
+  .gh-level-1 {
+    background: color-mix(in srgb, var(--accent) 26%, var(--background));
+  }
+
+  .gh-level-2 {
+    background: color-mix(in srgb, var(--accent) 45%, var(--background));
+  }
+
+  .gh-level-3 {
+    background: color-mix(in srgb, var(--accent) 66%, var(--background));
+  }
+
+  .gh-level-4 {
+    background: color-mix(in srgb, var(--accent) 90%, var(--background));
+  }
+
+  /* ── 自定义 tooltip（玻璃拟态 + 项目主字体 Maple，accent 语义色，跟随主题）── */
+  .gh-tooltip {
+    position: absolute;
+    z-index: 50;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+    background: color-mix(in srgb, var(--background) 88%, transparent);
+    backdrop-filter: blur(12px);
+    box-shadow:
+      0 8px 24px -8px color-mix(in srgb, var(--accent) 25%, transparent),
+      0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: inherit;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+  .gh-tooltip-visible {
+    opacity: 1;
+  }
+
+  :global(.gh-tooltip-date) {
+    color: color-mix(in srgb, var(--foreground) 70%, transparent);
+  }
+
+  :global(.gh-tooltip-count) {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* 指向格子的箭头（旋转方块，伪元素实现，不受 JS replaceChildren 影响） */
+  .gh-tooltip::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    transform: translateX(-50%) rotate(45deg);
+    background: color-mix(in srgb, var(--background) 88%, transparent);
+  }
+
+  .gh-tooltip[data-placement="above"]::after {
+    bottom: -4px;
+  }
+
+  .gh-tooltip[data-placement="below"]::after {
+    top: -4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-glow-effect {
+      background: none;
+    }
+
+    .gh-cell {
+      transition: none;
+    }
+
+    .gh-cell:hover {
+      transform: none;
+    }
+
+    .gh-tooltip {
+      transition: none;
+    }
+  }
+</style>
