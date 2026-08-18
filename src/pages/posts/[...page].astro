@@ -107,7 +107,7 @@ const nextURL = page.url.next
             <p class="empty-desc">稍后再来看看，这里会有新的文章。</p>
           </div>
         ) : (
-          <ul class="grid grid-cols-1 gap-6 pb-4 sm:grid-cols-2 lg:grid-cols-3 [&>li]:my-0">
+          <ul class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 [&>li]:my-0">
             {page.data.map((data: ContentEntry, index) => (
               <Card
                 {...data}
