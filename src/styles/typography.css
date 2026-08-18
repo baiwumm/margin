@@ -13,10 +13,6 @@
       @apply mb-3 text-foreground;
     }
 
-    h3 {
-      @apply font-sriracha italic;
-    }
-
     p,
     strong,
     ol,
