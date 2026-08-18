@@ -26,7 +26,7 @@ export function getTocFromMarkdown(body: string): TocItem[] {
     }
     if (inFence) continue;
 
-    const headingMatch = line.match(/^(#{2,4})\s+(.+?)\s*#*\s*$/);
+    const headingMatch = line.match(/^(#{1,6})\s+(.+?)\s*#*\s*$/);
     if (!headingMatch) continue;
 
     const level = headingMatch[1].length;
