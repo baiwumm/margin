@@ -8,9 +8,9 @@ const READ_MODE_SHORTCUT = "r";
 {
   readModeEnabled && (
     <>
-      <!-- Entry button, rendered inside the post metadata row (matches the
-           reference screenshot). Stays visible while reading so the user can
-           flip back and forth. -->
+      {/* Entry button, rendered inside the post metadata row (matches the
+          reference screenshot). Stays visible while reading so the user can
+          flip back and forth. */}
       <button
         id="read-mode-toggle"
         type="button"
@@ -38,7 +38,7 @@ const READ_MODE_SHORTCUT = "r";
         <span>Read Mode</span>
       </button>
 
-      <!-- Bottom floating toolbar (Sans / Serif, zoom, Exit) -->
+      {/* Bottom floating toolbar (Sans / Serif, zoom, Exit) */}
       <div
         id="read-mode-bar"
         class="read-mode-bar"
@@ -46,7 +46,7 @@ const READ_MODE_SHORTCUT = "r";
         data-pagefind-ignore
         aria-hidden="true"
       >
-        <!-- Breathing glow halo around the toolbar while reading -->
+        {/* Breathing glow halo around the toolbar while reading */}
         <span
           class="animate-reading-halo pointer-events-none absolute -inset-1.5 -z-10 rounded-full bg-accent/20 blur-md"
           aria-hidden="true"

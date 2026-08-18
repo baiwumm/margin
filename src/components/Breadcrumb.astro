@@ -251,45 +251,45 @@ const currentPageLabel = breadcrumbs.at(-1)?.label ?? "Home";
   }
 </style>
 
-{
-  withBackButton && (
-    <script>
-      const BACK_BUTTON_SELECTOR = "#back-button";
-      const FALLBACK_BACK_URL = "/";
+<script>
+  // 返回按钮仅在 withBackButton 为 true 时渲染，脚本统一打包，
+  // 运行时按 DOM 判断是否初始化。
+  if (document.querySelector("#back-button")) {
+    const BACK_BUTTON_SELECTOR = "#back-button";
+    const FALLBACK_BACK_URL = "/";
 
-      function toSafeBackPath(rawBackUrl: string | null) {
-        if (!rawBackUrl) return FALLBACK_BACK_URL;
+    function toSafeBackPath(rawBackUrl: string | null) {
+      if (!rawBackUrl) return FALLBACK_BACK_URL;
 
-        try {
-          const parsedUrl = new URL(rawBackUrl, window.location.origin);
-          const isSameOrigin = parsedUrl.origin === window.location.origin;
-          const isHttpProtocol =
-            parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+      try {
+        const parsedUrl = new URL(rawBackUrl, window.location.origin);
+        const isSameOrigin = parsedUrl.origin === window.location.origin;
+        const isHttpProtocol =
+          parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
 
-          if (!isSameOrigin || !isHttpProtocol) return FALLBACK_BACK_URL;
+        if (!isSameOrigin || !isHttpProtocol) return FALLBACK_BACK_URL;
 
-          return (
-            `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}` ||
-            FALLBACK_BACK_URL
-          );
-        } catch {
-          return FALLBACK_BACK_URL;
-        }
-      }
-
-      function updateGoBackUrl() {
-        const backButton = document.querySelector<HTMLAnchorElement>(
-          BACK_BUTTON_SELECTOR
+        return (
+          `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}` ||
+          FALLBACK_BACK_URL
         );
-
-        if (!backButton) return;
-
-        const rawBackUrl = sessionStorage.getItem("backUrl");
-        backButton.href = toSafeBackPath(rawBackUrl);
+      } catch {
+        return FALLBACK_BACK_URL;
       }
+    }
 
-      document.addEventListener("astro:page-load", updateGoBackUrl);
-      updateGoBackUrl();
-    </script>
-  )
-}
+    function updateGoBackUrl() {
+      const backButton = document.querySelector<HTMLAnchorElement>(
+        BACK_BUTTON_SELECTOR
+      );
+
+      if (!backButton) return;
+
+      const rawBackUrl = sessionStorage.getItem("backUrl");
+      backButton.href = toSafeBackPath(rawBackUrl);
+    }
+
+    document.addEventListener("astro:page-load", updateGoBackUrl);
+    updateGoBackUrl();
+  }
+</script>
