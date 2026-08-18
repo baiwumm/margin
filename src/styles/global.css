@@ -138,8 +138,8 @@ html[data-accent="rose"] {
 
 @theme inline {
   --font-app: "Maple Mono CN", var(--font-wotfard);
-  --font-sriracha: var(--font-sriracha);
-  --font-firacode: var(--font-firacode);
+  --font-sriracha: var(--font-app);
+  --font-firacode: var(--font-app);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
