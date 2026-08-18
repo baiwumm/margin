@@ -241,13 +241,17 @@ const nextPost =
     </header>
 
     {
-      tocItems.length > 0 && (
+      tocItems.length > 0 ? (
         <details class="toc-mobile mt-8 lg:hidden" data-pagefind-ignore>
           <summary>本页目录</summary>
           <TableOfContents items={tocItems} />
           <div class="toc-share-divider" aria-hidden="true" />
           <ShareLinks class="mt-6 w-full items-start" />
         </details>
+      ) : (
+        <div class="toc-mobile mt-8 lg:hidden" data-pagefind-ignore>
+          <ShareLinks class="w-full items-start" />
+        </div>
       )
     }
 
@@ -261,15 +265,17 @@ const nextPost =
         <Content components={{ GalleryEmbed }} />
       </article>
 
-      {
-        tocItems.length > 0 && (
-          <aside class="post-toc-aside hidden lg:sticky lg:top-24 lg:block">
-            <TableOfContents items={tocItems} class="toc-card" />
-            <div class="toc-share-divider" aria-hidden="true" />
-            <ShareLinks class="mt-6 w-full items-start" />
-          </aside>
-        )
-      }
+      <aside class="post-toc-aside hidden lg:sticky lg:top-24 lg:block">
+        {
+          tocItems.length > 0 && (
+            <>
+              <TableOfContents items={tocItems} class="toc-card" />
+              <div class="toc-share-divider" aria-hidden="true" />
+            </>
+          )
+        }
+        <ShareLinks class="mt-6 w-full items-start" />
+      </aside>
     </div>
 
     <PostLightbox />
