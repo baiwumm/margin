@@ -37,7 +37,7 @@ console.log(a, b)
 
 你觉得这个打印出来什么呢？
 
-![控制台报错：{(intermediate value)(intermediate value)} is not iterable](./m8xzykqp/01-destructure-error.webp)
+![控制台报错：{(intermediate value)(intermediate value)} is not iterable](./01-destructure-error.webp)
 
 直接报错：`{(intermediate value)(intermediate value)} is not iterable`
 
@@ -66,7 +66,7 @@ console.log(iter.next())
 
 我们看一下打印结果：
 
-![调用数组 Symbol.iterator 后依次调用 next() 的返回结果](./m8xzykqp/02-iterator-next.webp)
+![调用数组 Symbol.iterator 后依次调用 next() 的返回结果](./02-iterator-next.webp)
 
 **value** 代表的是这次迭代的值，**done** 代表迭代是否完成。
 

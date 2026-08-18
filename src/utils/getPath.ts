@@ -13,6 +13,10 @@ export function getPath(
   filePath: string | undefined,
   includeBase = true
 ) {
+  // 文件夹结构的文章（<slug>/index.md）不重复拼接目录段
+  const fileName = filePath?.split("/").pop() ?? "";
+  const isIndexFile = /^index\.(md|mdx)$/.test(fileName);
+
   const pathSegments = filePath
     ?.replace(BLOG_PATH, "")
     .split("/")
@@ -30,6 +34,10 @@ export function getPath(
   // If not inside the sub-dir, simply return the file path
   if (!pathSegments || pathSegments.length < 1) {
     return [basePath, slug].join("/");
+  }
+
+  if (isIndexFile) {
+    return [basePath, ...pathSegments].join("/");
   }
 
   return [basePath, ...pathSegments, slug].join("/");

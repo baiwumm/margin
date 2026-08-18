@@ -85,7 +85,8 @@ astro.config.ts        # 站点 / 集成 / Markdown / Shiki / 字体 / env schem
 # Content System
 
 - **创建文章**：在 `src/data/blog/` 新建 `<slug>.md` 或 `.mdx`，按 schema 写 frontmatter 即可；无需修改路由/配置，标签、RSS、sitemap、搜索、分页自动纳入。文件以下划线 `_` 开头会被 glob 忽略（不参与集合）。
-- **URL / Slug**：文章 slug 即文件名（`/posts/<slug>/`，支持子目录并按目录段逐级 slugify）；标签 slug 由 `slugifyStr` 生成（拉丁字符 → slugify 小写连字符，含非拉丁字符 → lodash.kebabcase 保留原字符）；画廊 slug 即文件夹名（`/galleries/<slug>/`）。
+- **文章图片与文件结构**：文章有本地图片时必须采用「`<slug>/index.md` + 图片」的单文件夹结构（与画廊一致），禁止「`<slug>.md` + `<slug>/` 图片文件夹」并存；无图片的文章可以保持平铺 `<slug>.md`。
+- **URL / Slug**：文章 slug 即文件名（文件夹结构时即文件夹名，`/posts/<slug>/`，支持子目录并按目录段逐级 slugify）；标签 slug 由 `slugifyStr` 生成（拉丁字符 → slugify 小写连字符，含非拉丁字符 → lodash.kebabcase 保留原字符）；画廊 slug 即文件夹名（`/galleries/<slug>/`）。
 - **Frontmatter（blog）**：`title`、`pubDatetime`（必填，ISO 日期）、`description`（必填）、`tags`（默认 `["others"]`）、`draft`、`featured`、`modDatetime`、`author`、`ogImage`（本地资源或远程 URL）、`coverImage`、`canonicalURL`、`hideEditPost`、`timezone`（覆盖 `SITE.timezone`）。
 - **Content Collection**：`blog` 与 `galleries` 的字段以 `src/content.config.ts` 为准；新增字段必须同步 schema。
 - **Markdown / MDX**：两者都支持；MDX 可直接写 JSX。文章目录（TOC）由标题自动生成并渲染在正文右侧吸顶栏（`src/components/TableOfContents.astro`），无需在正文添加标记；旧文章中的 `## Table of contents` 标记会被自动移除。
