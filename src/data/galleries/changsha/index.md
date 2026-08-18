@@ -6,5 +6,5 @@ coverImage: ./22-tourists-group-photo.webp
 tags:
   - 自驾游
   - 张家界
-  - 自然风光
+  - 长沙
 ---

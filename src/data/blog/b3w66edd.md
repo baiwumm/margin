@@ -1,5 +1,5 @@
 ---
-title: "JavaScript 中的二进制散列值和权限设计"
+title: "JavaScript 位运算与权限设计"
 description: "这篇文章介绍了 JavaScript 中二进制数的表示方法、按位运算符，以及如何使用位运算来设计和管理权限系统，包括权限的添加、校验与剔除。"
 pubDatetime: 2024-01-15T00:00:00+08:00
 tags:
