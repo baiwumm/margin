@@ -253,3 +253,105 @@
     }
   }
 }
+
+/* ===== Link Card（remarkLinkCard 插件生成的引用卡片） ===== */
+.link-card {
+  margin-block: 1.5rem;
+}
+
+.link-card-anchor {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--muted) 12%, transparent);
+  backdrop-filter: blur(6px);
+  /* 覆盖 .app-prose a 的渐变下划线（!important 压制其非 important 规则） */
+  background-image: none !important;
+  text-decoration: none !important;
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.link-card-anchor:hover,
+.link-card-anchor:focus-visible {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background-color: color-mix(in srgb, var(--accent) 5%, transparent);
+  box-shadow: 0 10px 30px -12px color-mix(in srgb, var(--accent) 30%, transparent);
+  transform: translateY(-1px);
+}
+
+.link-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.link-card-domain {
+  font-family: var(--font-firacode);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+}
+
+.link-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--foreground);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.link-card-desc {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 降级卡片：抓取失败且无手动信息时展示完整 URL */
+.link-card-url {
+  font-family: var(--font-firacode);
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--foreground) 50%, transparent);
+  word-break: break-all;
+}
+
+.link-card-arrow {
+  flex-shrink: 0;
+  color: color-mix(in srgb, var(--foreground) 45%, transparent);
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.link-card-anchor:hover .link-card-arrow,
+.link-card-anchor:focus-visible .link-card-arrow {
+  color: var(--accent);
+  transform: translateX(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-card-anchor,
+  .link-card-arrow {
+    transition: none;
+  }
+  .link-card-anchor:hover,
+  .link-card-anchor:focus-visible {
+    transform: none;
+  }
+}
