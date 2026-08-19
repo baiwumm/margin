@@ -5,6 +5,7 @@ pubDatetime: 2025-06-27T00:00:00+08:00
 tags:
   - 生活
   - 健康
+featured: true
 draft: false
 ---
 
