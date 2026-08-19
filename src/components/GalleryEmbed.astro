@@ -601,9 +601,9 @@ const gridClass = {
   /* ── Grid ── */
   .ge-grid {
     display: grid;
-    gap: 2px;
+    gap: 6px;
     list-style: none;
-    padding: 0;
+    padding: 10px;
     margin: 0;
   }
   .ge-grid-2 {
@@ -630,20 +630,38 @@ const gridClass = {
     width: 100%;
     aspect-ratio: 1 / 1;
     overflow: hidden;
+    border-radius: 0.75rem;
     cursor: zoom-in;
     background: color-mix(in srgb, var(--foreground) 5%, transparent);
     padding: 0;
     border: none;
+    z-index: 1;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
   }
   .ge-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.35s ease;
     display: block;
   }
-  .ge-item:hover .ge-img {
-    transform: scale(1.06);
+  /* 整个格子悬停时浮起放大：图片不再被 overflow 硬切，圆角 + 阴影跟随
+     格子整体缩放，alt 遮罩同步放大，避免裁剪露边 */
+  .ge-item:hover,
+  .ge-item:focus-visible {
+    z-index: 2;
+    transform: scale(1.02);
+    box-shadow: 0 12px 32px -12px color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ge-item {
+      transition: none;
+    }
+    .ge-item:hover,
+    .ge-item:focus-visible {
+      transform: none;
+    }
   }
   .ge-overlay {
     position: absolute;
@@ -699,6 +717,8 @@ const gridClass = {
     color: var(--accent);
     white-space: nowrap;
     text-decoration: none;
+    /* 覆盖 .app-prose a 的渐变下划线，避免悬停时与 text-decoration 叠加成双横线 */
+    background-image: none;
     transition: opacity 0.2s;
     flex-shrink: 0;
   }
