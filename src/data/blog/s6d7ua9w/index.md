@@ -16,7 +16,7 @@ description: "这篇文章系统梳理了 Nuxt 的 SEO 优化方案，涵盖 TDK
 ```ts
 export default defineNuxtConfig({
    app: {
-     title:'Dream Site',
+     title:'Better Nav',
      meta: [
        { name: 'keywords', content: 'Nuxt.js,导航,网站' },
        { name: 'description', content: '致力于打造程序员的梦中情站' }
@@ -34,7 +34,7 @@ export default defineNuxtConfig({
 ```vue
 <script setup lang="ts">
    useHead({
-    title:'Dream Site',
+    title:'Better Nav',
     link: [{ rel: 'icon', type: 'image/x-icon', href: 'favicon.ico' }],
     meta: [
       { name: 'keywords', content: 'Nuxt.js,导航,网站' },
@@ -49,8 +49,8 @@ export default defineNuxtConfig({
 ```vue
 <script setup lang="ts">
   useSeoMeta({
-  title: 'Dream Site',
-  ogTitle: 'Dream Site',
+  title: 'Better Nav',
+  ogTitle: 'Better Nav',
   description: '致力于打造程序员的梦中情站',
   ogDescription: '致力于打造程序员的梦中情站',
   ogImage: 'https://example.com/image.png',
@@ -64,7 +64,7 @@ export default defineNuxtConfig({
 ```vue
 <script setup lang="ts">
   definePageMeta({
-    title: 'Dream Site'
+    title: 'Better Nav'
   })
  </script>
 ```
@@ -76,12 +76,12 @@ export default defineNuxtConfig({
  useHead({
   // 作为字符串，
   // 其中`%s`会被标题替换
-  titleTemplate: '%s - Dream Site',
+  titleTemplate: '%s - Better Nav',
   // ... 或者作为一个函数
   titleTemplate: (productCategory) => {
     return productCategory
-      ? `${productCategory} - Dream Site`
-      : 'Dream Site'
+      ? `${productCategory} - Better Nav`
+      : 'Better Nav'
   }
  })
  </script>
@@ -121,7 +121,7 @@ export default defineNuxtConfig({
   // SEO 配置
   site: {
     url: 'https://dream-site.cn',
-    name: 'Dream Site',
+    name: 'Better Nav',
     description: '致力于打造程序员的梦中情站',
     defaultLocale: 'zh-cn',
     exclude: ['/admin/_components/**'], // 过滤不需要的 url
@@ -136,7 +136,7 @@ export default defineNuxtConfig({
 ```
 
 
-现在你就能打开 [sitemap.xml](https://site.baiwumm.com/sitemap.xml) 和 [robots.txt](https://site.baiwumm.com/robots.txt) 了，其他更加详细的配置可以参考官方文档：[nuxt-seo](https://nuxtseo.com/)
+现在你就能打开 [sitemap.xml](https://nav.baiwumm.com/sitemap.xml) 和 [robots.txt](https://nav.baiwumm.com/robots.txt) 了，其他更加详细的配置可以参考官方文档：[nuxt-seo](https://nuxtseo.com/)
 
 ## Robots
 

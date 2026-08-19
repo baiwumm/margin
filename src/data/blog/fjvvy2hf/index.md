@@ -5,7 +5,6 @@ pubDatetime: 2026-08-19T00:00:00+08:00
 tags:
   - DeepSeek Harness
   - AI
-featured: true
 draft: false
 ---
 
