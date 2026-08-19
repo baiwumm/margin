@@ -33,6 +33,7 @@ const galleries = defineCollection({
       title: z.string(),
       description: z.string(),
       pubDatetime: z.date(),
+      featured: z.boolean().optional(),
       draft: z.boolean().optional(),
       coverImage: image().optional(),
       tags: z.array(z.string()).default([]),
