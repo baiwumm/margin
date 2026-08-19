@@ -7,6 +7,7 @@ import Datetime from "@/components/Datetime.astro";
 import EditPost from "@/components/EditPost.astro";
 import ShareLinks from "@/components/ShareLinks.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
+import TextToSpeech from "@/components/TextToSpeech.astro";
 import ReadMode from "@/components/ReadMode.astro";
 import GalleryEmbed from "@/components/GalleryEmbed.astro";
 import PostLightbox from "@/components/PostLightbox.astro";
@@ -233,6 +234,9 @@ const nextPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
             {post}
             class="post-edit-chip flex rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 opacity-70 backdrop-blur-sm transition-all duration-200 hover:border-accent/30 hover:opacity-100 [&>svg]:size-3.5"
           />
+
+          <!-- Full-text read-aloud -->
+          <TextToSpeech />
 
           <!-- Immersive reading mode entry -->
           <ReadMode />

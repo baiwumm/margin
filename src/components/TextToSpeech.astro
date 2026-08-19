@@ -1,0 +1,973 @@
+---
+/**
+ * TextToSpeech — 文章页全文朗读（Web Speech API，零依赖）。
+ * 入口按钮渲染在文章元数据行（ReadMode 左侧）；朗读时在底部弹出
+ * 悬浮控制条（播放/暂停、点击进度跳段、停止、语速）。
+ * 开关：SITE.textToSpeech（config.ts）；快捷键 `l`。
+ */
+import { SITE } from "@/config";
+
+const ttsEnabled = SITE.textToSpeech;
+const TTS_SHORTCUT = "l";
+---
+
+{
+  ttsEnabled && (
+    <>
+      {/* Entry chip, rendered inside the post metadata row (left of ReadMode) */}
+      <button
+        type="button"
+        class="tts-toggle group"
+        data-tts-toggle
+        data-pagefind-ignore
+        aria-pressed="false"
+        aria-label="朗读全文"
+        aria-keyshortcuts={TTS_SHORTCUT}
+        title={`朗读全文（快捷键 ${TTS_SHORTCUT}，再次点击暂停）`}
+      >
+        {/* speaker icon — idle */}
+        <svg
+          class="tts-chip-icon"
+          data-tts-chip-speaker
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M11 5 6 9H2v6h4l5 4V5z" />
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+        </svg>
+        {/* play icon — paused */}
+        <svg
+          class="tts-chip-icon hidden"
+          data-tts-chip-play
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <polygon points="6 3 20 12 6 21 6 3" />
+        </svg>
+        {/* pause icon — speaking */}
+        <svg
+          class="tts-chip-icon hidden"
+          data-tts-chip-pause
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="6" y="4" width="4" height="16" rx="1" />
+          <rect x="14" y="4" width="4" height="16" rx="1" />
+        </svg>
+        <span>朗读</span>
+      </button>
+
+      {/* Bottom floating control bar */}
+      <div
+        id="tts-bar"
+        class="tts-bar"
+        data-tts-bar
+        data-pagefind-ignore
+        role="region"
+        aria-label="全文朗读控制"
+        aria-hidden="true"
+      >
+        <div class="tts-bar-inner">
+          <div class="tts-row-main">
+            <button
+              type="button"
+              class="tts-main-btn"
+              data-tts-play
+              aria-label="播放朗读"
+            >
+              <svg
+                class="tts-bar-icon"
+                data-tts-bar-play
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M3 2.5a.5.5 0 0 1 .765-.424l10 5.5a.5.5 0 0 1 0 .848l-10 5.5A.5.5 0 0 1 3 13.5v-11z" />
+              </svg>
+              <svg
+                class="tts-bar-icon hidden"
+                data-tts-bar-pause
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z" />
+              </svg>
+            </button>
+
+            <div
+              class="tts-progress-track"
+              data-tts-track
+              role="slider"
+              tabindex="0"
+              aria-label="朗读进度（点击跳转段落）"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <div class="tts-progress-fill" data-tts-fill />
+            </div>
+
+            <button
+              type="button"
+              class="tts-stop-btn"
+              data-tts-stop
+              aria-label="停止朗读"
+              title="停止朗读"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <rect x="6" y="6" width="12" height="12" rx="1.5" />
+              </svg>
+              <span>停止</span>
+            </button>
+          </div>
+
+          <div class="tts-row-meta">
+            <span class="tts-pos" data-tts-pos aria-live="polite">
+              全文朗读
+            </span>
+            <span class="tts-speed-group" role="group" aria-label="朗读语速">
+              <button
+                type="button"
+                class="tts-speed-btn"
+                data-tts-speed-down
+                aria-label="减慢语速"
+                title="减慢语速"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+              <span
+                class="tts-speed-label"
+                data-tts-speed-label
+                title="点击恢复默认语速"
+              >
+                1×
+              </span>
+              <button
+                type="button"
+                class="tts-speed-btn"
+                data-tts-speed-up
+                aria-label="加快语速"
+                title="加快语速"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  aria-hidden="true"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+<script>
+  const TTS_SHORTCUT = "l";
+  const RATES = [0.75, 1, 1.25, 1.5];
+  const DEFAULT_RATE = 1;
+  const RATE_KEY = "tts-rate";
+  const CHARS_PER_MIN = 260; // zh voices ≈ 260 chars/min at rate 1
+  const RESUME_DELAY_MS = 80; // Chrome needs a beat after cancel() before speak()
+
+  type Chunk = { el: HTMLElement; text: string; len: number; cum: number };
+  type TtsState = "idle" | "speaking" | "paused";
+
+  let controller: AbortController | null = null;
+
+  function initTextToSpeech() {
+    if (controller) controller.abort();
+    controller = new AbortController();
+    const { signal } = controller;
+
+    const toggleBtn =
+      document.querySelector<HTMLButtonElement>("[data-tts-toggle]");
+    const bar = document.querySelector<HTMLElement>("[data-tts-bar]");
+    const article = document.getElementById("article");
+    const synth = window.speechSynthesis;
+
+    if (!toggleBtn || !bar || !article) return;
+    if (!synth) {
+      toggleBtn.disabled = true;
+      toggleBtn.title = "当前浏览器不支持语音朗读";
+      return;
+    }
+
+    // The bar must leave `.post-header-card`: that card's `backdrop-filter`
+    // turns it into the containing block for `position: fixed` descendants.
+    // `<body>` has no transform/filter, so the bar stays page-fixed.
+    if (bar.parentElement !== document.body) {
+      document.body.appendChild(bar);
+    }
+
+    const mainBtn = bar.querySelector<HTMLButtonElement>("[data-tts-play]");
+    const barPlayIcon = bar.querySelector<HTMLElement>("[data-tts-bar-play]");
+    const barPauseIcon = bar.querySelector<HTMLElement>("[data-tts-bar-pause]");
+    const stopBtn = bar.querySelector<HTMLButtonElement>("[data-tts-stop]");
+    const track = bar.querySelector<HTMLElement>("[data-tts-track]");
+    const fill = bar.querySelector<HTMLElement>("[data-tts-fill]");
+    const posEl = bar.querySelector<HTMLElement>("[data-tts-pos]");
+    const speedLabel = bar.querySelector<HTMLElement>("[data-tts-speed-label]");
+    const speedDown = bar.querySelector<HTMLButtonElement>(
+      "[data-tts-speed-down]"
+    );
+    const speedUp = bar.querySelector<HTMLButtonElement>("[data-tts-speed-up]");
+    const chipSpeaker = toggleBtn.querySelector<HTMLElement>(
+      "[data-tts-chip-speaker]"
+    );
+    const chipPlay = toggleBtn.querySelector<HTMLElement>(
+      "[data-tts-chip-play]"
+    );
+    const chipPause = toggleBtn.querySelector<HTMLElement>(
+      "[data-tts-chip-pause]"
+    );
+    if (
+      !mainBtn ||
+      !barPlayIcon ||
+      !barPauseIcon ||
+      !stopBtn ||
+      !track ||
+      !fill ||
+      !posEl ||
+      !speedLabel ||
+      !speedDown ||
+      !speedUp ||
+      !chipSpeaker ||
+      !chipPlay ||
+      !chipPause
+    ) {
+      return;
+    }
+
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    let state: TtsState = "idle";
+    let chunks: Chunk[] = [];
+    let totalChars = 0;
+    let chunkIndex = -1; // currently active chunk
+    let charOffset = 0; // position within the active chunk's full text
+    let utteranceBaseOffset = 0; // where the current utterance started in chunk text
+    let lastBoundaryIndex = 0; // charIndex from onboundary (utterance-relative)
+    let rate = DEFAULT_RATE; // overwritten by readRate() once defined below
+    let voice: SpeechSynthesisVoice | null = null;
+    let currentUtterance: SpeechSynthesisUtterance | null = null;
+    let intentionalStop = false; // true while cancel() is deliberate (pause/stop/seek/rate)
+    let resumeTimer: number | null = null;
+
+    // Fresh page: kill any stale speech left over from a previous render
+    synth.cancel();
+
+    /* ================= Chunk building ================= */
+
+    const buildChunks = (): Chunk[] => {
+      const selectors =
+        "h2, h3, h4, h5, h6, p, li, blockquote, figcaption, dt, dd, summary, th, td";
+      const nodes = Array.from(
+        article.querySelectorAll<HTMLElement>(selectors)
+      );
+      const kept: Array<{ el: HTMLElement; text: string }> = [];
+      for (const el of nodes) {
+        // Skip elements nested inside an already-kept block (e.g. blockquote > p,
+        // td > p, li > p, nested list items) to avoid double-reading their text.
+        if (kept.some(k => k.el.contains(el))) continue;
+        const clone = el.cloneNode(true) as HTMLElement;
+        clone
+          .querySelectorAll(
+            "pre, button, a.heading-link, .copy-code, script, style"
+          )
+          .forEach(n => n.remove());
+        const text = (clone.textContent ?? "").replace(/\s+/g, " ").trim();
+        if (!text) continue;
+        kept.push({ el, text });
+      }
+      let acc = 0;
+      const result = kept.map(({ el, text }) => {
+        const chunk: Chunk = { el, text, len: text.length, cum: acc };
+        acc += text.length;
+        return chunk;
+      });
+      totalChars = acc;
+      return result;
+    };
+
+    /* ================= Voice ================= */
+
+    const pickVoice = () => {
+      const voices = synth.getVoices();
+      voice =
+        voices.find(v => v.lang === "zh-CN") ??
+        voices.find(v => v.lang.toLowerCase().startsWith("zh")) ??
+        null;
+    };
+    pickVoice();
+    synth.addEventListener("voiceschanged", pickVoice, { signal });
+
+    /* ================= Helpers ================= */
+
+    const isTyping = () => {
+      const el = document.activeElement as HTMLElement | null;
+      if (!el) return false;
+      const tag = el.tagName;
+      return (
+        tag === "INPUT" ||
+        tag === "TEXTAREA" ||
+        tag === "SELECT" ||
+        el.isContentEditable
+      );
+    };
+
+    // Don't let `l` fight with the search modal or shortcuts panel
+    const dialogOpen = () =>
+      document.querySelector("#search-modal")?.classList.contains("active") ||
+      document
+        .querySelector("[data-shortcuts-panel]")
+        ?.classList.contains("active");
+
+    const formatRate = (r: number) => r.toString().replace(/\.0+$/, "") + "×";
+
+    const readRate = (): number => {
+      const raw = localStorage.getItem(RATE_KEY);
+      if (raw === null) return DEFAULT_RATE;
+      const n = Number(raw);
+      return RATES.includes(n) ? n : DEFAULT_RATE;
+    };
+    rate = readRate(); // apply persisted rate now that readRate is defined
+
+    const estimateMinutes = () =>
+      Math.max(1, Math.round(totalChars / (CHARS_PER_MIN * rate)));
+
+    const getProgress = () => {
+      if (!totalChars || chunkIndex < 0) return 0;
+      const chunk = chunks[chunkIndex];
+      if (!chunk) return 0;
+      const within = Math.max(0, Math.min(charOffset, chunk.len));
+      return Math.min(
+        100,
+        Math.round(((chunk.cum + within) / totalChars) * 100)
+      );
+    };
+
+    /* ================= UI sync ================= */
+
+    const updateSpeedLabel = () => {
+      speedLabel.textContent = formatRate(rate);
+      speedLabel.title =
+        rate === DEFAULT_RATE ? "默认语速" : "点击恢复默认语速";
+    };
+
+    const syncProgressUI = () => {
+      const pct = getProgress();
+      fill.style.width = `${pct}%`;
+      track.setAttribute("aria-valuenow", String(pct));
+      posEl.textContent = `第 ${Math.min(chunkIndex + 1, chunks.length)}/${chunks.length} 段 · ${pct}% · 约 ${estimateMinutes()} 分钟`;
+    };
+
+    const syncUI = () => {
+      const active = state !== "idle";
+      bar.classList.toggle("active", active);
+      bar.setAttribute("aria-hidden", String(!active));
+      toggleBtn.setAttribute("aria-pressed", String(active));
+      const label =
+        state === "speaking"
+          ? "暂停朗读"
+          : state === "paused"
+            ? "继续朗读"
+            : "播放朗读";
+      mainBtn.setAttribute("aria-label", label);
+      barPlayIcon.classList.toggle("hidden", state === "speaking");
+      barPauseIcon.classList.toggle("hidden", state !== "speaking");
+      chipSpeaker.classList.toggle(
+        "hidden",
+        state === "speaking" || state === "paused"
+      );
+      chipPlay.classList.toggle("hidden", state !== "paused");
+      chipPause.classList.toggle("hidden", state !== "speaking");
+      syncProgressUI();
+      updateSpeedLabel();
+    };
+
+    const resetUI = () => {
+      bar.classList.remove("active");
+      bar.setAttribute("aria-hidden", "true");
+      toggleBtn.setAttribute("aria-pressed", "false");
+      mainBtn.setAttribute("aria-label", "播放朗读");
+      barPlayIcon.classList.remove("hidden");
+      barPauseIcon.classList.add("hidden");
+      chipSpeaker.classList.remove("hidden");
+      chipPlay.classList.add("hidden");
+      chipPause.classList.add("hidden");
+      fill.style.width = "0%";
+      track.setAttribute("aria-valuenow", "0");
+      posEl.textContent = chunks.length
+        ? `第 1/${chunks.length} 段 · 0% · 约 ${estimateMinutes()} 分钟`
+        : "全文朗读";
+      updateSpeedLabel();
+    };
+
+    const clearHighlight = () => {
+      for (const c of chunks) c.el.classList.remove("tts-active");
+    };
+
+    const highlightChunk = (idx: number) => {
+      chunks.forEach((c, i) => c.el.classList.toggle("tts-active", i === idx));
+      const el = chunks[idx]?.el;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      if (rect.top < 0 || rect.bottom > vh) {
+        el.scrollIntoView({
+          block: "center",
+          behavior: reducedMotion ? "auto" : "smooth",
+        });
+      }
+    };
+
+    // Pause the intro music player if it is playing (avoids voice/music overlap)
+    const pauseIntroAudioIfPlaying = () => {
+      const store = (
+        window as Window & {
+          __introAudioStore?: { audio: HTMLAudioElement };
+        }
+      ).__introAudioStore;
+      if (store && !store.audio.paused) store.audio.pause();
+    };
+
+    /* ================= Speech engine ================= */
+
+    const speakAfterCancel = (fn: () => void) => {
+      if (resumeTimer) window.clearTimeout(resumeTimer);
+      resumeTimer = window.setTimeout(() => {
+        resumeTimer = null;
+        fn();
+      }, RESUME_DELAY_MS);
+    };
+
+    const finish = () => {
+      state = "idle";
+      chunkIndex = -1;
+      charOffset = 0;
+      clearHighlight();
+      resetUI();
+    };
+
+    const speakFrom = (idx: number, offset: number) => {
+      if (idx >= chunks.length) {
+        finish();
+        return;
+      }
+      chunkIndex = idx;
+      charOffset = Math.max(0, Math.min(offset, chunks[idx].len));
+      utteranceBaseOffset = charOffset;
+      lastBoundaryIndex = 0;
+      const chunk = chunks[chunkIndex];
+      const text = chunk.text.slice(charOffset);
+      if (!text) {
+        speakFrom(chunkIndex + 1, 0);
+        return;
+      }
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = voice?.lang || "zh-CN";
+      if (voice) u.voice = voice;
+      u.rate = rate;
+      u.onstart = () => {
+        state = "speaking";
+        highlightChunk(chunkIndex);
+        syncUI();
+      };
+      u.onboundary = (e: SpeechSynthesisEvent) => {
+        if (typeof e.charIndex === "number") {
+          lastBoundaryIndex = e.charIndex;
+          charOffset = utteranceBaseOffset + e.charIndex;
+          syncProgressUI();
+        }
+      };
+      u.onend = () => {
+        if (currentUtterance !== u) return; // stale event after cancel()
+        currentUtterance = null;
+        if (intentionalStop) return;
+        speakFrom(chunkIndex + 1, 0);
+      };
+      u.onerror = (e: SpeechSynthesisErrorEvent) => {
+        if (currentUtterance !== u) return; // stale event after cancel()
+        currentUtterance = null;
+        if (
+          intentionalStop ||
+          e.error === "interrupted" ||
+          e.error === "canceled"
+        )
+          return;
+        if (e.error === "not-allowed" || e.error === "synthesis-failed") {
+          stop();
+          return;
+        }
+        speakFrom(chunkIndex + 1, 0); // transient error: skip chunk, keep going
+      };
+      intentionalStop = false;
+      currentUtterance = u;
+      synth.speak(u);
+    };
+
+    const start = () => {
+      if (chunks.length === 0) chunks = buildChunks();
+      if (chunks.length === 0) return; // nothing readable on this page
+      state = "speaking";
+      pauseIntroAudioIfPlaying();
+      bar.classList.add("active");
+      bar.setAttribute("aria-hidden", "false");
+      speakFrom(chunkIndex < 0 ? 0 : chunkIndex, charOffset);
+    };
+
+    const pause = () => {
+      if (state !== "speaking") return;
+      intentionalStop = true;
+      synth.cancel();
+      charOffset = utteranceBaseOffset + lastBoundaryIndex;
+      state = "paused";
+      syncUI();
+    };
+
+    const resume = () => {
+      if (state !== "paused" || chunks.length === 0) return;
+      state = "speaking";
+      bar.classList.add("active");
+      bar.setAttribute("aria-hidden", "false");
+      speakAfterCancel(() => speakFrom(chunkIndex, charOffset));
+    };
+
+    const stop = () => {
+      intentionalStop = true;
+      if (resumeTimer) {
+        window.clearTimeout(resumeTimer);
+        resumeTimer = null;
+      }
+      synth.cancel();
+      currentUtterance = null;
+      state = "idle";
+      chunkIndex = -1;
+      charOffset = 0;
+      clearHighlight();
+      resetUI();
+    };
+
+    const toggle = () => {
+      if (state === "idle") start();
+      else if (state === "speaking") pause();
+      else resume();
+    };
+
+    /* ================= Rate ================= */
+
+    const setRate = (next: number) => {
+      if (next === rate) return;
+      rate = next;
+      localStorage.setItem(RATE_KEY, String(next));
+      updateSpeedLabel();
+      if (state === "speaking") {
+        // Re-speak the current chunk from its current position with the new rate
+        intentionalStop = true;
+        synth.cancel();
+        speakAfterCancel(() => speakFrom(chunkIndex, charOffset));
+      }
+    };
+
+    /* ================= Seek ================= */
+
+    const seekToFraction = (f: number) => {
+      if (chunks.length === 0 || totalChars === 0) return;
+      const target = Math.round(Math.min(1, Math.max(0, f)) * totalChars);
+      let idx = chunks.length - 1;
+      for (let i = 0; i < chunks.length; i++) {
+        if (target < chunks[i].cum + chunks[i].len) {
+          idx = i;
+          break;
+        }
+      }
+      const chunk = chunks[idx];
+      const offset = Math.max(0, Math.min(target - chunk.cum, chunk.len - 1));
+      if (idx === chunks.length - 1 && offset >= chunk.len - 1) {
+        finish();
+        return;
+      }
+      if (state === "speaking") {
+        intentionalStop = true;
+        synth.cancel();
+        speakAfterCancel(() => speakFrom(idx, offset));
+      } else if (state === "paused") {
+        chunkIndex = idx;
+        charOffset = offset;
+        syncUI();
+      }
+    };
+
+    /* ================= Listeners ================= */
+
+    toggleBtn.addEventListener("click", toggle, { signal });
+    mainBtn.addEventListener("click", toggle, { signal });
+    stopBtn.addEventListener("click", stop, { signal });
+
+    speedDown.addEventListener(
+      "click",
+      () => setRate(RATES[Math.max(0, RATES.indexOf(rate) - 1)]),
+      { signal }
+    );
+    speedUp.addEventListener(
+      "click",
+      () => setRate(RATES[Math.min(RATES.length - 1, RATES.indexOf(rate) + 1)]),
+      { signal }
+    );
+    speedLabel.addEventListener("click", () => setRate(DEFAULT_RATE), {
+      signal,
+    });
+
+    track.addEventListener(
+      "click",
+      e => {
+        const rect = track.getBoundingClientRect();
+        if (rect.width <= 0) return;
+        const f = (e.clientX - rect.left) / rect.width;
+        seekToFraction(f);
+      },
+      { signal }
+    );
+    track.addEventListener(
+      "keydown",
+      e => {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          seekToFraction(Math.max(0, getProgress() - 5) / 100);
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          seekToFraction(Math.min(100, getProgress() + 5) / 100);
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          seekToFraction(0);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          seekToFraction(1);
+        }
+      },
+      { signal }
+    );
+
+    document.addEventListener(
+      "keydown",
+      (e: KeyboardEvent) => {
+        if (e.key !== TTS_SHORTCUT) return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        if (isTyping() || dialogOpen()) return;
+        e.preventDefault();
+        toggle();
+      },
+      { signal }
+    );
+
+    // Stop cleanly when navigating away (View Transitions)
+    document.addEventListener("astro:before-swap", () => stop(), {
+      signal,
+      once: true,
+    });
+  }
+
+  document.addEventListener("astro:page-load", initTextToSpeech);
+</script>
+
+<style>
+  /* ===== Entry chip (matches the metadata chips / read-mode-toggle) ===== */
+  .tts-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
+    background: color-mix(in srgb, var(--muted) 10%, transparent);
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--foreground) 72%, transparent);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .tts-toggle:hover {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+
+  .tts-toggle[aria-pressed="true"] {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+
+  .tts-chip-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+    color: color-mix(in srgb, var(--accent) 70%, transparent);
+    transition:
+      transform 0.3s ease,
+      opacity 0.2s ease;
+  }
+
+  .tts-toggle.group:hover .tts-chip-icon {
+    transform: translateY(-0.125rem) scale(1.1);
+  }
+
+  /* ===== Bottom floating bar ===== */
+  .tts-bar {
+    position: fixed;
+    left: 50%;
+    bottom: 1.25rem;
+    z-index: 70;
+    transform: translateX(-50%) translateY(0.75rem);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease,
+      visibility 0.25s;
+  }
+
+  .tts-bar.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* When the immersive reading toolbar is also visible, lift the TTS bar
+     above it so the two floating bars never overlap. */
+  :global(body:has(.read-mode-bar.active)) .tts-bar {
+    bottom: 5.5rem;
+  }
+
+  .tts-bar-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: min(100vw - 1.5rem, 32rem);
+    padding: 0.6rem 0.8rem;
+    border-radius: 1rem;
+    border: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+    background: color-mix(in srgb, var(--background) 88%, transparent);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    box-shadow:
+      0 12px 32px -12px color-mix(in srgb, var(--accent) 35%, transparent),
+      0 4px 16px color-mix(in srgb, var(--foreground) 12%, transparent);
+  }
+
+  .tts-row-main {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .tts-main-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    border-radius: 999px;
+    border: none;
+    background: var(--accent);
+    color: var(--background);
+    transition:
+      transform 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .tts-main-btn:hover {
+    transform: scale(1.06);
+  }
+
+  .tts-main-btn:active {
+    transform: scale(0.96);
+  }
+
+  .tts-bar-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .tts-progress-track {
+    position: relative;
+    flex: 1;
+    min-width: 3rem;
+    height: 0.375rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--foreground) 10%, transparent);
+    cursor: pointer;
+  }
+
+  .tts-progress-track:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+    outline-offset: 2px;
+  }
+
+  .tts-progress-fill {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--accent) 55%, transparent),
+      var(--accent)
+    );
+  }
+
+  .tts-stop-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex-shrink: 0;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    border: none;
+    background: color-mix(in srgb, var(--foreground) 7%, transparent);
+    font-size: 0.75rem;
+    color: color-mix(in srgb, var(--foreground) 70%, transparent);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .tts-stop-btn:hover {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+
+  .tts-stop-btn svg {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
+  .tts-row-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .tts-pos {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-family: var(--font-firacode), monospace;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  }
+
+  .tts-speed-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+    padding: 2px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--foreground) 6%, transparent);
+  }
+
+  .tts-speed-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: color-mix(in srgb, var(--foreground) 65%, transparent);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .tts-speed-btn:hover {
+    color: var(--foreground);
+    background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  }
+
+  .tts-speed-btn svg {
+    width: 0.7rem;
+    height: 0.7rem;
+  }
+
+  .tts-speed-label {
+    min-width: 2.2rem;
+    text-align: center;
+    font-family: var(--font-firacode), monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--foreground) 80%, transparent);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+  }
+
+  .tts-speed-label:hover {
+    color: var(--accent);
+  }
+
+  /* ===== Active paragraph highlight (applied to article elements) ===== */
+  :global(.tts-active) {
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+    box-shadow: inset 2.5px 0 0 var(--accent);
+    border-radius: 0.2rem;
+    transition:
+      background-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tts-bar {
+      transition: none;
+    }
+
+    .tts-main-btn:hover {
+      transform: none;
+    }
+  }
+</style>

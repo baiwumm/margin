@@ -1,4 +1,5 @@
 ---
+
 ---
 
 <div
@@ -43,7 +44,9 @@
           stroke-linejoin="round"
         >
           <rect x="2" y="6" width="20" height="12" rx="2"></rect>
-          <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9 14h6"></path>
+          <path
+            d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h.01M18 14h.01M9 14h6"
+          ></path>
         </svg>
       </span>
       <h2 class="shortcuts-title">
@@ -114,11 +117,25 @@
             </li>
           </ul>
         </section>
+
+        <section class="shortcuts-section shortcuts-span-2">
+          <h3 class="shortcuts-group-title">阅读</h3>
+          <ul class="shortcuts-list">
+            <li class="shortcuts-row">
+              <span>沉浸式阅读模式</span>
+              <span class="shortcuts-keys"><kbd>r</kbd></span>
+            </li>
+            <li class="shortcuts-row">
+              <span>朗读 / 暂停全文</span>
+              <span class="shortcuts-keys"><kbd>l</kbd></span>
+            </li>
+          </ul>
+        </section>
       </div>
 
       <p class="shortcuts-hint">
-        按 <kbd>?</kbd> 或 <kbd>Esc</kbd> 关闭面板 · <kbd>⌘</kbd> 在
-        Windows / Linux 上为 <kbd>Ctrl</kbd>
+        按 <kbd>?</kbd> 或 <kbd>Esc</kbd> 关闭面板 · <kbd>⌘</kbd> 在 Windows / Linux
+        上为 <kbd>Ctrl</kbd>
       </p>
     </div>
   </div>
@@ -237,21 +254,25 @@
     document.addEventListener("keydown", handleKeydown, { signal });
 
     // 页脚 / 菜单中的入口按钮
-    document.querySelectorAll<HTMLElement>("[data-shortcuts-trigger]").forEach(btn => {
-      btn.addEventListener(
-        "click",
-        e => {
-          e.preventDefault();
-          openPanel();
-        },
-        { signal }
-      );
-    });
+    document
+      .querySelectorAll<HTMLElement>("[data-shortcuts-trigger]")
+      .forEach(btn => {
+        btn.addEventListener(
+          "click",
+          e => {
+            e.preventDefault();
+            openPanel();
+          },
+          { signal }
+        );
+      });
 
     // 遮罩与关闭按钮
-    panel.querySelectorAll<HTMLElement>("[data-shortcuts-close]").forEach(el => {
-      el.addEventListener("click", closePanel, { signal });
-    });
+    panel
+      .querySelectorAll<HTMLElement>("[data-shortcuts-close]")
+      .forEach(el => {
+        el.addEventListener("click", closePanel, { signal });
+      });
   }
 
   document.addEventListener("astro:page-load", initShortcutsPanel);
