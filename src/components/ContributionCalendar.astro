@@ -15,9 +15,9 @@ import IconGitHub from "@/assets/icons/IconGitHub.svg";
 const calendar = await getContributionCalendar();
 
 // 布局常量（px）
-const GAP = 4; // 格子间距
+const GAP = 5; // 格子间距
 const DAY_COL = 22; // 左侧星期标签列宽
-const MIN_W = 720; // 日历最小宽度，低于此宽度时容器横向滚动
+const MIN_W = 740; // 日历最小宽度，低于此宽度时容器横向滚动
 
 // 月份 → 起始列映射，供月份标签行定位（标签允许溢出到后续空列）
 const monthAtColumn = new Map<number, string>(
@@ -265,7 +265,7 @@ const monthAtColumn = new Map<number, string>(
      尺寸由模板按需指定（网格格 w-full+aspect-square，图例格 size-[10px]） */
   .gh-cell {
     border-radius: 3px;
-    outline: 1px solid color-mix(in srgb, var(--foreground) 6%, transparent);
+    outline: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
     transition: transform 0.1s ease;
   }
 
@@ -273,24 +273,26 @@ const monthAtColumn = new Map<number, string>(
     transform: scale(1.3);
   }
 
+  /* level-0：无贡献的空格，使用中性浅灰（基于 foreground 极淡混入），
+     与背景形成清晰边界，深/浅主题下都清晰可见，并与后续等级拉开阶级 */
   .gh-level-0 {
-    background: color-mix(in srgb, var(--accent) 8%, var(--background));
+    background: color-mix(in srgb, var(--foreground) 16%, var(--background));
   }
 
   .gh-level-1 {
-    background: color-mix(in srgb, var(--accent) 26%, var(--background));
+    background: color-mix(in srgb, var(--accent) 32%, var(--background));
   }
 
   .gh-level-2 {
-    background: color-mix(in srgb, var(--accent) 45%, var(--background));
+    background: color-mix(in srgb, var(--accent) 56%, var(--background));
   }
 
   .gh-level-3 {
-    background: color-mix(in srgb, var(--accent) 66%, var(--background));
+    background: color-mix(in srgb, var(--accent) 78%, var(--background));
   }
 
   .gh-level-4 {
-    background: color-mix(in srgb, var(--accent) 90%, var(--background));
+    background: color-mix(in srgb, var(--accent) 100%, var(--background));
   }
 
   /* ── 自定义 tooltip（玻璃拟态 + 项目主字体 Maple，accent 语义色，跟随主题）── */
