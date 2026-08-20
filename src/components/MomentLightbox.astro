@@ -331,6 +331,9 @@
       current = Math.max(0, Math.min(idx, currentImages.length - 1));
       const item = currentImages[current];
 
+      // 先隐藏旧帧，避免新图加载期间残留上一张图
+      lbImg.style.opacity = "0";
+
       lbImg.src = item.src;
       lbImg.alt = item.alt;
 
@@ -340,15 +343,20 @@
         if (nb) preloadImage(nb.src);
       }
 
-      // 等新图解码完成再一起更新文案并播放动画，避免“先显示 Alt”
-      if (!reduceMotion && direction !== 0) {
-        try {
-          await lbImg.decode();
-        } catch {
-          // 解码失败时直接显示
-        }
+      // 等新图解码完成再显示（带超时兜底，慢网下不卡死交互），
+      // 避免“先显示上一张 / 空白闪一下”的延迟
+      try {
+        await Promise.race([
+          lbImg.decode(),
+          new Promise(resolve => setTimeout(resolve, 600)),
+        ]);
+      } catch {
+        // 解码失败时直接显示
       }
       if (seq !== openSeq) return;
+
+      // 淡入新图
+      lbImg.style.opacity = "1";
 
       if (lbCaption) lbCaption.textContent = item.alt;
       if (lbCounter)
@@ -377,11 +385,15 @@
       const images = getCardImages(card);
       if (!images) return;
       currentImages = images;
+      // 预热本卡片全部图片（含隐藏图），后续切换/查看时缓存命中、几乎无延迟
+      for (const img of images) preloadImage(img.src);
       current = Math.max(0, Math.min(startIdx, images.length - 1));
       open(current);
     }
 
     function close() {
+      // 重置为隐藏态，下次打开时从透明度 0 开始，杜绝旧帧残留
+      lbImg.style.opacity = "0";
       lb.close();
       setScrollLock(false);
     }
@@ -704,6 +716,11 @@
     user-select: none;
     -webkit-user-drag: none;
     cursor: grab;
+    /* JS 以 opacity 控制新旧帧切换，避免切换时残留上一张图 */
+    opacity: 1;
+    transition:
+      opacity 0.15s ease,
+      transform 0.2s ease-out;
   }
 
   .lightbox-image.is-panning {
