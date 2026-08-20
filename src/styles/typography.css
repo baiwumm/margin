@@ -294,6 +294,29 @@
   flex: 1;
 }
 
+/* 封面缩略图：og/twitter 图或站内动态 OG 图，显示在标题左侧 */
+.link-card-thumb {
+  width: 4rem;
+  height: 4rem;
+  flex-shrink: 0;
+  border-radius: 0.75rem;
+  object-fit: cover;
+  border: 1px solid color-mix(in srgb, var(--border) 20%, transparent);
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+
+/* 覆盖 .app-prose img 的 mx-auto，让缩略图在 flex 容器内靠左 */
+.app-prose .link-card-thumb {
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .link-card-thumb {
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+}
+
 .link-card-domain {
   font-family: var(--font-firacode);
   font-size: 0.7rem;

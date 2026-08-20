@@ -14,6 +14,9 @@
  * - 外部链接：构建期 fetch 抓取 TDK（og:title / og:description 优先，
  *   回退到 <title> 与 meta description），带浏览器 UA、5s 超时、
  *   同一次构建内按 URL 去重缓存、响应截断 512KB。
+ * - 封面图：外链抓取 og:image（含 secure_url / twitter:image 兜底），
+ *   站内 blog 链接复用动态 OG 图（/posts/<slug>/index.png）；有图时
+ *   显示在标题左侧，直接用远程链接（不下载到本地），无图则按无图渲染。
  * - 抓取失败或字段缺失时降级为「域名 + URL」卡片，绝不影响构建。
  * - 字段优先级：显式 title/description 覆盖 > 抓取/本地 TDK >
  *   说明文字 > 域名。
@@ -36,7 +39,13 @@ type MdRoot = {
 };
 
 /* ── 卡片数据 ─────────────────────────────────────────────────────── */
-type Tdk = { title?: string; description?: string; keywords?: string };
+type Tdk = {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  /** 社交封面图（og:image / twitter:image）的绝对 URL，缺失则无图 */
+  image?: string;
+};
 
 type CardRequest = {
   node: MdNode;
@@ -168,7 +177,16 @@ function escapeHtml(input: string): string {
 }
 
 /* ── TDK 抓取（外链，构建期） ─────────────────────────────────────── */
-function parseTdk(html: string): Tdk | null {
+/** 相对图片地址基于被抓取页面的 URL 解析为绝对地址 */
+function resolveUrl(raw: string, base: string): string | undefined {
+  try {
+    return new URL(raw, base).href;
+  } catch {
+    return undefined;
+  }
+}
+
+function parseTdk(html: string, pageUrl: string): Tdk | null {
   const metas = new Map<string, string>();
   for (const match of html.matchAll(/<meta\b[^>]*>/gi)) {
     const tag = match[0];
@@ -184,8 +202,14 @@ function parseTdk(html: string): Tdk | null {
     (titleTag ? decodeEntities(titleTag[1].trim()) : undefined);
   const description = metas.get("og:description") ?? metas.get("description");
   const keywords = metas.get("keywords");
-  if (!title && !description) return null;
-  return { title: title || undefined, description, keywords };
+  const rawImage =
+    metas.get("og:image:secure_url") ??
+    metas.get("og:image") ??
+    metas.get("twitter:image") ??
+    metas.get("twitter:image:src");
+  const image = rawImage ? resolveUrl(rawImage, pageUrl) : undefined;
+  if (!title && !description && !image) return null;
+  return { title: title || undefined, description, keywords, image };
 }
 
 async function fetchTdk(url: string): Promise<Tdk | null> {
@@ -209,7 +233,7 @@ async function fetchTdk(url: string): Promise<Tdk | null> {
     }
     // 只解析前 512KB：title / meta 都位于 <head>，截断可避免大页面拖慢构建
     const html = (await res.text()).slice(0, 512 * 1024);
-    const tdk = parseTdk(html);
+    const tdk = parseTdk(html, url);
     tdkCache.set(url, tdk);
     return tdk;
   } catch {
@@ -261,21 +285,29 @@ function parseFrontmatterTdk(raw: string): Tdk | undefined {
  * 从 import.meta.glob 的绝对路径推导 slug 并组装站内 TDK 映射。
  * 路径形如 /src/data/blog/<slug>.md 或 /src/data/blog/<slug>/index.md，
  * slug 保留相对目录段（如 sub/foo），与 /posts/<slug>/ 路由一致。
+ * blog 站内链接的封面图复用动态 OG 图（/posts/<slug>/index.png），
+ * 与 PostDetails 的 SITE.dynamicOgImage 逻辑保持一致；画廊无专属 OG 图，
+ * 不设 image（走无图降级）。
  */
 function buildLocalTdkMap(): Map<string, Tdk> {
   const map = new Map<string, Tdk>();
-  const collect = (entries: Record<string, string>, prefix: string) => {
+  const collect = (entries: Record<string, string>, prefix: string, withImage: boolean) => {
     for (const [absPath, raw] of Object.entries(entries)) {
       const rel = absPath
         .replace(/^\/src\/data\/(blog|galleries)\//, "")
         .replace(/\.(md|mdx)$/i, "");
       const slug = rel.replace(/\/index$/i, "");
       const tdk = parseFrontmatterTdk(raw);
-      if (tdk) map.set(`${prefix}/${slug}`, tdk);
+      if (tdk) {
+        map.set(`${prefix}/${slug}`, {
+          ...tdk,
+          ...(withImage ? { image: `${prefix}/${slug}/index.png` } : {}),
+        });
+      }
     }
   };
-  collect(rawPosts, "/posts");
-  collect(rawGalleries, "/galleries");
+  collect(rawPosts, "/posts", true);
+  collect(rawGalleries, "/galleries", false);
   return map;
 }
 
@@ -303,10 +335,16 @@ function buildCardHtml(card: CardRequest, tdk: Tdk | undefined): string {
   const keywordsAttr = tdk?.keywords
     ? ` data-keywords="${escapeHtml(tdk.keywords)}"`
     : "";
+  // 有 og/twitter 封面图时，把图放在标题左侧（直接用远程链接，不下载到本地）
+  const image = tdk?.image ? escapeHtml(tdk.image) : undefined;
+  const thumb = image
+    ? `<img class="link-card-thumb" src="${image}" alt="" loading="lazy" decoding="async" />`
+    : "";
 
   return (
     `<div class="link-card not-prose"${keywordsAttr}>` +
     `<a class="link-card-anchor" href="${escapeHtml(url)}"${rel}>` +
+    thumb +
     '<span class="link-card-body">' +
     `<span class="link-card-domain">${domain}</span>` +
     `<span class="link-card-title">${escapeHtml(title)}</span>` +

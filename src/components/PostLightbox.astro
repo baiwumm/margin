@@ -235,9 +235,17 @@
       setScrollLock(false);
     }
 
-    // 正文图片点击打开灯箱
+    // 正文图片点击打开灯箱；图片位于链接内（如链接卡片缩略图）时
+    // 阻止默认跳转，仅放大预览
     items.forEach((img, idx) => {
-      img.addEventListener("click", () => open(idx), { signal });
+      img.addEventListener(
+        "click",
+        e => {
+          if (img.closest("a")) e.preventDefault();
+          open(idx);
+        },
+        { signal }
+      );
     });
 
     // 灯箱控制按钮
