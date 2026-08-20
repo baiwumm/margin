@@ -69,8 +69,8 @@ const maxCount = Math.max(...tagsWithCount.map(t => t.count));
               <div class="tag-aurora" data-tag-aurora />
               <div class="tag-border-glow" data-tag-border />
               <div class="tag-content">
-                <div class="flex items-center gap-1.5">
-                  <IconHash class="size-5 text-accent opacity-60 transition-opacity group-hover:opacity-100" />
+                <div class="flex min-w-0 flex-1 items-center gap-1.5">
+                  <IconHash class="size-5 shrink-0 text-accent opacity-60 transition-opacity group-hover:opacity-100" />
                   <span class="tag-name">{tagName}</span>
                 </div>
                 <div class="tag-count">
@@ -288,6 +288,10 @@ const maxCount = Math.max(...tagsWithCount.map(t => t.count));
   }
 
   .tag-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-weight: 600;
     font-size: 1rem;
     transition:
@@ -303,6 +307,7 @@ const maxCount = Math.max(...tagsWithCount.map(t => t.count));
 
   .tag-count {
     display: flex;
+    flex-shrink: 0;
     flex-direction: column;
     align-items: center;
     gap: 0;

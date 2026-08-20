@@ -173,17 +173,20 @@ if (SITE.showCoverImages) {
       aria-describedby={descriptionId}
       style={{ viewTransitionName }}
     >
-      <Heading id={headingId} class="flex items-center gap-2">
+      <Heading
+        id={headingId}
+        class="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap"
+      >
         {isGallery && (
           <span
             aria-hidden="true"
-            class="inline-flex items-center justify-center rounded-md bg-gallery/10 p-1 text-gallery/80 ring-1 ring-gallery/20"
+            class="inline-flex shrink-0 items-center justify-center rounded-md bg-gallery/10 p-1 text-gallery/80 ring-1 ring-gallery/20"
           >
             <IconGallery class="size-4" />
           </span>
         )}
-        {isGallery && <span class="sr-only">Gallery:</span>}
-        {title}
+        {isGallery && <span class="sr-only shrink-0">Gallery:</span>}
+        <span class="overflow-hidden text-ellipsis whitespace-nowrap">{title}</span>
       </Heading>
       <!-- Expand clickable area to whole card on top of everything, minus the description -->
       <span class="absolute -inset-4 sm:-inset-5 z-10" aria-hidden="true"></span>
