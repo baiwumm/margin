@@ -1,17 +1,19 @@
 ---
 import { getCollection } from "astro:content";
 
-const [blogPosts, galleryPosts] = await Promise.all([
+const [blogPosts, galleryPosts, momentPosts] = await Promise.all([
   getCollection("blog"),
   getCollection("galleries"),
+  getCollection("moments"),
 ]);
 
 const posts = blogPosts.filter(({ data }) => !data.draft);
 const galleries = galleryPosts.filter(({ data }) => !data.draft);
+const moments = momentPosts.filter(({ data }) => !data.draft);
 const tagCount = new Set(posts.flatMap(({ data }) => data.tags ?? [])).size;
 ---
 
-<div class="grid grid-cols-3 gap-3 sm:gap-4">
+<div class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
   <div
     class="rounded-2xl border border-border/25 bg-muted/10 px-2 py-4 text-center sm:py-5"
   >
@@ -35,5 +37,13 @@ const tagCount = new Set(posts.flatMap(({ data }) => data.tags ?? [])).size;
       {tagCount}
     </div>
     <div class="mt-1 text-xs text-foreground/60 sm:text-sm">个标签</div>
+  </div>
+  <div
+    class="rounded-2xl border border-border/25 bg-muted/10 px-2 py-4 text-center sm:py-5"
+  >
+    <div class="font-firacode text-2xl font-bold text-accent sm:text-3xl">
+      {moments.length}
+    </div>
+    <div class="mt-1 text-xs text-foreground/60 sm:text-sm">条动态</div>
   </div>
 </div>
