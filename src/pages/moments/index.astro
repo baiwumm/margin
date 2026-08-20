@@ -1,0 +1,253 @@
+---
+import type { ImageMetadata } from "astro";
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import MomentCard from "@/components/MomentCard.astro";
+import MomentLightbox from "@/components/MomentLightbox.astro";
+import { SITE } from "@/config";
+import { getGallerySlug } from "@/utils/contentEntry";
+
+if (!SITE.showMoments) {
+  return Astro.redirect("/404");
+}
+
+// Load all images from all moments at build-time
+const allImages = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/data/moments/**/*.{jpg,jpeg,png,webp,avif,gif,JPG,JPEG,PNG,WEBP}",
+  { eager: true }
+);
+
+// Get images from a specific moment
+function getMomentImages(slug: string): ImageMetadata[] {
+  return Object.entries(allImages)
+    .filter(
+      ([path]) =>
+        path.startsWith(`/src/data/moments/${slug}/`) &&
+        !path.endsWith("index.md") &&
+        !path.endsWith("index.mdx")
+    )
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, mod]) => mod.default);
+}
+
+const rawMoments = await getCollection("moments", ({ data }) => !data.draft);
+
+const moments = rawMoments
+  .sort((a, b) => {
+    // Featured first, then newest first
+    const featuredDiff =
+      Number(Boolean(b.data.featured)) - Number(Boolean(a.data.featured));
+    if (featuredDiff !== 0) return featuredDiff;
+    return (
+      new Date(b.data.pubDatetime).getTime() -
+      new Date(a.data.pubDatetime).getTime()
+    );
+  })
+  .map(moment => {
+    const slug = getGallerySlug(moment.id);
+    return {
+      moment,
+      slug,
+      images: getMomentImages(slug),
+    };
+  });
+
+const totalImages = moments.reduce((acc, m) => acc + m.images.length, 0);
+---
+
+<Layout
+  title={`瞬间 | ${SITE.title}`}
+  description="随手记录的日常动态，像朋友圈一样。"
+>
+  <Header />
+  <Breadcrumb />
+  <main id="main-content" class="app-layout pb-12">
+    <!-- Hero -->
+    <div class="moments-hero" data-moments-hero>
+      <div class="aurora-orb aurora-orb-1"></div>
+      <div class="aurora-orb aurora-orb-2"></div>
+      <div class="aurora-orb aurora-orb-3"></div>
+      <div class="aurora-mouse" data-moments-mouse></div>
+      <div class="relative z-10">
+        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
+          <span class="glow-text">瞬间</span>
+        </h1>
+        <p class="mt-3 max-w-lg text-foreground/70 italic">
+          随手记录的日常动态，像朋友圈一样。
+        </p>
+        <div class="mt-4 flex flex-wrap items-center gap-2">
+          <span class="hero-badge">{moments.length} 条动态</span>
+          {
+            totalImages > 0 && (
+              <span class="hero-badge">{totalImages} 张图片</span>
+            )
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Masonry feed -->
+    {
+      moments.length === 0 ? (
+        <p class="mt-12 text-center text-foreground/50 italic">
+          暂无动态，敬请期待。
+        </p>
+      ) : (
+        <div class="moments-masonry" data-moments-masonry>
+          {moments.map(({ moment, images }) => (
+            <MomentCard moment={moment} images={images} />
+          ))}
+        </div>
+      )
+    }
+  </main>
+
+  <MomentLightbox />
+  <Footer />
+</Layout>
+
+<script>
+  let momentsCleanup: AbortController | null = null;
+
+  function initMomentMasonry(signal: AbortSignal) {
+    // JS 瀑布流：把卡片按「最短列优先」分配到列容器，位置不固定（贴纸感）。
+    // 无 JS 时回退为 CSS Grid 布局（3 列网格，同样无整列空白）。
+    const masonry = document.querySelector(
+      "[data-moments-masonry]"
+    ) as HTMLElement | null;
+    if (!masonry) return;
+
+    const getColCount = () => {
+      const w = window.innerWidth;
+      if (w >= 1024) return 3;
+      if (w >= 640) return 2;
+      return 1;
+    };
+
+    const relayout = () => {
+      const count = getColCount();
+      // 收集所有卡片（无论已在列容器内还是直接子级），保持文档顺序
+      const cards = Array.from(
+        masonry.querySelectorAll<HTMLElement>("[data-moment-card]")
+      );
+      if (cards.length === 0) return;
+
+      // 重建列容器，按最短列贪心分配
+      masonry.innerHTML = "";
+      const cols = Array.from({ length: count }, () => {
+        const col = document.createElement("div");
+        col.setAttribute("data-moment-col", "");
+        col.className = "moment-col";
+        masonry.appendChild(col);
+        return col;
+      });
+      for (const card of cards) {
+        let target = cols[0];
+        for (const col of cols) {
+          if (col.offsetHeight < target.offsetHeight) target = col;
+        }
+        target.appendChild(card);
+      }
+    };
+
+    relayout();
+    let rafId = 0;
+    const schedule = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(relayout);
+    };
+    window.addEventListener("resize", schedule, { signal });
+    // 图片解码/字体加载完成后高度稳定，再均衡一次
+    window.addEventListener("load", schedule, { signal });
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    // Cleanup previous listeners
+    if (momentsCleanup) momentsCleanup.abort();
+    momentsCleanup = new AbortController();
+    const { signal } = momentsCleanup;
+
+    // Hero mouse-follow
+    const hero = document.querySelector("[data-moments-hero]") as HTMLElement;
+    const heroMouse = document.querySelector(
+      "[data-moments-mouse]"
+    ) as HTMLElement;
+    if (hero && heroMouse) {
+      hero.addEventListener(
+        "mousemove",
+        e => {
+          requestAnimationFrame(() => {
+            const rect = hero.getBoundingClientRect();
+            heroMouse.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+            heroMouse.style.setProperty("--my", `${e.clientY - rect.top}px`);
+            heroMouse.style.opacity = "1";
+          });
+        },
+        { signal }
+      );
+      hero.addEventListener(
+        "mouseleave",
+        () => {
+          heroMouse.style.opacity = "0";
+        },
+        { signal }
+      );
+    }
+
+    initMomentMasonry(signal);
+  });
+</script>
+
+<style>
+  /* ===== Hero ===== */
+  .moments-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2.5rem;
+    background: color-mix(
+      in srgb,
+      var(--color-foreground) 3%,
+      var(--color-background)
+    );
+    border: 1px solid color-mix(in srgb, var(--color-accent) 12%, transparent);
+  }
+  @media (min-width: 640px) {
+    .moments-hero {
+      padding: 3rem;
+    }
+  }
+
+  /* ===== Masonry feed ===== */
+  /* Grid 兜底：无 JS 时也是 3 列网格；JS 瀑布流会将其替换为列容器 */
+  .moments-masonry {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  @media (min-width: 640px) {
+    .moments-masonry {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .moments-masonry {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* JS 瀑布流创建的列容器——动态元素没有 Astro scoped 属性，必须用 :global 才匹配 */
+  :global(.moment-col) {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+  }
+</style>

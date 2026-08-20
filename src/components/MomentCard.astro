@@ -1,0 +1,332 @@
+---
+/**
+ * MomentCard — 瞬间（Moments）卡片，朋友圈/贴纸式瀑布流中的单个动态。
+ *
+ * 图片规则：
+ *   - 1 张：全宽大图（4:3）
+ *   - 2 张：两列方形网格
+ *   - 3 张：三列方形网格
+ *   - 超过 3 张：只展示前 2 张，第 3 格变为「+N」角标格（朋友圈式）
+ * 卡片上会携带全部图片的 src 列表（data-moment-images），
+ * 任意图片或角标格点击后由 MomentLightbox 按卡片分组打开灯箱预览。
+ */
+import type { CollectionEntry } from "astro:content";
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import { SITE } from "@/config";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+type Props = {
+  moment: CollectionEntry<"moments">;
+  images: ImageMetadata[];
+};
+
+const { moment, images } = Astro.props;
+const { pubDatetime, text, featured, tags } = moment.data;
+
+// 完整日期作为初始渲染与 title 兜底，正文展示由客户端替换为相对时间
+const fullDate = dayjs(pubDatetime).tz(SITE.timezone).format("YYYY年M月D日");
+
+const imageCount = images.length;
+// 3 张及以内全部展示；超过 3 张时只展示前 2 张，第 3 格变为「+N」角标格（朋友圈式）
+const showAll = imageCount <= 3;
+const visibleImages = showAll ? images : images.slice(0, 2);
+const extraCount = showAll ? 0 : imageCount - 2;
+
+// 全部图片的 src/alt 列表（含未展示的隐藏图），供灯箱按卡片读取
+const imageList = JSON.stringify(
+  images.map(img => ({
+    src: img.src,
+    alt: text.slice(0, 30) || "瞬间图片",
+  }))
+);
+---
+
+<article class="moment-card" data-moment-card data-moment-images={imageList}>
+  <!-- Header: publish date only (relative time, computed client-side) -->
+  <header class="moment-header">
+    {featured && <span class="moment-featured">精选</span>}
+    <time
+      class="moment-datetime"
+      datetime={pubDatetime.toISOString()}
+      data-moment-time
+      title={fullDate}
+    >
+      {fullDate}
+    </time>
+  </header>
+
+  <!-- Body text -->
+  {text && <p class="moment-text">{text}</p>}
+
+  <!-- Images -->
+  {
+    imageCount > 0 && (
+      <div
+        class:list={[
+          "moment-images",
+          imageCount === 1 ? "single" : "grid",
+          imageCount === 2 && "grid-cols-2",
+          imageCount >= 3 && "grid-cols-3",
+        ]}
+      >
+        {visibleImages.map((img, idx) => (
+          <button
+            type="button"
+            class="moment-img-btn"
+            data-moment-img
+            aria-label={`查看图片：${moment.data.text.slice(0, 30) || "瞬间图片"} ${idx + 1}/${imageCount}`}
+          >
+            <Image
+              src={img}
+              alt={moment.data.text.slice(0, 30) || "瞬间图片"}
+              class="moment-img"
+              loading="lazy"
+              widths={[400, 800]}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          </button>
+        ))}
+        {extraCount > 0 && (
+          <button
+            type="button"
+            class="moment-img-btn moment-more-btn"
+            data-moment-more
+            aria-label={`查看全部 ${imageCount} 张图片`}
+          >
+            <span class="moment-img-extra" aria-hidden="true">
+              +{extraCount}
+            </span>
+          </button>
+        )}
+      </div>
+    )
+  }
+
+  <!-- Tags -->
+  {
+    tags.length > 0 && (
+      <ul class="moment-tags" aria-label="标签">
+        {tags.map(tag => (
+          <li>
+            <span class="moment-tag">
+              <span aria-hidden="true">#</span>
+              {tag}
+            </span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</article>
+
+<style>
+  /* ── Card ── */
+  .moment-card {
+    padding: 1rem;
+    border-radius: 1.125rem;
+    border: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
+    background: color-mix(in srgb, var(--background) 72%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition:
+      border-color 0.25s ease,
+      box-shadow 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .moment-card:hover {
+    border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    box-shadow: 0 8px 30px -8px
+      color-mix(in srgb, var(--accent) 15%, transparent);
+    transform: translateY(-2px);
+  }
+
+  /* ── Header ── */
+  .moment-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .moment-featured {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.05rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: color-mix(in srgb, var(--accent) 90%, transparent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+
+  .moment-datetime {
+    font-size: 0.6875rem;
+    font-weight: 400;
+    color: color-mix(in srgb, var(--foreground) 40%, transparent);
+  }
+
+  /* ── Body text ── */
+  .moment-text {
+    margin: 0 0 0.75rem;
+    font-size: 0.925rem;
+    line-height: 1.75;
+    color: var(--foreground);
+    white-space: pre-line;
+    word-break: break-word;
+  }
+
+  /* ── Images ── */
+  .moment-images {
+    gap: 0.375rem;
+    overflow: hidden;
+    border-radius: 0.75rem;
+  }
+
+  .moment-images.grid {
+    display: grid;
+  }
+
+  .moment-img-btn {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--foreground) 5%, transparent);
+    cursor: zoom-in;
+    aspect-ratio: 1 / 1;
+  }
+
+  /* 单图时全宽 4:3 */
+  .moment-images.single .moment-img-btn {
+    aspect-ratio: 4 / 3;
+    border-radius: 0.625rem;
+  }
+
+  .moment-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+  }
+
+  .moment-img-btn:hover .moment-img {
+    transform: scale(1.04);
+  }
+
+  /* 多图「+N」角标格（朋友圈式，独立占一格） */
+  .moment-more-btn {
+    background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  }
+
+  .moment-more-btn:hover {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+
+  .moment-more-btn .moment-img-extra {
+    color: color-mix(in srgb, var(--foreground) 60%, transparent);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
+  }
+
+  .moment-more-btn:hover .moment-img-extra {
+    color: var(--accent);
+  }
+
+  .moment-img-extra {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    background: color-mix(in srgb, black 55%, transparent);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  /* ── Tags ── */
+  .moment-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .moment-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    /* 跟随主题（accent）色，随偏好设置中的强调色切换 */
+    color: color-mix(in srgb, var(--accent) 85%, transparent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+
+  .moment-tag span {
+    opacity: 0.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .moment-card {
+      transition: none;
+    }
+    .moment-img-btn:hover .moment-img {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  import dayjs from "dayjs";
+
+  // 相对时间（弱化显示）：构建期只输出 ISO，客户端计算避免“3 天前”过期
+  function formatRelativeTime(iso: string): string {
+    const target = dayjs(iso);
+    const now = dayjs();
+    const minutes = now.diff(target, "minute");
+    if (minutes < 1) return "刚刚";
+    if (minutes < 60) return `${minutes} 分钟前`;
+    const hours = now.diff(target, "hour");
+    if (hours < 24) return `${hours} 小时前`;
+    const days = now.diff(target, "day");
+    if (days < 30) return `${days} 天前`;
+    const months = now.diff(target, "month");
+    if (months < 12) return `${months} 个月前`;
+    return target.format("YYYY年M月D日");
+  }
+
+  function updateMomentTimes() {
+    document.querySelectorAll<HTMLElement>("[data-moment-time]").forEach(el => {
+      const iso = el.getAttribute("datetime");
+      if (!iso) return;
+      el.textContent = formatRelativeTime(iso);
+    });
+  }
+
+  updateMomentTimes();
+  document.addEventListener("astro:page-load", updateMomentTimes);
+</script>
