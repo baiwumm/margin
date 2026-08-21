@@ -145,7 +145,7 @@ const isDark = colorMode.preference === 'dark'
 
 1.  PC端
     
-<div class="grid grid-cols-2 gap-4 [&>p]:my-0 [&>p>img]:my-0">
+<div class="grid sm:grid-cols-2 gap-4 [&>p]:my-0 [&>p>img]:my-0">
 
 ![Header 头部布局 PC 端效果（一）](./01-header-pc-1.png)
 
@@ -155,7 +155,7 @@ const isDark = colorMode.preference === 'dark'
 
 2.  移动端
     
-<div class="grid grid-cols-2 gap-4 [&>p]:my-0 [&>p>img]:my-0">
+<div class="grid sm:grid-cols-2 gap-4 [&>p]:my-0 [&>p>img]:my-0">
 
 ![Header 头部布局移动端效果（一）](./03-header-mobile-1.png)
 

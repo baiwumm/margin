@@ -50,7 +50,7 @@ draft: false
 收拾行李时，护士开玩笑：“希望下次见你是来取报告，不是回来住院。”  
 我勉强笑了笑，心里却像压了块石头——**这一次，能等到真相吗？**
 
-<div class="grid grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
+<div class="grid sm:grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
 
 ![住院期间的记录照片（一）](./01-hospital-record-1.webp)
 
@@ -81,7 +81,7 @@ draft: false
 ✓ 肠瘘+脓肿=**手术绝对指征**  
 ✓ 预测治疗方案：**先微创手术，后生物制剂**
 
-<div class="grid grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
+<div class="grid sm:grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
 
 ![中山大学附属第一医院病理活体组织诊断报告](./04-pathology-report.webp)
 
@@ -147,7 +147,7 @@ draft: false
 
 看着缴费单，不禁感慨：**生病是不幸的，但生在深圳是幸运的。**
 
-<div class="grid grid-cols-2 gap-2">
+<div class="grid sm:grid-cols-2 gap-2">
 
 ![雅培安素肠内营养粉](./07-ensure-nutrition-powder.webp)
 
@@ -168,7 +168,7 @@ draft: false
 
 算下来，**年均治疗费约4万元**，经医保报销后自付不到1万。这个数字，让原本沉重的治疗计划突然变得可以承受。
 
-<div class="grid grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
+<div class="grid sm:grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
 
 ![类克输液期间的记录照片（一）](./09-remicade-infusion-1.webp)
 

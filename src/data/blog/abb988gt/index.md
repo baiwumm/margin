@@ -177,7 +177,7 @@ draft: false
 
 ## 界面预览
 
-<div class="grid grid-cols-2 gap-2">
+<div class="grid s,:grid-cols-2 gap-2">
 
 ![Certimate 仪表盘界面](./15-certimate-dashboard.webp)
 

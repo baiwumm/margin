@@ -15,7 +15,7 @@ draft: false
 
 What？我啥都没干，怎么就欠费了呢，打开阿里云APP看了下账单，好家伙，欠费4000块，我是真的一脸懵逼
 
-<div class="grid grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
+<div class="grid sm:grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
 
 ![阿里云发送的欠费与停服提醒短信](./01-aliyun-sms-reminder.jpg)
 

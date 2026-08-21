@@ -73,7 +73,7 @@ Shots.so 提供了丰富的设备外框，比如 **iPhone、iPad、MacBook、浏
 
 这些效果能让截图的氛围和调性，和文章/产品宣传更贴合。
 
-<div class="grid grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
+<div class="grid sm:grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
 
 ![Shots.so 纯色与渐变背景效果示例](./05-shots-solid-gradient-bg.webp)
 
@@ -96,7 +96,7 @@ Shots.so 提供了丰富的设备外框，比如 **iPhone、iPad、MacBook、浏
 
 这种方式尤其适合展示 **App 的多个界面、网站的不同模块**，读者一眼就能看到全貌，而不是来回切图。
 
-<div class="grid grid-cols-2 gap-4 [&>p]:my-0 [&>p>img]:my-0">
+<div class="grid sm:grid-cols-2 gap-4 [&>p]:my-0 [&>p>img]:my-0">
 
 ![Shots.so 单图展示布局示例](./08-shots-single-image-layout.webp)
 

@@ -33,7 +33,7 @@ draft: false
 
 这场病让我改变了许多想法。健康的时候总觉得一切理所当然，生病后才真正体会到“能吃能喝能睡”的珍贵。身体健康才是根本，其余都是浮云。
 
-<div class="grid grid-cols-2 gap-4 [&>p]:my-0 [&>p>img]:my-0">
+<div class="grid sm:grid-cols-2 gap-4 [&>p]:my-0 [&>p>img]:my-0">
 
 ![住院期间注射的营养液“三升袋”](./01-hospital-nutrition-bag.webp)
 

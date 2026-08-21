@@ -87,7 +87,7 @@ draft: false
 
 ## 开箱的仪式感
 
-<div class="grid grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
+<div class="grid sm:grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
 
 ![旧电脑的桌面工作区](./01-old-computer-desk.webp)
 

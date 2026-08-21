@@ -131,7 +131,7 @@ export default UniHaloConfig;
 
 ## 界面预览
 
-<div class="grid grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
+<div class="grid sm:grid-cols-3 gap-4 [&>p]:my-0 [&>p>img]:my-0">
 
 ![uni-halo 小程序欢迎页](./03-unihalo-welcome-page.webp)
 
