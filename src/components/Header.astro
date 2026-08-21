@@ -123,6 +123,21 @@ const isActive = (path: string) => {
                 </li>
               )
             }
+            {
+              SITE.showFriends && (
+                <li>
+                  <a
+                    href="/friends"
+                    class:list={[
+                      "nav-link",
+                      { "nav-active": isActive("/friends") },
+                    ]}
+                  >
+                    Friends
+                  </a>
+                </li>
+              )
+            }
             <li class="flex items-center">
               <button
                 data-search-trigger

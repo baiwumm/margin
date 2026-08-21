@@ -1,0 +1,47 @@
+---
+/**
+ * FriendGroup — 友链分组（组头 + 卡片网格）。
+ *
+ * 组头：标题 + 描述 + 组内数量；主体为 1/2/3 列响应式卡片网格，行等高。
+ */
+import FriendCard from "./FriendCard.astro";
+import type { Friend, FriendGroup as Group } from "@/data/friends";
+
+type Props = {
+  group: Group;
+  friends: Friend[];
+};
+
+const { group, friends } = Astro.props as Props;
+const count = friends.length;
+---
+
+{
+  count > 0 && (
+    <section class="mt-12" aria-labelledby={`group-${group.id}`}>
+      <div class="mb-4 flex items-center gap-2">
+        <span class="h-1.5 w-1.5 rounded-full bg-accent/70 shadow-[0_0_8px_var(--color-accent)]"></span>
+        <h2
+          id={`group-${group.id}`}
+          class="font-firacode text-[10px] tracking-widest text-accent/80 uppercase"
+        >
+          {group.name}
+        </h2>
+        <div class="h-px flex-1 bg-linear-to-r from-accent/20 to-transparent"></div>
+        <span class="text-xs text-foreground/45">{count} 个</span>
+      </div>
+
+      {group.description && (
+        <p class="mb-4 -mt-2 text-sm italic text-foreground/55">
+          {group.description}
+        </p>
+      )}
+
+      <ul class="grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 [&>li]:my-0">
+        {friends.map(friend => (
+          <FriendCard friend={friend} />
+        ))}
+      </ul>
+    </section>
+  )
+}

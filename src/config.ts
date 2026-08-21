@@ -29,6 +29,7 @@ export const SITE = {
   showGalleries: true,
   showMoments: true, // show moments (瞬间) page in navigation
   showProjects: true, // show projects page in navigation
+  showFriends: true, // show friends (友链) page in navigation
   showGalleriesInIndex: true, // Show galleries in the general paginated list (only if showGalleries is true)
   showBackButton: true, // show back button in post detail
   readMode: true, // immersive reading mode on post pages (toggle with the `r` key)

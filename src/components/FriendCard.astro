@@ -1,0 +1,175 @@
+---
+/**
+ * FriendCard — 友链卡片（Friends 页面使用）。
+ *
+ * 视觉对齐 Posts / Projects 卡片：card-glow 鼠标辉光、rounded-2xl、
+ * 玻璃拟态半透明背景（bg-muted/10）、hover 边框转 accent + 轻微上浮。
+ *
+ * 布局：左圆形小头像 + 右「上名称 / 下地址」+ 整卡下方描述（最多两行省略）。
+ * 整卡可点击（新窗口打开）。
+ */
+import type { Friend } from "@/data/friends";
+
+type Props = {
+  friend: Friend;
+};
+
+const { friend } = Astro.props as Props;
+const { name, url, avatar = "", description = "" } = friend;
+
+// 地址（显示用，去掉协议与结尾斜杠）
+const address = (() => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  }
+})();
+
+// 首字母占位
+const initial = (name.trim().charAt(0) || "?").toUpperCase();
+---
+
+<li class="h-full">
+  <a
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class:list={[
+      "card-glow group/card relative flex h-full flex-col rounded-2xl border backdrop-blur-sm",
+      "transition-[border-color,background-color,box-shadow,transform] duration-300 ease-out motion-reduce:transform-none motion-reduce:transition-none",
+      "focus-within:-translate-y-0.5 hover:-translate-y-0.5 focus-within:shadow-lg hover:shadow-lg",
+      "border-border/25 bg-muted/10",
+      "focus-within:border-accent/40 focus-within:bg-accent/5 hover:border-accent/40 hover:bg-accent/5",
+      "focus-within:shadow-accent/10 hover:shadow-accent/10",
+      "focus-visible:outline-none",
+    ]}
+    aria-label={`访问 ${name}`}
+  >
+    <!-- card-glow 鼠标辉光（Layout 全局绑定） -->
+    <div
+      class="card-glow-effect pointer-events-none absolute inset-0 z-0 rounded-2xl opacity-0 transition-opacity duration-300 group-focus-within/card:opacity-100 group-hover/card:opacity-100 motion-reduce:transition-none"
+      aria-hidden="true"
+    ></div>
+
+    <div class="relative z-5 flex h-full flex-col p-4 sm:p-5">
+      <!-- 头像 + 名称/地址（上半） -->
+      <div class="flex items-center gap-3">
+        <span class="friend-avatar" aria-hidden="true">
+          <span class="friend-avatar-fallback">{initial}</span>
+          {avatar && (
+            <img
+              src={avatar}
+              alt={`${name} 的头像`}
+              loading="lazy"
+              referrerpolicy="no-referrer"
+              class="friend-avatar-img"
+              onerror="this.classList.add('is-broken');"
+            />
+          )}
+        </span>
+
+        <span class="min-w-0 flex-1">
+          <span
+            class="block truncate font-firacode text-sm font-semibold text-foreground transition-colors duration-200 group-hover/card:text-accent"
+            title={name}
+          >
+            {name}
+          </span>
+          <span
+            class="mt-0.5 block truncate font-firacode text-xs text-foreground/50"
+            title={address}
+          >
+            {address}
+          </span>
+        </span>
+      </div>
+
+      <!-- 描述（下半，最多两行，超出省略；flex-1 保证所有卡片描述区对齐等高） -->
+      <p
+        class:list={[
+          "fr-desc mt-3 block text-sm leading-relaxed text-foreground/60",
+          "flex-1",
+        ]}
+      >
+        {description || "这个站点很神秘，什么描述也没有~"}
+      </p>
+    </div>
+  </a>
+</li>
+
+<style>
+  .card-glow {
+    contain: paint;
+  }
+
+  .card-glow-effect {
+    background: radial-gradient(
+      350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      color-mix(in oklab, var(--accent) 8%, transparent) 0%,
+      color-mix(in oklab, var(--accent) 4%, transparent) 30%,
+      color-mix(in oklab, var(--accent) 0.8%, transparent) 60%,
+      transparent 80%
+    );
+    will-change: opacity;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-glow-effect {
+      background: none;
+    }
+  }
+
+  /* ── 圆形小头像（无边框、无 hover 效果） ── */
+  .friend-avatar {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--muted) 20%, transparent);
+  }
+
+  .friend-avatar-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .friend-avatar-img.is-broken {
+    display: none;
+  }
+
+  .friend-avatar-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-family: var(--font-firacode);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 24%, transparent),
+      color-mix(in srgb, var(--gallery) 18%, transparent)
+    );
+    user-select: none;
+  }
+
+  /* 描述最多两行，超出省略 */
+  .fr-desc {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+</style>
