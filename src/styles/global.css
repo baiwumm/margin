@@ -258,7 +258,7 @@ i {
 }
 
 .premium-search input.pagefind-ui__search-input::placeholder {
-  color: color-mix(in srgb, var(--foreground) 35%, transparent);
+  color: color-mix(in srgb, var(--foreground) 85%, transparent);
 }
 
 .premium-search form::before {
