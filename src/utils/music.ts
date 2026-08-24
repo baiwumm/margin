@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 /* ── 类型 ─────────────────────────────────────────────────────────── */
-export type MusicPlatform = "netease" | "qq" | "spotify" | "apple";
+export type MusicPlatform = "netease" | "qq";
 
 export interface MusicTrack {
   /** 歌曲 ID（平台侧） */
@@ -66,14 +66,6 @@ const PLATFORM_META: Record<
   qq: {
     label: "QQ音乐",
     url: (id) => `https://y.qq.com/n/ryqq/songDetail/${id}`,
-  },
-  spotify: {
-    label: "Spotify",
-    url: (id) => `https://open.spotify.com/track/${id}`,
-  },
-  apple: {
-    label: "Apple Music",
-    url: (id) => `https://music.apple.com/song/${id}`,
   },
 };
 

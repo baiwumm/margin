@@ -53,7 +53,7 @@ const moments = defineCollection({
     // audio 为可选显式音频地址（本地 mp3 或稳定直链），优先级高于按 id 自动探测
     music: z
       .object({
-        platform: z.enum(["netease", "qq", "spotify", "apple"]).default("netease"),
+        platform: z.enum(["netease", "qq"]).default("netease"),
         id: z.union([z.string(), z.number()]).transform(v => String(v)),
         audio: z.string().optional(),
       })
