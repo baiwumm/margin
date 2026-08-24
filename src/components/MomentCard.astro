@@ -133,20 +133,22 @@ const imageList = JSON.stringify(
 </article>
 
 <style>
-  /* ── Card（弱化 UI Card 感，靠近 Editorial Journal） ── */
+  /* ── Card（玻璃拟态，贴近 Posts/Projects 卡片设计语言） ── */
   .moment-card {
     padding: 1.125rem 1.125rem 1.25rem;
-    border-radius: 0.875rem;
-    border: 1px solid color-mix(in srgb, var(--border) 12%, transparent);
-    background: color-mix(in srgb, var(--background) 55%, transparent);
+    border-radius: 1rem;
+    border: 1px solid color-mix(in srgb, var(--border) 35%, transparent);
+    background: color-mix(in srgb, var(--muted) 12%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     transition:
       border-color 0.25s ease,
       background-color 0.25s ease;
   }
 
   .moment-card:hover {
-    border-color: color-mix(in srgb, var(--accent) 22%, transparent);
-    background: color-mix(in srgb, var(--background) 68%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
   }
 
   /* ── Header ── */
