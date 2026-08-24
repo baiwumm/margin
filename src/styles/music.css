@@ -1,0 +1,410 @@
+/* 音乐播放器卡片（Music / ::music）全局样式
+ * 必须放在全局而非组件 scoped <style>，因为 .md 里的 ::music 指令由
+ * remark 插件注入为 raw HTML 字符串，Astro 的 scoped 样式不会作用到它。
+ * 全局类可同时覆盖 .mdx 组件与 .md 指令两种入口，保证视觉一致。
+ * 播放逻辑见 src/utils/musicPlayer.ts（由 Layout 注册）。
+ */
+
+/* ── 容器 ── */
+.music-card {
+  margin-block: 1.75rem;
+}
+
+.music-inner {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+  background: color-mix(in srgb, var(--muted) 12%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.3s ease;
+}
+
+.music-card.is-playing .music-inner {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background-color: color-mix(in srgb, var(--accent) 5%, transparent);
+  box-shadow: 0 14px 36px -16px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* ── 黑胶唱片 ── */
+.music-vinyl {
+  flex: 0 0 4.25rem;
+  width: 4.25rem;
+  height: 4.25rem;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.music-disc {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  flex: 0 0 auto;
+  background:
+    repeating-radial-gradient(
+      circle at center,
+      color-mix(in srgb, var(--foreground) 22%, transparent) 0 1px,
+      transparent 1px 3px
+    ),
+    radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--foreground) 14%, transparent), color-mix(in srgb, var(--foreground) 6%, transparent) 70%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--foreground) 10%, transparent),
+    0 4px 14px -6px color-mix(in srgb, var(--foreground) 40%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+/* 播放时黑胶旋转 */
+.music-card.is-playing .music-disc {
+  animation: music-spin 8s linear infinite;
+}
+
+@keyframes music-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.music-cover {
+  width: 78%;
+  height: 78%;
+  border-radius: 9999px;
+  object-fit: cover;
+  border: 2px solid color-mix(in srgb, var(--background) 80%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.music-cover-placeholder {
+  width: 70%;
+  height: 70%;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border: 2px solid color-mix(in srgb, var(--background) 80%, transparent);
+}
+
+/* 中心轴孔 */
+.music-spindle {
+  position: absolute;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 9999px;
+  background: var(--background);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--foreground) 20%, transparent);
+}
+
+/* ── 播放/暂停按钮（卡片右侧，垂直居中于标题+作者信息块） ── */
+.music-toggle {
+  flex-shrink: 0;
+  align-self: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 2px 8px -2px color-mix(in srgb, var(--foreground) 30%, transparent);
+  transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.music-toggle:hover {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  border-color: var(--accent);
+  transform: scale(1.06);
+}
+
+.music-toggle:focus-visible {
+  outline: 2px dashed var(--accent);
+  outline-offset: 2px;
+}
+
+.music-toggle svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* 播放/暂停图标切换：默认显示播放、隐藏暂停；播放态反向。
+   注意：不能用全局 .hidden 类（会污染 Tailwind 的 hidden/sm:flex 等），
+   这里仅作用于音乐组件内部，基于 .is-playing 状态切换。 */
+.music-icon-pause {
+  display: none;
+}
+
+.music-card.is-playing .music-icon-play,
+.music-mini.is-playing .music-icon-play {
+  display: none;
+}
+
+.music-card.is-playing .music-icon-pause,
+.music-mini.is-playing .music-icon-pause {
+  display: inline-flex;
+}
+
+/* ── 文字区（极简杂志排版） ──
+   结构：
+   .music-body（纵向）
+     ├ .music-title-row（横向）: .music-titles(平台/歌名/歌手) + .music-toggle(按钮，与标题行垂直居中)
+     ├ .music-progress（整行进度条）
+     └ .music-meta-row（整行：时间 + 打开）
+   按钮只对齐「标题 + 作者」信息块，不悬空、不遮文字。 */
+.music-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.music-title-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.music-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.music-platform {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  color: color-mix(in srgb, var(--foreground) 50%, transparent);
+}
+
+.music-platform-icon {
+  display: inline-flex;
+  color: color-mix(in srgb, var(--accent) 80%, transparent);
+}
+
+.music-name {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--foreground);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.music-artist {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── 进度条 ── */
+.music-progress {
+  position: relative;
+  height: 4px;
+  width: 100%;
+  margin-top: 0.4rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border) 35%, transparent);
+  cursor: pointer;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+  outline: none;
+}
+
+.music-progress:focus-visible {
+  outline: 2px dashed var(--accent);
+  outline-offset: 4px;
+  background: color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+.music-progress-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--accent) 0%,
+    color-mix(in srgb, var(--accent) 70%, var(--foreground)) 100%
+  );
+  transition: width 0.2s linear;
+}
+
+/* ── 底部：时间 + 外链按钮 ── */
+.music-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+  min-width: 0;
+}
+
+.music-time {
+  font-family: var(--font-firacode, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.7rem;
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.music-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--accent) 80%, transparent);
+  text-decoration: none !important;
+  background-image: none !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.music-open:hover,
+.music-open:focus-visible {
+  color: var(--accent);
+  transform: translateX(2px);
+  outline: none;
+}
+
+.music-open svg {
+  flex-shrink: 0;
+}
+
+/* ── 移动端适配 ── */
+@media (max-width: 640px) {
+  .music-inner {
+    gap: 0.85rem;
+    padding: 0.85rem 0.9rem;
+  }
+  .music-vinyl {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}
+
+/* ── 迷你播放条（Moments 窄卡片用） ──
+   单行：[小封面圆] [歌名 - 歌手] [▶ 播放按钮]
+   不含进度条/外链/平台徽标，紧凑不抢视觉。 */
+.music-mini {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--border) 28%, transparent);
+  background: color-mix(in srgb, var(--muted) 10%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  margin-top: 0.5rem;
+}
+
+.music-mini-cover {
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 9999px;
+  object-fit: cover;
+  border: 1.5px solid color-mix(in srgb, var(--background) 75%, transparent);
+}
+
+.music-mini-cover-placeholder {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.music-mini-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  line-height: 1.3;
+}
+
+.music-mini-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.music-mini-artist {
+  font-size: 0.6875rem;
+  color: color-mix(in srgb, var(--foreground) 50%, transparent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.music-mini-toggle {
+  flex-shrink: 0;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.music-mini-toggle:hover {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  transform: scale(1.08);
+}
+
+.music-mini-toggle svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-card.is-playing .music-disc {
+    animation: none;
+  }
+  .music-progress-bar {
+    transition: none;
+  }
+  .music-toggle:hover,
+  .music-mini-toggle:hover {
+    transform: none;
+  }
+  .music-open:hover {
+    transform: none;
+  }
+}

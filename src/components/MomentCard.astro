@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { SITE } from "@/config";
+import Music from "@/components/Music.astro";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -27,7 +28,7 @@ type Props = {
 };
 
 const { moment, images } = Astro.props;
-const { pubDatetime, text, featured, tags } = moment.data;
+const { pubDatetime, text, featured, tags, music } = moment.data;
 
 // 完整日期作为初始渲染与 title 兜底，正文展示由客户端替换为相对时间
 const fullDate = dayjs(pubDatetime).tz(SITE.timezone).format("YYYY年M月D日");
@@ -115,6 +116,15 @@ const imageList = JSON.stringify(
     )
   }
 
+  <!-- 配乐（frontmatter music 字段，可选） -->
+  {
+    music && (
+      <div class="moment-music">
+        <Music id={music.id} platform={music.platform} audio={music.audio} compact />
+      </div>
+    )
+  }
+
   <!-- Tags -->
   {
     tags.length > 0 && (
@@ -188,6 +198,20 @@ const imageList = JSON.stringify(
     color: var(--foreground);
     white-space: pre-line;
     word-break: break-word;
+  }
+
+  /* ── 配乐（嵌套 Music 卡片：去掉外部 margin，避免双重玻璃层叠加） ── */
+  .moment-music {
+    margin-top: 1rem;
+  }
+  .moment-music :global(.music-card) {
+    margin-block: 0;
+  }
+  .moment-music :global(.music-anchor) {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: color-mix(in srgb, var(--border) 22%, transparent);
   }
 
   /* ── Images ── */

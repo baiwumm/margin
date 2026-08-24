@@ -281,6 +281,13 @@ const showGrain = SITE.backdropEffects.grain;
     <!-- Load full theme logic -->
     <script src="../scripts/theme.ts"></script>
 
+    <!-- 音乐播放器卡片（文章 MD/MDX 与瞬间 Moment 共用） -->
+    <script>
+      import { initMusicPlayers } from "@/utils/musicPlayer";
+      initMusicPlayers();
+      document.addEventListener("astro:page-load", initMusicPlayers);
+    </script>
+
     <!-- Vercel Web Analytics -->
     <VercelAnalytics />
 

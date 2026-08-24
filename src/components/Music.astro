@@ -1,0 +1,158 @@
+---
+/**
+ * Music — 黑胶风格音乐播放器卡片（构建期取数，静态 HTML 输出，站内直接播放）。
+ *
+ * 设计定位：数字手账 + 极简 editorial + 一点复古感。
+ * 不只是跳转：点播放按钮用全局音频单例站内播放，黑胶旋转 + 进度条 + 外链按钮。
+ *
+ * 用法（MDX）：
+ *   <Music id="212233" />
+ *   <Music id="212233" platform="netease" audio="/audio/212233.mp3" />
+ * 用法（Markdown，remarkMusic 指令）：
+ *   ::music{id=212233}
+ *   ::music{id=212233 audio=/audio/212233.mp3}
+ *
+ * 音频来源优先级：显式 audio > public/audio/{id}.mp3 > 抓取直链(B兜底) > 空(跳转)。
+ *
+ * 注：播放逻辑在全局脚本 src/utils/musicPlayer.ts（由 Layout 注册），因为 .md 的
+ * ::music 指令由 remark 注入为 raw HTML，组件 scoped 脚本无法覆盖，故统一定义在全局。
+ */
+import { resolveTrack, platformLabel, type MusicPlatform } from "@/utils/music";
+
+type Props = {
+  id: string;
+  platform?: MusicPlatform;
+  /** 显式音频地址（本地 mp3 或稳定直链），优先级最高 */
+  audio?: string;
+  /** 迷你模式：单行紧凑播放条，用于 Moments 等窄卡片 */
+  compact?: boolean;
+  class?: string;
+};
+
+const { id, platform = "netease", audio, compact = false, class: className } = Astro.props;
+
+// 构建期取数（含本地缓存/探测/回源，失败降级）
+const track = await resolveTrack(id, platform, audio);
+const label = platformLabel(platform);
+const hasCover = Boolean(track.cover);
+const hasAudio = Boolean(track.audioUrl);
+
+// 网易云 SVG 图标（内联，不引入图标库）
+const NETEASE_ICON =
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 3.2a6.8 6.8 0 0 1 6.8 6.8c0 1.2-.3 2.3-.9 3.3l-2.1-1.2c.3-.7.5-1.5.5-2.1a4.2 4.2 0 1 0-4.2 4.2c.6 0 1.2-.1 1.7-.4L12 18a6.8 6.8 0 0 1-6.8-6.8A6.8 6.8 0 0 1 12 5.2z"/></svg>';
+
+const ICON_PLAY =
+  '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M3 2.5a.5.5 0 0 1 .765-.424l10 5.5a.5.5 0 0 1 0 .848l-10 5.5A.5.5 0 0 1 3 13.5v-11z"/></svg>';
+
+const ICON_PAUSE =
+  '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/></svg>';
+
+const ICON_LINK =
+  '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>';
+---
+
+{
+  compact ? (
+    /* ── 迷你模式：单行紧凑播放条 ── */
+    <div
+      class:list={["music-mini music-player not-prose", className]}
+      data-audio={track.audioUrl}
+      data-label={track.name}
+      data-href={track.url}
+    >
+      {hasCover ? (
+        <img class="music-mini-cover" src={track.cover} alt="" loading="lazy" decoding="async" />
+      ) : (
+        <span class="music-mini-cover music-mini-cover-placeholder" />
+      )}
+      <span class="music-mini-info">
+        <span class="music-mini-name">{track.name}</span>
+        <span class="music-mini-artist">{track.artist}</span>
+      </span>
+      <button
+        class="music-mini-toggle"
+        type="button"
+        data-music-toggle
+        aria-label={hasAudio ? "播放" : "在平台打开"}
+        data-playing="false"
+      >
+        <span class="music-icon-play" set:html={ICON_PLAY} />
+        <span class="music-icon-pause" set:html={ICON_PAUSE} />
+      </button>
+    </div>
+  ) : (
+    /* ── 完整模式：黑胶 + 标题行 + 进度条 ── */
+    <div
+      class:list={["music-card music-player not-prose", className]}
+      data-audio={track.audioUrl}
+      data-label={track.name}
+      data-href={track.url}
+    >
+      <div class="music-inner">
+        <div class="music-vinyl" aria-hidden="true">
+          <div class="music-disc">
+            {
+              hasCover ? (
+                <img class="music-cover" src={track.cover} alt="" loading="lazy" decoding="async" />
+              ) : (
+                <span class="music-cover-placeholder" />
+              )
+            }
+            <span class="music-spindle" />
+          </div>
+        </div>
+
+        <div class="music-body">
+          <div class="music-title-row">
+            <div class="music-titles">
+              <span class="music-platform font-firacode">
+                <span class="music-platform-icon" set:html={NETEASE_ICON} />
+                {label.toUpperCase()}
+              </span>
+              <span class="music-name">{track.name}</span>
+              <span class="music-artist">{track.artist}</span>
+            </div>
+            <button
+              class="music-toggle"
+              type="button"
+              data-music-toggle
+              aria-label={hasAudio ? "播放" : "在平台打开"}
+              data-playing="false"
+            >
+              <span class="music-icon-play" set:html={ICON_PLAY} />
+              <span class="music-icon-pause" set:html={ICON_PAUSE} />
+            </button>
+          </div>
+
+          {
+            hasAudio && (
+              <div class="music-progress" data-music-progress role="slider" tabindex="0" aria-label="播放进度" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0">
+                <div class="music-progress-bar" data-music-bar />
+              </div>
+            )
+          }
+
+          <div class="music-meta-row">
+            {
+              hasAudio && (
+                <span class="music-time">
+                  <span data-music-current>0:00</span>
+                  <span class="opacity-40"> / </span>
+                  <span data-music-total>0:00</span>
+                </span>
+              )
+            }
+            <a
+              class="music-open"
+              href={track.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`在${label}打开`}
+              set:html={`${ICON_LINK}<span>打开</span>`}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

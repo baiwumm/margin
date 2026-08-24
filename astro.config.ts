@@ -10,6 +10,7 @@ import {
 import { transformerFileName } from "./src/utils/transformers/fileName";
 import { remarkRemoveTocMarker } from "./src/utils/remarkRemoveTocMarker";
 import { remarkLinkCard } from "./src/utils/remarkLinkCard";
+import { remarkMusic } from "./src/utils/remarkMusic";
 import { rehypeExternalLinks } from "./src/utils/rehypeExternalLinks";
 import { SITE } from "./src/config";
 
@@ -32,7 +33,7 @@ export default defineConfig({
     }),
   ],
   markdown: {
-    remarkPlugins: [remarkRemoveTocMarker, remarkLinkCard],
+    remarkPlugins: [remarkRemoveTocMarker, remarkLinkCard, remarkMusic],
     rehypePlugins: [rehypeExternalLinks],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes

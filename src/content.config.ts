@@ -49,6 +49,15 @@ const moments = defineCollection({
     featured: z.boolean().optional(),
     draft: z.boolean().optional(),
     tags: z.array(z.string()).default([]),
+    // 可选配乐：frontmatter 写 music: { platform, id, audio? }；旧 moments 无此字段时正常渲染
+    // audio 为可选显式音频地址（本地 mp3 或稳定直链），优先级高于按 id 自动探测
+    music: z
+      .object({
+        platform: z.enum(["netease", "qq", "spotify", "apple"]).default("netease"),
+        id: z.union([z.string(), z.number()]).transform(v => String(v)),
+        audio: z.string().optional(),
+      })
+      .optional(),
   }),
 });
 
