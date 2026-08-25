@@ -66,6 +66,7 @@ const PLATFORM_META: Record<
   qq: {
     label: "QQ音乐",
     url: (id) => `https://y.qq.com/n/ryqq/songDetail/${id}`,
+    fetch: fetchQQ,
   },
 };
 
@@ -192,6 +193,58 @@ async function fetchNetease(id: string): Promise<CacheRecord | null> {
       cover,
       url: `https://music.163.com/song?id=${id}`,
       audioUrl: audioUrl || undefined,
+      fetchedAt: Date.now(),
+    };
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/* ── QQ音乐抓取（非官方接口） ─────────────────────────────────────── */
+/**
+ * QQ音乐非官方接口：c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg。
+ * 入参 id 为歌曲的 songmid（QQ 分享链接里 songmid= 后的字符串），
+ * 返回 data[0]：name / singer[].name / album.picUrl（封面）。
+ * 失败时返回 null，由上层降级。
+ */
+async function fetchQQ(id: string): Promise<CacheRecord | null> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const url = `https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg?songmid=${encodeURIComponent(
+      id
+    )}&platform=yqq&format=json`;
+    const res = await fetch(url, {
+      headers: { "user-agent": UA, referer: "https://y.qq.com/" },
+      redirect: "follow",
+      signal: controller.signal,
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as {
+      data?: Array<{
+        name?: string;
+        singer?: Array<{ name?: string }>;
+        album?: { mid?: string; id?: number; name?: string };
+      }>;
+    };
+    const song = json.data?.[0];
+    if (!song) return null;
+    const name = sanitize(song.name ?? "");
+    const artist = sanitize(song.singer?.[0]?.name ?? "");
+    // QQ 接口不直接返回封面 URL，按 album.mid 拼接 QQ 音乐封面 CDN 地址；
+    // 拼接失败（无 album.mid）时为空，走黑胶占位降级
+    const albumMid = song.album?.mid;
+    const cover = albumMid
+      ? `https://y.gtimg.cn/music/photo_new/T002R300x300M000${albumMid}.jpg`
+      : "";
+    if (!name && !artist && !cover) return null;
+    return {
+      name,
+      artist,
+      cover,
+      url: `https://y.qq.com/n/ryqq/songDetail/${id}`,
       fetchedAt: Date.now(),
     };
   } catch {
