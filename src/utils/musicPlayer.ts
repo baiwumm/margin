@@ -2,13 +2,14 @@
  * musicPlayer — 音乐播放器卡片的全局客户端逻辑。
  *
  * 统一管理所有 `.music-player` 卡片（文章 MD/MDX 与瞬间 Moment 共用同一套 HTML 结构）：
- * - 复用项目已有的 introAudioStore 全局单例（全站唯一 <audio>，切歌自动停上一首）。
- * - 播放按钮：有 data-audio 则站内播放，无则降级为跳转到平台外链。
- * - 进度条：可点击 / 键盘左右跳转；timeupdate 驱动宽度与计时。
- * - 正在播放的卡片加 .is-playing 类（CSS 负责黑胶旋转），其余回到可播放态。
+ * - 复用项目已有的 introAudioStore 全局单例（全站唯一 <audio>）。
+ * - 关键设计：多张卡片共享同一个全局 <audio>。**初始化时不调用 getIntroAudioStore**
+ *   （否则会把单例的 src 反复切到每张卡，导致状态错乱），只在「点击播放 / 操作进度条」
+ *   时才把单例定向到本卡——切到新卡会自动停掉旧卡，天然实现「点别的，其他停止」。
+ * - 播放/暂停用卡片自身的 .is-playing 类判断（由全局状态事件精确维护）。
+ * - 无音频时播放按钮降级为跳转到平台外链。
  *
  * 用法：在 Layout 的全局脚本里 import 并调用 initMusicPlayers()（astro:page-load 时）。
- * 不依赖 React，遵循项目「astro:page-load 初始化 + AbortController 清理」范式。
  */
 import {
   getIntroAudioStore,
@@ -52,12 +53,14 @@ function initMusicPlayers() {
     }
     if (!hasAudio) return;
 
-    const store = getIntroAudioStore({
-      src: audioSrc,
-      label,
-      isStream: false,
-      durationHint: 0,
-    });
+    // 惰性获取全局单例（仅在实际需要播放/控制时调用，避免 init 时污染单例 src）
+    const getStore = () =>
+      getIntroAudioStore({
+        src: audioSrc,
+        label,
+        isStream: false,
+        durationHint: 0,
+      });
 
     const setPlayingUI = (playing: boolean) => {
       card.classList.toggle("is-playing", playing);
@@ -67,7 +70,7 @@ function initMusicPlayers() {
 
     const render = (state: IntroAudioState) => {
       if (state.src !== audioSrc) {
-        // 不是本卡在播：确保本卡显示可播放态
+        // 不是本卡在播：确保本卡显示可播放态（无论是否由本卡触发切歌）
         setPlayingUI(false);
         return;
       }
@@ -88,13 +91,16 @@ function initMusicPlayers() {
       }
     };
 
+    // 播放 / 暂停切换：只认本卡当前是否在播；传别人时单例切源会停旧播新
     btn?.addEventListener("click", () => {
-      if (store.audio.paused) {
-        store.audio.play().catch(() => {
+      if (card.classList.contains("is-playing")) {
+        // 本卡正在播 → 暂停
+        getStore().audio.pause();
+      } else {
+        // 本卡未在播 → 把单例切到本卡并播放（若之前在播别的会自动停掉）
+        getStore().audio.play().catch(() => {
           /* 浏览器拦截自动播放：忽略 */
         });
-      } else {
-        store.audio.pause();
       }
     });
 
@@ -102,20 +108,21 @@ function initMusicPlayers() {
     progressTrack?.addEventListener("click", (e: MouseEvent) => {
       const rect = progressTrack.getBoundingClientRect();
       const ratio = (e.clientX - rect.left) / rect.width;
-      const total = store.audio.duration;
-      if (total > 0) store.audio.currentTime = ratio * total;
+      const audio = getStore().audio;
+      if (audio.duration > 0) audio.currentTime = ratio * audio.duration;
     });
 
     // 进度条键盘跳转
     progressTrack?.addEventListener("keydown", (e: KeyboardEvent) => {
-      const total = store.audio.duration;
+      const audio = getStore().audio;
+      const total = audio.duration;
       if (!total || total <= 0) return;
       if (e.key === "ArrowRight" || e.key === "ArrowUp") {
         e.preventDefault();
-        store.audio.currentTime = Math.min(store.audio.currentTime + 5, total);
+        audio.currentTime = Math.min(audio.currentTime + 5, total);
       } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
         e.preventDefault();
-        store.audio.currentTime = Math.max(store.audio.currentTime - 5, 0);
+        audio.currentTime = Math.max(audio.currentTime - 5, 0);
       }
     });
 
@@ -124,15 +131,8 @@ function initMusicPlayers() {
       render(custom.detail);
     });
 
-    render({
-      src: store.src,
-      label: store.label,
-      isStream: store.isStream,
-      playing: !store.audio.paused,
-      hasStarted: store.hasStarted,
-      currentTime: store.audio.currentTime,
-      duration: store.audio.duration || 0,
-    });
+    // 初始统一显示未播放（若页面加载时已有全局播放，事件会立即同步）
+    setPlayingUI(false);
   });
 }
 
