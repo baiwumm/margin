@@ -1,4 +1,5 @@
 import { defineConfig, envField, fontProviders } from "astro/config";
+import { unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
@@ -33,8 +34,10 @@ export default defineConfig({
     }),
   ],
   markdown: {
-    remarkPlugins: [remarkRemoveTocMarker, remarkLinkCard, remarkMusic],
-    rehypePlugins: [rehypeExternalLinks],
+    processor: unified({
+      remarkPlugins: [remarkRemoveTocMarker, remarkLinkCard, remarkMusic],
+      rehypePlugins: [rehypeExternalLinks],
+    }),
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
       themes: { light: "github-light", dark: "github-dark" },
