@@ -38,16 +38,15 @@ const { page, tagName } = Astro.props;
 
 const tagOgImage = `/tags/${tag}/og.png`;
 
-// Prevent duplicate metadata in tag pagination pages
 const metaTitle =
   page.currentPage > 1
-    ? `Tag: ${tagName} (Page ${page.currentPage} of ${page.lastPage}) | ${SITE.title}`
-    : `Tag: ${tagName} | ${SITE.title}`;
+    ? `${tagName}（第 ${page.currentPage} 页，共 ${page.lastPage} 页）| 标签 | ${SITE.title}`
+    : `${tagName} | 标签 | ${SITE.title}`;
 
 const tagDescription =
   page.currentPage > 1
-    ? `All articles tagged with "${tagName}" on ${SITE.title} (Page ${page.currentPage} of ${page.lastPage}).`
-    : `All articles tagged with "${tagName}" on ${SITE.title}.`;
+    ? `浏览标签「${tagName}」下的全部内容（第 ${page.currentPage} 页，共 ${page.lastPage} 页）。`
+    : `浏览标签「${tagName}」下的全部内容。`;
 
 const prevURL = page.url.prev
   ? new URL(page.url.prev, SITE.website).toString()
@@ -68,7 +67,7 @@ const nextURL = page.url.next
   <Main
     pageTitle={[`Tag:`, `${tagName}`]}
     titleTransition={tag}
-    pageDesc={`All the articles with the tag "${tagName}".`}
+    pageDesc={`包含标签「${tagName}」的全部内容。`}
   >
     <ul>
       {
@@ -81,9 +80,9 @@ const nextURL = page.url.next
         ))
       }
     </ul>
-  </Main>
 
-  <Pagination {page} />
+    <Pagination {page} />
+  </Main>
 
   <Footer noMarginTop={page.lastPage > 1} />
 </Layout>

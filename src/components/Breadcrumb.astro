@@ -118,7 +118,9 @@ const currentPageLabel = breadcrumbs.at(-1)?.label ?? "Home";
   .breadcrumb-bar.has-back {
     max-width: 100%;
     overflow-x: auto;
+    /* 标准属性必须与 -webkit- 前缀成对书写，否则 Firefox 不应用覆盖值 */
     -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
     scrollbar-width: none;
   }
 

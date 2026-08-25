@@ -299,7 +299,7 @@ export async function resolveTrack(
     return {
       id,
       platform,
-      name: cached.name || `网易云音乐 #${id}`,
+      name: cached.name || `${meta.label} #${id}`,
       artist: cached.artist || "未知歌手",
       cover: cached.cover || "",
       url: cached.url || fallbackUrl,
@@ -320,7 +320,7 @@ export async function resolveTrack(
   return {
     id,
     platform,
-    name: rec?.name || `网易云音乐 #${id}`,
+    name: rec?.name || `${meta.label} #${id}`,
     artist: rec?.artist || "未知歌手",
     cover: rec?.cover || "",
     url: rec?.url || fallbackUrl,

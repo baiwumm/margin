@@ -110,10 +110,10 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
               rel="noopener noreferrer"
               class="transition-colors duration-200 hover:text-accent"
             >
-              baiwumm
+              {SITE.author}
             </a>
           ) : (
-            "baiwumm"
+            SITE.author
           )
         }
         . All rights reserved.

@@ -22,15 +22,19 @@ const coverSrc = coverImage ?? fallbackImage;
     "card-glow group/card relative flex flex-col overflow-hidden rounded-2xl",
     "border border-border/25 backdrop-blur-sm",
     "bg-linear-to-br from-accent/5 via-muted/10 to-transparent",
-    "transition-all duration-300 ease-out",
-    "hover:border-accent/30 hover:from-accent/10 hover:via-muted/20 hover:to-transparent",
-    "hover:-translate-y-0.5",
-    "hover:shadow-lg hover:shadow-accent/10",
+    "transition-all duration-300 ease-out motion-reduce:transform-none motion-reduce:transition-none",
+    "hover:border-accent/30 focus-visible:border-accent/30",
+    "hover:from-accent/10 focus-visible:from-accent/10",
+    "hover:via-muted/20 focus-visible:via-muted/20",
+    "hover:to-transparent",
+    "hover:-translate-y-0.5 focus-visible:-translate-y-0.5",
+    "hover:shadow-lg focus-visible:shadow-lg",
+    "hover:shadow-accent/10 focus-visible:shadow-accent/10",
   ]}
 >
   <!-- Cursor-following glow -->
   <div
-    class="card-glow-effect pointer-events-none absolute inset-0 z-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover/card:opacity-100"
+    class="card-glow-effect pointer-events-none absolute inset-0 z-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 motion-reduce:transition-none"
     aria-hidden="true"
   >
   </div>
@@ -44,7 +48,7 @@ const coverSrc = coverImage ?? fallbackImage;
         <Image
           src={coverSrc}
           alt={title}
-          class="h-full w-full object-cover transition-transform duration-500 group-hover/card:scale-105"
+          class="gallery-card-img h-full w-full object-cover transition-transform duration-500 group-hover/card:scale-105"
           loading="lazy"
           widths={[400, 800]}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -86,7 +90,7 @@ const coverSrc = coverImage ?? fallbackImage;
     >
       {title}
     </h2>
-    <Datetime pubDatetime={pubDatetime} class="text-xs" />
+    <Datetime pubDatetime={pubDatetime} size="xs" />
     <p class="mt-1 line-clamp-2 text-sm leading-relaxed opacity-65">
       {description}
     </p>
@@ -101,5 +105,11 @@ const coverSrc = coverImage ?? fallbackImage;
       color-mix(in oklab, var(--accent) 4%, transparent) 30%,
       transparent 80%
     );
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-card-img {
+      transition: none;
+    }
   }
 </style>

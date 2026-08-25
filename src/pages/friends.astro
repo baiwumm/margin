@@ -403,7 +403,10 @@ const applicationText = [
         async () => {
           const text = button.dataset.copyText ?? "";
           const ok = await copyText(text);
-          if (!ok) return;
+          if (!ok) {
+            showToast("复制失败，请手动复制该信息");
+            return;
+          }
           button.classList.add("is-copied");
           setTimeout(() => button.classList.remove("is-copied"), feedbackMs);
         },

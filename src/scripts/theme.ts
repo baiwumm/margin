@@ -5,13 +5,31 @@ const LIGHT = "light";
 const DARK = "dark";
 const DEFAULT_ACCENT = "blue";
 
+// localStorage 访问防护：隐私模式/禁用存储时直接抛 SecurityError，
+// 不捕获会中断整个主题脚本（按钮绑定全部失效）
+function getStorageItem(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function setStorageItem(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    /* 存储不可用时仅放弃持久化，不影响本次会话的主题生效 */
+  }
+}
+
 // Initial color scheme
 // Can be "light", "dark", or empty string for system's prefers-color-scheme
 const initialColorScheme = "dark";
 
 function getPreferTheme(): string {
   // get theme data from local storage (user's explicit choice)
-  const currentTheme = localStorage.getItem(THEME);
+  const currentTheme = getStorageItem(THEME);
   if (currentTheme) return currentTheme;
 
   // return initial color scheme if it is set (site default)
@@ -29,11 +47,11 @@ let themeValue = window.theme?.themeValue ?? getPreferTheme();
 // Accent color value, restored from the inline FOUC script or localStorage
 let accentValue =
   document.firstElementChild?.getAttribute("data-accent") ??
-  localStorage.getItem(ACCENT) ??
+  getStorageItem(ACCENT) ??
   DEFAULT_ACCENT;
 
 function setPreference(): void {
-  localStorage.setItem(THEME, themeValue);
+  setStorageItem(THEME, themeValue);
   reflectPreference();
 }
 
@@ -127,7 +145,7 @@ function setAccentFeature(): void {
       const val = freshDot.getAttribute("data-accent-option");
       if (!val) return;
       accentValue = val;
-      localStorage.setItem(ACCENT, accentValue);
+      setStorageItem(ACCENT, accentValue);
       reflectAccent();
     });
   });
@@ -157,10 +175,13 @@ document.addEventListener("astro:before-swap", event => {
 });
 
 // sync with system changes
+// 仅当用户从未显式选择过主题（localStorage 无记录）时跟随系统，
+// 避免把用户手动保存的偏好覆盖掉；跟随系统时只更新视图，不写回存储
 window
   .matchMedia("(prefers-color-scheme: dark)")
   .addEventListener("change", ({ matches: isDark }) => {
+    if (getStorageItem(THEME)) return;
     themeValue = isDark ? DARK : LIGHT;
     window.theme?.setTheme(themeValue);
-    setPreference();
+    reflectPreference();
   });

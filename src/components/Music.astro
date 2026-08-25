@@ -43,9 +43,14 @@ const label = platformLabel(platform);
 const hasCover = Boolean(track.cover);
 const hasAudio = Boolean(track.audioUrl);
 
-// 网易云 SVG 图标（内联，不引入图标库）
+// 网易云 SVG 图标（内联，不引入图标库）；非网易云平台用中性音符图标，避免错误品牌标识
 const NETEASE_ICON =
   '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 3.2a6.8 6.8 0 0 1 6.8 6.8c0 1.2-.3 2.3-.9 3.3l-2.1-1.2c.3-.7.5-1.5.5-2.1a4.2 4.2 0 1 0-4.2 4.2c.6 0 1.2-.1 1.7-.4L12 18a6.8 6.8 0 0 1-6.8-6.8A6.8 6.8 0 0 1 12 5.2z"/></svg>';
+
+const NOTE_ICON =
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+
+const PLATFORM_ICON = platform === "netease" ? NETEASE_ICON : NOTE_ICON;
 
 const ICON_PLAY =
   '<svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M3 2.5a.5.5 0 0 1 .765-.424l10 5.5a.5.5 0 0 1 0 .848l-10 5.5A.5.5 0 0 1 3 13.5v-11z"/></svg>';
@@ -122,7 +127,7 @@ const ICON_LINK =
           <div class="music-title-row">
             <div class="music-titles">
               <span class="music-platform font-firacode">
-                <span class="music-platform-icon" set:html={NETEASE_ICON} />
+                <span class="music-platform-icon" set:html={PLATFORM_ICON} />
                 {label.toUpperCase()}
               </span>
               <span class="music-name">{track.name}</span>

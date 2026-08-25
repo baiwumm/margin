@@ -119,9 +119,9 @@ const shareBtnClass =
     -webkit-backdrop-filter: blur(4px);
   }
 
-  /* 复制成功态：绿色勾选 + 绿色边框 */
+  /* 复制成功态：绿色勾选 + 绿色边框（走主题语义色，随明暗主题联动） */
   .share-copy-btn.copied {
-    border-color: rgba(34, 197, 94, 0.4);
-    color: #22c55e;
+    border-color: color-mix(in srgb, var(--accent-green) 40%, transparent);
+    color: var(--accent-green);
   }
 </style>
