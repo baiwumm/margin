@@ -115,11 +115,19 @@ function buildHtml(opts: {
 /* ── 插件主入口 ───────────────────────────────────────────────────── */
 export function remarkMusic() {
   return async (tree: MdRoot) => {
-    const requests: { node: MdNode; id: string; platform: MusicPlatform; audio?: string }[] = [];
+    const requests: {
+      node: MdNode;
+      id: string;
+      platform: MusicPlatform;
+      audio?: string;
+    }[] = [];
 
     const collect = (node: MdNode) => {
       if (node.type !== "paragraph" || !node.children) return;
-      const text = node.children.map(child => collectText(child)).join("").trim();
+      const text = node.children
+        .map(child => collectText(child))
+        .join("")
+        .trim();
       const match = DIRECTIVE_RE.exec(text);
       if (!match) return;
       const attrs = parseAttrs(match[1]);

@@ -8,7 +8,6 @@ draft: false
 description: "这篇文章介绍了参考 Nuxt UI 官网实现站点 Footer 底部布局的过程，包括 ICP 备案信息展示与社交图标按钮开发。"
 ---
 
-
 ## 前言
 
 今天开发项目的 **Footer** 布局，这里我们参考 [Nuxt-UI](https://ui.nuxt.com/) 官网的布局。
@@ -16,20 +15,22 @@ description: "这篇文章介绍了参考 Nuxt UI 官网实现站点 Footer 底�
 ## 需求拆分
 
 1.  准备好域名备案号和 **icp** 图标
-    
+
 2.  底部社交按钮链接或其他链接
-    
+
 3.  **AppFooter** 组件开发
-    
 
 ## Footer 布局
 
 1.  新建 **components/AppFooter.vue** 文件：
+
 ```vue
 <template>
   <footer class="fixed bottom-0 w-full">
     <UDivider :avatar="{ src: '/logo.svg' }" />
-    <div class="flex justify-between items-center px-4 md:px-8 lg:px-32 py-3 max-sm:flex-col -mt-2.5">
+    <div
+      class="-mt-2.5 flex items-center justify-between px-4 py-3 max-sm:flex-col md:px-8 lg:px-32"
+    >
       <!-- icp 备案 -->
       <ULink
         to="https://beian.miit.gov.cn/#/Integrated/index"
@@ -38,11 +39,7 @@ description: "这篇文章介绍了参考 Nuxt UI 官网实现站点 Footer 底�
         inactive-class="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
       >
         <div class="flex items-center gap-2">
-          <NuxtImg
-            src="/icp.png"
-            alt="粤ICP备2023007649号-3"
-            class="w-4"
-          />
+          <NuxtImg src="/icp.png" alt="粤ICP备2023007649号-3" class="w-4" />
           粤ICP备2023007649号-3
         </div>
       </ULink>
@@ -75,11 +72,11 @@ description: "这篇文章介绍了参考 Nuxt UI 官网实现站点 Footer 底�
       </div>
     </div>
   </footer>
- </template>
+</template>
 ```
 
-
 2.  **layouts/default.vue** 文件配置组件：
+
 ```vue
 <template>
   <div>
@@ -90,32 +87,32 @@ description: "这篇文章介绍了参考 Nuxt UI 官网实现站点 Footer 底�
     <!-- footer -->
     <AppFooter />
   </div>
- </template>
+</template>
 ```
 
-
 3.  这里我们顺便给 **AppColorMode** 组件加个切换过渡动画，让网站丰富一点：
+
 ```vue
 <script setup lang="ts">
-const colorMode = useColorMode()
+const colorMode = useColorMode();
 
 // 切换模式
 const setColorMode = () => {
-  colorMode.value = colorMode.value === 'dark' ? 'light' : 'dark'
-}
+  colorMode.value = colorMode.value === "dark" ? "light" : "dark";
+};
 
 // 判断是否支持 startViewTransition API
 const enableTransitions = () =>
-  'startViewTransition' in document &&
-  window.matchMedia('(prefers-reduced-motion: no-preference)').matches
+  "startViewTransition" in document &&
+  window.matchMedia("(prefers-reduced-motion: no-preference)").matches;
 
 // 切换动画
 async function toggleDark({ clientX: x, clientY: y }: MouseEvent) {
-  const isDark = colorMode.value === 'dark'
+  const isDark = colorMode.value === "dark";
 
   if (!enableTransitions()) {
-    setColorMode()
-    return
+    setColorMode();
+    return;
   }
 
   const clipPath = [
@@ -123,32 +120,36 @@ async function toggleDark({ clientX: x, clientY: y }: MouseEvent) {
     `circle(${Math.hypot(
       Math.max(x, innerWidth - x),
       Math.max(y, innerHeight - y)
-    )}px at ${x}px ${y}px)`
-  ]
+    )}px at ${x}px ${y}px)`,
+  ];
 
   await document.startViewTransition(async () => {
-    setColorMode()
-    await nextTick()
-  }).ready
+    setColorMode();
+    await nextTick();
+  }).ready;
 
   document.documentElement.animate(
     { clipPath: !isDark ? clipPath.reverse() : clipPath },
     {
       duration: 300,
-      easing: 'ease-in',
-      pseudoElement: `::view-transition-${!isDark ? 'old' : 'new'}(root)`
+      easing: "ease-in",
+      pseudoElement: `::view-transition-${!isDark ? "old" : "new"}(root)`,
     }
-  )
+  );
 }
 </script>
 
 <template>
   <UTooltip :text="`切换${$colorMode.value === 'dark' ? '白天' : '黑夜'}模式`">
     <UButton
-      :icon="$colorMode.value === 'dark' ? 'i-heroicons-moon-solid' : ' i-heroicons-sun-solid'"
+      :icon="
+        $colorMode.value === 'dark'
+          ? 'i-heroicons-moon-solid'
+          : ' i-heroicons-sun-solid'
+      "
       size="sm"
       variant="ghost"
-      class="text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+      class="text-gray-700 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-white"
       @click="toggleDark"
     />
   </UTooltip>
@@ -172,7 +173,6 @@ async function toggleDark({ clientX: x, clientY: y }: MouseEvent) {
 }
 </style>
 ```
-
 
 ## 最终效果
 

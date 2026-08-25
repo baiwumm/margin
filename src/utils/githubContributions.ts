@@ -177,59 +177,62 @@ const fetchContributionCalendar = async (
 };
 
 /** 返回用户一整年贡献日历；无 Token / 解析失败 / 网络异常时返回 null。 */
-export const getContributionCalendar = async (): Promise<ContributionCalendarData | null> => {
-  const login = resolveLogin();
-  if (!login) return null;
+export const getContributionCalendar =
+  async (): Promise<ContributionCalendarData | null> => {
+    const login = resolveLogin();
+    if (!login) return null;
 
-  try {
-    const data = await fetchContributionCalendar(login);
-    if (!data) return null;
+    try {
+      const data = await fetchContributionCalendar(login);
+      if (!data) return null;
 
-    const { from, today, weekCount } = buildDateRange();
-    const calendar = data.user?.contributionsCollection.contributionCalendar;
-    if (!calendar) return null;
-    const rawWeeks = calendar.weeks;
+      const { from, today, weekCount } = buildDateRange();
+      const calendar = data.user?.contributionsCollection.contributionCalendar;
+      if (!calendar) return null;
+      const rawWeeks = calendar.weeks;
 
-    const weeks: Array<Array<ContributionDay | null>> = [];
-    for (let w = 0; w < weekCount; w++) {
-      const days: Array<ContributionDay | null> = [];
-      for (let d = 0; d < 7; d++) {
-        const date = addDays(from, w * 7 + d);
-        if (date.getTime() > today.getTime()) {
-          days.push(null); // 本周未来日期
-          continue;
+      const weeks: Array<Array<ContributionDay | null>> = [];
+      for (let w = 0; w < weekCount; w++) {
+        const days: Array<ContributionDay | null> = [];
+        for (let d = 0; d < 7; d++) {
+          const date = addDays(from, w * 7 + d);
+          if (date.getTime() > today.getTime()) {
+            days.push(null); // 本周未来日期
+            continue;
+          }
+          const iso = toISODate(date);
+          const raw = rawWeeks[w]?.contributionDays.find(
+            day => day.date === iso
+          );
+          if (!raw) {
+            days.push(null);
+            continue;
+          }
+          days.push({
+            date: iso,
+            count: raw.contributionCount,
+            level: LEVEL_MAP[raw.contributionLevel] ?? 0,
+          });
         }
-        const iso = toISODate(date);
-        const raw = rawWeeks[w]?.contributionDays.find(day => day.date === iso);
-        if (!raw) {
-          days.push(null);
-          continue;
+        weeks.push(days);
+      }
+
+      const monthLabels: Array<{ label: string; column: number }> = [];
+      for (let w = 0; w < weekCount; w++) {
+        const firstDay = addDays(from, w * 7);
+        const month = firstDay.getUTCMonth();
+        if (w === 0 || month !== addDays(from, (w - 1) * 7).getUTCMonth()) {
+          monthLabels.push({ label: `${month + 1}月`, column: w });
         }
-        days.push({
-          date: iso,
-          count: raw.contributionCount,
-          level: LEVEL_MAP[raw.contributionLevel] ?? 0,
-        });
       }
-      weeks.push(days);
-    }
 
-    const monthLabels: Array<{ label: string; column: number }> = [];
-    for (let w = 0; w < weekCount; w++) {
-      const firstDay = addDays(from, w * 7);
-      const month = firstDay.getUTCMonth();
-      if (w === 0 || month !== addDays(from, (w - 1) * 7).getUTCMonth()) {
-        monthLabels.push({ label: `${month + 1}月`, column: w });
-      }
+      return {
+        login,
+        totalContributions: calendar.totalContributions,
+        weeks,
+        monthLabels,
+      };
+    } catch {
+      return null; // 网络异常回退，构建不中断
     }
-
-    return {
-      login,
-      totalContributions: calendar.totalContributions,
-      weeks,
-      monthLabels,
-    };
-  } catch {
-    return null; // 网络异常回退，构建不中断
-  }
-};
+  };

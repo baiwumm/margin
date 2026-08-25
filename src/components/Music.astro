@@ -29,7 +29,13 @@ type Props = {
   class?: string;
 };
 
-const { id, platform = "netease", audio, compact = false, class: className } = Astro.props;
+const {
+  id,
+  platform = "netease",
+  audio,
+  compact = false,
+  class: className,
+} = Astro.props;
 
 // 构建期取数（含本地缓存/探测/回源，失败降级）
 const track = await resolveTrack(id, platform, audio);
@@ -61,7 +67,13 @@ const ICON_LINK =
       data-href={track.url}
     >
       {hasCover ? (
-        <img class="music-mini-cover" src={track.cover} alt="" loading="lazy" decoding="async" />
+        <img
+          class="music-mini-cover"
+          src={track.cover}
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
       ) : (
         <span class="music-mini-cover music-mini-cover-placeholder" />
       )}
@@ -91,13 +103,17 @@ const ICON_LINK =
       <div class="music-inner">
         <div class="music-vinyl" aria-hidden="true">
           <div class="music-disc">
-            {
-              hasCover ? (
-                <img class="music-cover" src={track.cover} alt="" loading="lazy" decoding="async" />
-              ) : (
-                <span class="music-cover-placeholder" />
-              )
-            }
+            {hasCover ? (
+              <img
+                class="music-cover"
+                src={track.cover}
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <span class="music-cover-placeholder" />
+            )}
             <span class="music-spindle" />
           </div>
         </div>
@@ -124,24 +140,29 @@ const ICON_LINK =
             </button>
           </div>
 
-          {
-            hasAudio && (
-              <div class="music-progress" data-music-progress role="slider" tabindex="0" aria-label="播放进度" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0">
-                <div class="music-progress-bar" data-music-bar />
-              </div>
-            )
-          }
+          {hasAudio && (
+            <div
+              class="music-progress"
+              data-music-progress
+              role="slider"
+              tabindex="0"
+              aria-label="播放进度"
+              aria-valuenow="0"
+              aria-valuemin="0"
+              aria-valuemax="0"
+            >
+              <div class="music-progress-bar" data-music-bar />
+            </div>
+          )}
 
           <div class="music-meta-row">
-            {
-              hasAudio && (
-                <span class="music-time">
-                  <span data-music-current>0:00</span>
-                  <span class="opacity-40"> / </span>
-                  <span data-music-total>0:00</span>
-                </span>
-              )
-            }
+            {hasAudio && (
+              <span class="music-time">
+                <span data-music-current>0:00</span>
+                <span class="opacity-40"> / </span>
+                <span data-music-total>0:00</span>
+              </span>
+            )}
             <a
               class="music-open"
               href={track.url}

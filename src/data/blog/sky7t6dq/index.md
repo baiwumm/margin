@@ -8,69 +8,67 @@ draft: false
 description: "这篇文章介绍了从零初始化 Nuxt3 项目的完整流程，包括 Nuxt 的核心优势、环境要求、安装步骤与默认目录结构。"
 ---
 
-
 ## 什么是 Nuxt
 
 [Nuxt](https://nuxt.com/) 是一个建立在 **Vue.js** 上的服务器端渲染框架。它抽象出了管理异步数据、中间件和路由所涉及的大部分复杂配置。它还有助于使用行业标准架构来构造 **Vue.js** 应用程序，以构建简单或企业级的 **Vue.js** 应用程序。
 
 ## Nuxt3 的优点
 
--   **基于 Vue3 的优势**：**Nuxt3** 充分利用了 **Vue3** 的所有优点，包括性能优化、响应式编程和更好的 **TypeScript** 支持。**Vue3** 的 **Composition API** 使得代码更加灵活和可复用，为大型项目提供了更好的组织和管理方式。
-    
--   **服务端渲染（SSR）和静态站点生成（SSG）**：**Nuxt3** 支持服务端渲染和静态站点生成，这有助于解决单页应用（SPA）中的 **SEO** 问题，提高页面加载速度，从而改善用户体验。
-    
--   **模块化**：**Nuxt3** 具有丰富的模块化生态系统，使得开发者能够轻松地扩展应用的功能，减少开发工作量。通过模块化的方式，开发者可以更加高效地组织和管理代码，提高开发效率。
-    
--   **文件系统路由**：**Nuxt3** 的文件系统路由允许开发者通过简单的文件和目录结构来组织应用路由，使得开发过程更加简洁明了。这有助于减少配置工作量，提高开发效率。
-    
--   **开箱即用**：**Nuxt3** 提供了许多开箱即用的功能，如状态管理、中间件、页面过渡动画等，使得开发过程更加简单和高效。这些功能可以帮助开发者快速构建出功能完善的 **Web** 应用程序。
-    
--   **性能优化**：**Nuxt3** 通过使用最新的 **Web** 技术和优化技巧，提供了更好的性能和更快的加载速度。无论是服务端渲染还是静态站点生成，**Nuxt3** 都能帮助开发者提高应用的性能表现。
-    
--   **灵活的配置和插件系统**：**Nuxt3** 提供了更灵活的配置选项和插件系统，使得开发者能够根据自己的需求进行定制和优化。这使得 **Nuxt3** 具有很高的可扩展性和灵活性，能够满足各种复杂的开发需求。
-    
+- **基于 Vue3 的优势**：**Nuxt3** 充分利用了 **Vue3** 的所有优点，包括性能优化、响应式编程和更好的 **TypeScript** 支持。**Vue3** 的 **Composition API** 使得代码更加灵活和可复用，为大型项目提供了更好的组织和管理方式。
+
+- **服务端渲染（SSR）和静态站点生成（SSG）**：**Nuxt3** 支持服务端渲染和静态站点生成，这有助于解决单页应用（SPA）中的 **SEO** 问题，提高页面加载速度，从而改善用户体验。
+
+- **模块化**：**Nuxt3** 具有丰富的模块化生态系统，使得开发者能够轻松地扩展应用的功能，减少开发工作量。通过模块化的方式，开发者可以更加高效地组织和管理代码，提高开发效率。
+
+- **文件系统路由**：**Nuxt3** 的文件系统路由允许开发者通过简单的文件和目录结构来组织应用路由，使得开发过程更加简洁明了。这有助于减少配置工作量，提高开发效率。
+
+- **开箱即用**：**Nuxt3** 提供了许多开箱即用的功能，如状态管理、中间件、页面过渡动画等，使得开发过程更加简单和高效。这些功能可以帮助开发者快速构建出功能完善的 **Web** 应用程序。
+
+- **性能优化**：**Nuxt3** 通过使用最新的 **Web** 技术和优化技巧，提供了更好的性能和更快的加载速度。无论是服务端渲染还是静态站点生成，**Nuxt3** 都能帮助开发者提高应用的性能表现。
+
+- **灵活的配置和插件系统**：**Nuxt3** 提供了更灵活的配置选项和插件系统，使得开发者能够根据自己的需求进行定制和优化。这使得 **Nuxt3** 具有很高的可扩展性和灵活性，能够满足各种复杂的开发需求。
 
 ## 环境要求
 
--   **Node.js**: 确保使用偶数版本号（18、20 等）
-    
--   **Nuxtr**: 安装社区开发的 [Nuxtr 扩展](https://marketplace.visualstudio.com/items?itemName=Nuxtr.nuxtr-vscode)
-    
--   **Volar**：启用 [接管模式: TakeOver Mode](https://vuejs.org/guide/typescript/overview.html#volar-takeover-mode)（推荐）或添加 [TypeScript Vue 插件](https://marketplace.visualstudio.com/items?itemname=vue.vscode-typescript-vue-plugin)
-    
+- **Node.js**: 确保使用偶数版本号（18、20 等）
+
+- **Nuxtr**: 安装社区开发的 [Nuxtr 扩展](https://marketplace.visualstudio.com/items?itemName=Nuxtr.nuxtr-vscode)
+
+- **Volar**：启用 [接管模式: TakeOver Mode](https://vuejs.org/guide/typescript/overview.html#volar-takeover-mode)（推荐）或添加 [TypeScript Vue 插件](https://marketplace.visualstudio.com/items?itemname=vue.vscode-typescript-vue-plugin)
 
 ## 项目安装
 
 1.  打开一个终端（如果你使用的是 [Visual Studio Code](https://code.visualstudio.com/)，你可以打开一个[集成终端](https://code.visualstudio.com/docs/editor/integrated-terminal)） 并使用以下命令创建一个新的入门项目：
+
 ```bash
 pnpm dlx nuxi@latest init <project-name>
 ```
 
-
 2.  打开项目文件夹：
+
 ```bash
 code <project-name>
 ```
 
-
 3.  安装依赖项：
+
 ```text
 # 在运行 pnpm install 之前，确保你在 `.npmrc` 中有 `shamefully-hoist=true`
 pnpm install
 ```
 
-
 4.  现在您将能够在开发模式下启动您的 **Nuxt** 应用程序：
+
 ```bash
 pnpm dev -o
 ```
-
 
 > 上面步骤完成之后！ [http://localhost:3000](http://localhost:3000) 的浏览器窗口应该会自动打开。
 
 ![运行 pnpm dev 后自动打开的开发服务器页面](./01-dev-server.png)
 
 ## 目录结构
+
 ```text
 📁 .nuxt // Nuxt在开发中使用.nuxt/目录来生成你的Vue应用程序。
 📁 .output // 当构建你的应用程序用于生产时，Nuxt 会创建 .output/ 目录。
@@ -96,7 +94,6 @@ pnpm dev -o
 📄 package.json // 包含了应用程序的所有依赖项和脚本。
 📄 tsconfig.json // Nuxt会根据你在Nuxt项目中使用的别名，以及其他合理的默认值，自动生成一个`.nuxt/tsconfig.json`文件。
 ```
-
 
 ## 总结
 

@@ -32,15 +32,15 @@ draft: false
 
 **JavaScript** 中的按位操作符有：
 
-| 运算符 | 用法 | 描述 |
-| --- | --- | --- |
-| 按位与（AND） | `A & B` | 如果对应的二进制位都为 1，则该二进制位为 1 |
-| 按位或（OR） | `A \| B` | 如果对应的二进制位有一个为 1，则该二进制位为 1 |
-| 按位异或（XOR） | `A ^ B` | 如果对应的二进制位只有一个为 1，则该二进制位为 1 |
-| 按位非（NOT） | `~A` | 反转所有二进制位，即 1 转换为 0，0 转换为 1 |
-| 按位左移 | `A << B` | 将所有二进制位统一向左移动指定的位数，并在最右侧补 0 |
-| 按位右移 | `A >> B` | 按位右移（有符号右移）：将所有二进制位统一向右移动指定的位数，并拷贝最左侧的位来填充左侧 |
-| 无符号右移 | `A >>> B` | 按位右移零（无符号右移）：将所有二进制位统一向右移动指定的位数，并在最左侧补 0 |
+| 运算符          | 用法      | 描述                                                                                     |
+| --------------- | --------- | ---------------------------------------------------------------------------------------- |
+| 按位与（AND）   | `A & B`   | 如果对应的二进制位都为 1，则该二进制位为 1                                               |
+| 按位或（OR）    | `A \| B`  | 如果对应的二进制位有一个为 1，则该二进制位为 1                                           |
+| 按位异或（XOR） | `A ^ B`   | 如果对应的二进制位只有一个为 1，则该二进制位为 1                                         |
+| 按位非（NOT）   | `~A`      | 反转所有二进制位，即 1 转换为 0，0 转换为 1                                              |
+| 按位左移        | `A << B`  | 将所有二进制位统一向左移动指定的位数，并在最右侧补 0                                     |
+| 按位右移        | `A >> B`  | 按位右移（有符号右移）：将所有二进制位统一向右移动指定的位数，并拷贝最左侧的位来填充左侧 |
+| 无符号右移      | `A >>> B` | 按位右移零（无符号右移）：将所有二进制位统一向右移动指定的位数，并在最左侧补 0           |
 
 示例：
 
@@ -81,10 +81,10 @@ A >>> 1 = 0010
 
 ```js
 // 所有权限码的二进制数形式，有且只有一位值为 1，其余全部为 0
-const READ = 0b1000 // 可读
-const WRITE = 0b0100 // 可写
-const CREATE = 0b0010 // 创建
-const DELETE = 0b0001 // 删除
+const READ = 0b1000; // 可读
+const WRITE = 0b0100; // 可写
+const CREATE = 0b0010; // 创建
+const DELETE = 0b0001; // 删除
 ```
 
 ## 权限操作
@@ -93,15 +93,15 @@ const DELETE = 0b0001 // 删除
 
 ```js
 // 赋予用户全部权限
-const ALL = READ | WRITE | CREATE | DELETE
+const ALL = READ | WRITE | CREATE | DELETE;
 
-console.log(ALL)
+console.log(ALL);
 // 结果位 1111,每个位置的1就代表拥有这个权限，这里全部是1，就代表拥有全部权限。
 
 // 同样的，这些权限可以自由组合
-const READ_AND_WRITE = READ | WRITE // 可读和可写，结果为 1100
-const READ_AND_CREATE = READ | CREATE // 可读和创建，结果为 1010
-const WRITE_AND_DELETE = WRITE | DELETE // 可写和删除，结果为 0101
+const READ_AND_WRITE = READ | WRITE; // 可读和可写，结果为 1100
+const READ_AND_CREATE = READ | CREATE; // 可读和创建，结果为 1010
+const WRITE_AND_DELETE = WRITE | DELETE; // 可写和删除，结果为 0101
 ```
 
 2. 使用 **按位与（AND）** 校验权限：
@@ -110,25 +110,25 @@ const WRITE_AND_DELETE = WRITE | DELETE // 可写和删除，结果为 0101
 // 比如我们拿到一个用户的权限，我们怎么根据返回的数据判断是否拥有某个权限呢？
 
 // 假设现在返回了 拥有可读可写的权限组合：1100
-const auth = READ | WRITE // 可读和可写，结果为 1100
+const auth = READ | WRITE; // 可读和可写，结果为 1100
 
 // 判断是否包含 READ 权限
-const isRead = (auth & READ) === READ // true
+const isRead = (auth & READ) === READ; // true
 
 // 是否包含 DELETE 权限
-const isDelete = (auth & DELETE) === DELETE // false
+const isDelete = (auth & DELETE) === DELETE; // false
 ```
 
 3. 使用 **按位非（NOT）** 剔除权限：
 
 ```js
 // 全部权限
-const ALL = READ | WRITE | CREATE | DELETE
+const ALL = READ | WRITE | CREATE | DELETE;
 
 // 如果要剔除 WRITE 权限，应该怎么做呢，先执行 ~ 取反，再执行 & 运算
-const notWrite = ALL & ~WRITE // 输出 1011
+const notWrite = ALL & ~WRITE; // 输出 1011
 // 剔除 DELETE 权限
-const notDelete = ALL & ~DELETE // 输出 1110
+const notDelete = ALL & ~DELETE; // 输出 1110
 ```
 
 ## 局限性

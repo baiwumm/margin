@@ -95,7 +95,7 @@ const formattedDuration = `${Math.floor(duration / 60)}:${String(duration % 60).
         aria-valuemax={duration}
         aria-label="Audio progress control"
       >
-        <div class="intro-progress-bar" id="intro-progress-bar"></div>
+        <div class="intro-progress-bar" id="intro-progress-bar" />
       </div>
     )
   }
@@ -103,15 +103,18 @@ const formattedDuration = `${Math.floor(duration / 60)}:${String(duration % 60).
   <!-- Time -->
   {
     isStream ? (
-      <span class="intro-live-pill" aria-live="off">LIVE</span>
+      <span class="intro-live-pill" aria-live="off">
+        LIVE
+      </span>
     ) : (
       <span class="intro-time" id="intro-time" aria-live="off">
-        <span id="intro-current">0:00</span><span class="opacity-30"> /</span><span
-          id="intro-total"
-          class="opacity-30"
-        >
-          {formattedDuration}</span
-        >
+        <>
+          <span id="intro-current">0:00</span>
+          <span class="opacity-30"> /</span>
+          <span id="intro-total" class="opacity-30">
+            {formattedDuration}
+          </span>
+        </>
       </span>
     )
   }
@@ -389,7 +392,7 @@ const formattedDuration = `${Math.floor(duration / 60)}:${String(duration % 60).
       if (current && current.textContent !== nowStr) {
         current.textContent = nowStr;
       }
-      
+
       if (track) {
         track.setAttribute("aria-valuenow", String(Math.floor(now)));
         const maxVal = String(Math.max(total, 0));
@@ -397,7 +400,7 @@ const formattedDuration = `${Math.floor(duration / 60)}:${String(duration % 60).
           track.setAttribute("aria-valuemax", maxVal);
         }
       }
-      
+
       if (totalLabel) {
         const totalStr = fmt(total);
         if (totalLabel.textContent !== totalStr) {

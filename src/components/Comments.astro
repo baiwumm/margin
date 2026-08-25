@@ -4,10 +4,7 @@ import { SITE } from "@/config";
 const { enabled, giscus } = SITE.comments;
 
 const missingConfig =
-  !giscus.repo ||
-  !giscus.repoId ||
-  !giscus.category ||
-  !giscus.categoryId;
+  !giscus.repo || !giscus.repoId || !giscus.category || !giscus.categoryId;
 
 const shouldRender = enabled && !missingConfig;
 ---
@@ -31,7 +28,7 @@ const shouldRender = enabled && !missingConfig;
             <div class="h-px flex-1 bg-linear-to-r from-accent/20 to-transparent" />
           </div>
 
-          <div id="giscus-container" class="giscus"></div>
+          <div id="giscus-container" class="giscus" />
         </div>
       </div>
     </section>

@@ -34,7 +34,7 @@ function user() {}
 这个时候就会出现歧义，因为这个函数有两种调用方式：
 
 ```js
-function user() {};
+function user() {}
 
 // 普通方式调用
 user();
@@ -51,10 +51,10 @@ new user();
 
 ```js
 // 普通函数
-function user() {};
+function user() {}
 
 // 构造函数
-function User() {};
+function User() {}
 ```
 
 但毕竟这个不是强约制性的，普通函数依旧可以使用 new 调用，这只能说在一定程度上稍微缓解了这个问题，就像 JS 一些构造函数一样，两种调用方式都可以，比如：
@@ -74,7 +74,7 @@ new Date();
 ```js
 function User() {
   if (new.target) {
-    throw 'Uncaught TypeError: User is not a constructor';
+    throw "Uncaught TypeError: User is not a constructor";
   }
 }
 ```
@@ -103,7 +103,7 @@ user();
 class 只能这样调用：
 
 ```js
-class User {};
+class User {}
 
 // 报错 Uncaught TypeError: Class constructor User cannot be invoked without 'new'
 const user = User();

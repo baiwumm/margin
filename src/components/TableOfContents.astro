@@ -9,7 +9,11 @@ type Props = {
 const { items, class: className = "" } = Astro.props;
 ---
 
-<nav class:list={["toc-nav", className]} aria-label="本页目录" data-pagefind-ignore>
+<nav
+  class:list={["toc-nav", className]}
+  aria-label="本页目录"
+  data-pagefind-ignore
+>
   <p class="toc-title">本页目录</p>
   <ul class="toc-list">
     {
@@ -45,7 +49,9 @@ const { items, class: className = "" } = Astro.props;
         nav.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')
       );
       const headings = links
-        .map(link => document.getElementById(link.getAttribute("href")!.slice(1)))
+        .map(link =>
+          document.getElementById(link.getAttribute("href")!.slice(1))
+        )
         .filter((el): el is HTMLElement => el !== null);
       if (links.length === 0 || headings.length === 0) continue;
       spies.push({ nav, links, headings });

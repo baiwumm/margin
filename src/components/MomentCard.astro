@@ -120,7 +120,12 @@ const imageList = JSON.stringify(
   {
     music && (
       <div class="moment-music">
-        <Music id={music.id} platform={music.platform} audio={music.audio} compact />
+        <Music
+          id={music.id}
+          platform={music.platform}
+          audio={music.audio}
+          compact
+        />
       </div>
     )
   }

@@ -15,7 +15,7 @@ draft: false
 // 如何将字符串 code 当成 js 代码执行
 function exec(code) {}
 
-exec('console.log("Hello world")')
+exec('console.log("Hello world")');
 ```
 
 ## eval 函数
@@ -29,8 +29,8 @@ function exec(code) {
   eval(code);
 }
 
-exec('console.log(a)');
-console.log('sync');
+exec("console.log(a)");
+console.log("sync");
 
 // 执行结果：先输出 2，再输出 sync
 ```
@@ -48,8 +48,8 @@ function exec(code) {
   setTimeout(code);
 }
 
-exec('console.log(a)');
-console.log('sync');
+exec("console.log(a)");
+console.log("sync");
 
 // 执行结果：先输出 sync，再输出 1
 ```
@@ -64,13 +64,13 @@ console.log('sync');
 const a = 1;
 function exec(code) {
   const a = 2;
-  var script = document.createElement('script');
+  var script = document.createElement("script");
   script.innerHTML = code;
   document.body.appendChild(script);
 }
 
-exec('console.log(a)');
-console.log('sync');
+exec("console.log(a)");
+console.log("sync");
 
 // 执行结果：先输出 1，再输出 sync
 ```
@@ -88,8 +88,8 @@ function exec(code) {
   new Function(code)();
 }
 
-exec('console.log(a)');
-console.log('sync');
+exec("console.log(a)");
+console.log("sync");
 
 // 执行结果：先输出 1，再输出 sync
 ```
@@ -100,9 +100,9 @@ console.log('sync');
 
 具体的实现方案可根据当前的业务场景来选择，但是不推荐 **动态script标签**，毕竟是通过操作 **Dom** 实现的。
 
-| 方法  | 同步/异步 | 作用域 |
-| --- | --- | --- |
-| eval | 同步  | 当前执行作用域 |
-| setTimeout | 异步  | 全局作用域 |
-| 动态 script 标签 | 同步  | 全局作用域 |
-| new Function | 同步  | 全局作用域 |
+| 方法             | 同步/异步 | 作用域         |
+| ---------------- | --------- | -------------- |
+| eval             | 同步      | 当前执行作用域 |
+| setTimeout       | 异步      | 全局作用域     |
+| 动态 script 标签 | 同步      | 全局作用域     |
+| new Function     | 同步      | 全局作用域     |

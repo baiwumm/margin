@@ -81,16 +81,28 @@
   --color-btn-primary-border: var(--g-accent);
   --color-btn-primary-hover-bg: color-mix(in srgb, var(--g-accent) 85%, #fff);
   --color-btn-primary-hover-border: var(--g-accent);
-  --color-btn-primary-selected-bg: color-mix(in srgb, var(--g-accent) 75%, #fff);
+  --color-btn-primary-selected-bg: color-mix(
+    in srgb,
+    var(--g-accent) 75%,
+    #fff
+  );
   --color-btn-primary-shadow: none;
   --color-btn-primary-inset-shadow: none;
   --color-btn-primary-selected-shadow: none;
-  --color-btn-primary-disabled-bg: color-mix(in srgb, var(--g-accent) 45%, #10131a);
+  --color-btn-primary-disabled-bg: color-mix(
+    in srgb,
+    var(--g-accent) 45%,
+    #10131a
+  );
   --color-btn-primary-disabled-border: transparent;
   --color-btn-primary-disabled-text: rgba(255, 255, 255, 0.6);
   --color-action-list-item-default-hover-bg: var(--g-control-hover);
   --color-segmented-control-bg: var(--g-control);
-  --color-segmented-control-button-bg: color-mix(in srgb, #10131a 78%, #263044 22%);
+  --color-segmented-control-button-bg: color-mix(
+    in srgb,
+    #10131a 78%,
+    #263044 22%
+  );
   --color-segmented-control-button-selected-border: var(--g-border);
   --color-social-reaction-bg-hover: var(--g-control-hover);
   --color-social-reaction-bg-reacted-hover: var(--g-accent-soft);
@@ -111,8 +123,9 @@
 body {
   background: transparent;
   color: var(--g-fg);
-  font-family: "Maple Mono CN", "Margin Font", "Fira Code", ui-monospace,
-    "SFMono-Regular", Menlo, Consolas, sans-serif;
+  font-family:
+    "Maple Mono CN", "Margin Font", "Fira Code", ui-monospace, "SFMono-Regular",
+    Menlo, Consolas, sans-serif;
   font-size: 14px;
   line-height: 1.7;
 }
@@ -319,7 +332,9 @@ a {
   background: var(--g-card);
   border: 1px solid var(--g-border);
   border-radius: var(--g-radius);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
 .gsc-reactions-popover div.m-2 {
@@ -374,7 +389,9 @@ a {
   background: var(--g-card);
   box-shadow: var(--g-shadow);
   padding: 0.9rem 1rem;
-  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .gsc-comment-wrap:hover .gsc-comment {
@@ -491,7 +508,9 @@ a {
   border-radius: var(--g-radius-sm);
   background: var(--g-control);
   padding: 2px 10px;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .gsc-comment-footer button:not(.gsc-emoji-button):hover {

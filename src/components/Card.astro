@@ -56,7 +56,9 @@ if (SITE.showCoverImages) {
       );
       const gallerySlug = getGallerySlug(id);
       const firstImage = Object.entries(allGalleryImages)
-        .filter(([path]) => path.startsWith(`/src/data/galleries/${gallerySlug}/`))
+        .filter(([path]) =>
+          path.startsWith(`/src/data/galleries/${gallerySlug}/`)
+        )
         .sort(([a], [b]) => a.localeCompare(b))
         .at(0)?.[1]?.default;
       if (firstImage) {
@@ -87,87 +89,99 @@ if (SITE.showCoverImages) {
     coverSrc ? "overflow-hidden" : "",
     "border backdrop-blur-sm",
     "transition-[border-color,background-color,box-shadow,transform] duration-300 ease-out motion-reduce:transform-none motion-reduce:transition-none",
-    "hover:-translate-y-0.5 focus-within:-translate-y-0.5",
-    "hover:shadow-lg focus-within:shadow-lg",
+    "focus-within:-translate-y-0.5 hover:-translate-y-0.5",
+    "focus-within:shadow-lg hover:shadow-lg",
 
     // Default posts styling
-    !isGallery && !featured && [
-      "border-border/25 bg-muted/10",
-      "hover:border-accent/40 hover:bg-accent/5 focus-within:border-accent/40 focus-within:bg-accent/5",
-      "hover:shadow-accent/10 focus-within:shadow-accent/10",
-    ],
+    !isGallery &&
+      !featured && [
+        "border-border/25 bg-muted/10",
+        "focus-within:border-accent/40 focus-within:bg-accent/5 hover:border-accent/40 hover:bg-accent/5",
+        "focus-within:shadow-accent/10 hover:shadow-accent/10",
+      ],
 
     // Featured generic posts styling
-    !isGallery && featured && [
-      "border-featured/30 bg-featured/5",
-      "hover:border-featured/50 hover:bg-featured/10 focus-within:border-featured/50 focus-within:bg-featured/10",
-      "hover:shadow-featured/10 focus-within:shadow-featured/10",
-      "featured-glow",
-    ],
+    !isGallery &&
+      featured && [
+        "border-featured/30 bg-featured/5",
+        "focus-within:border-featured/50 focus-within:bg-featured/10 hover:border-featured/50 hover:bg-featured/10",
+        "focus-within:shadow-featured/10 hover:shadow-featured/10",
+        "featured-glow",
+      ],
 
     // Gallery variant styling
-    isGallery && !featured && [
-      "border-gallery/20 bg-gallery/5",
-      "hover:border-gallery/40 hover:bg-gallery/10 focus-within:border-gallery/40 focus-within:bg-gallery/10",
-      "hover:shadow-gallery/10 focus-within:shadow-gallery/10",
-    ],
+    isGallery &&
+      !featured && [
+        "border-gallery/20 bg-gallery/5",
+        "focus-within:border-gallery/40 focus-within:bg-gallery/10 hover:border-gallery/40 hover:bg-gallery/10",
+        "focus-within:shadow-gallery/10 hover:shadow-gallery/10",
+      ],
 
     // Featured gallery styling
-    isGallery && featured && [
-      "border-gallery/40 bg-gallery/10",
-      "hover:border-gallery/60 hover:bg-gallery/15 focus-within:border-gallery/60 focus-within:bg-gallery/15",
-      "hover:shadow-gallery/20 focus-within:shadow-gallery/20",
-      "gallery-glow",
-    ],
+    isGallery &&
+      featured && [
+        "border-gallery/40 bg-gallery/10",
+        "focus-within:border-gallery/60 focus-within:bg-gallery/15 hover:border-gallery/60 hover:bg-gallery/15",
+        "focus-within:shadow-gallery/20 hover:shadow-gallery/20",
+        "gallery-glow",
+      ],
   ]}
 >
   <!-- Cursor-following glow -->
   <div
-    class="card-glow-effect pointer-events-none absolute inset-0 z-0 rounded-2xl opacity-0 transition-opacity duration-300 motion-reduce:transition-none group-hover/card:opacity-100 group-focus-within/card:opacity-100"
+    class="card-glow-effect pointer-events-none absolute inset-0 z-0 rounded-2xl opacity-0 transition-opacity duration-300 group-focus-within/card:opacity-100 group-hover/card:opacity-100 motion-reduce:transition-none"
     aria-hidden="true"
   >
   </div>
 
   <!-- Cover image — wrapped in <a> for clickability; aria-hidden so screen readers skip the duplicate link -->
-  {coverSrc && (
-    <a href={href} tabindex="-1" aria-hidden="true" class="card-cover-wrapper block" data-cover>
-      {typeof coverSrc === "object" ? (
-        <Image
-          src={coverSrc}
-          alt={title}
-          class="card-cover-img"
-          loading={loading}
-          fetchpriority={fetchpriority}
-          widths={[400, 800]}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-      ) : (
-        <img
-          src={coverSrc}
-          alt={title}
-          class="card-cover-img"
-          loading={loading}
-          fetchpriority={fetchpriority}
-          decoding="async"
-          width="1200"
-          height="630"
-          onerror="this.closest('[data-cover]').style.display='none'"
-        />
-      )}
-      <div class="card-cover-overlay" aria-hidden="true"></div>
-    </a>
-  )}
+  {
+    coverSrc && (
+      <a
+        href={href}
+        tabindex="-1"
+        aria-hidden="true"
+        class="card-cover-wrapper block"
+        data-cover
+      >
+        {typeof coverSrc === "object" ? (
+          <Image
+            src={coverSrc}
+            alt={title}
+            class="card-cover-img"
+            loading={loading}
+            fetchpriority={fetchpriority}
+            widths={[400, 800]}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        ) : (
+          <img
+            src={coverSrc}
+            alt={title}
+            class="card-cover-img"
+            loading={loading}
+            fetchpriority={fetchpriority}
+            decoding="async"
+            width="1200"
+            height="630"
+            onerror="this.closest('[data-cover]').style.display='none'"
+          />
+        )}
+        <div class="card-cover-overlay" aria-hidden="true" />
+      </a>
+    )
+  }
 
   <div class="relative z-5 p-4 sm:p-5">
     <a
       href={href}
       class:list={[
-        "text-lg font-semibold text-foreground transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm",
-        isGallery 
-          ? "group-hover/card:text-gallery focus-visible:ring-gallery" 
-          : featured 
+        "rounded-sm text-lg font-semibold text-foreground transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none",
+        isGallery
+          ? "group-hover/card:text-gallery focus-visible:ring-gallery"
+          : featured
             ? "group-hover/card:text-featured focus-visible:ring-featured"
-            : "group-hover/card:text-accent focus-visible:ring-accent"
+            : "group-hover/card:text-accent focus-visible:ring-accent",
       ]}
       aria-labelledby={headingId}
       aria-describedby={descriptionId}
@@ -177,63 +191,81 @@ if (SITE.showCoverImages) {
         id={headingId}
         class="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap"
       >
-        {isGallery && (
-          <span
-            aria-hidden="true"
-            class="inline-flex shrink-0 items-center justify-center rounded-md bg-gallery/10 p-1 text-gallery/80 ring-1 ring-gallery/20"
-          >
-            <IconGallery class="size-4" />
-          </span>
-        )}
+        {
+          isGallery && (
+            <span
+              aria-hidden="true"
+              class="inline-flex shrink-0 items-center justify-center rounded-md bg-gallery/10 p-1 text-gallery/80 ring-1 ring-gallery/20"
+            >
+              <IconGallery class="size-4" />
+            </span>
+          )
+        }
         {isGallery && <span class="sr-only shrink-0">Gallery:</span>}
-        <span class="overflow-hidden text-ellipsis whitespace-nowrap">{title}</span>
+        <span class="overflow-hidden text-ellipsis whitespace-nowrap"
+          >{title}</span
+        >
       </Heading>
       <!-- Expand clickable area to whole card on top of everything, minus the description -->
-      <span class="absolute -inset-4 sm:-inset-5 z-10" aria-hidden="true"></span>
+      <span class="absolute -inset-4 z-10 sm:-inset-5" aria-hidden="true"
+      ></span>
     </a>
-    
+
     <!-- Meta row: date + reading time -->
-    <div class="relative z-20 mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 pointer-events-none">
-      <Datetime pubDatetime={pubDatetime} modDatetime={modDatetime} timezone={timezone} />
-      {readingTime && (
-        <span class="flex items-center gap-1 text-sm text-foreground/60 whitespace-nowrap">
-          <IconClock class="size-4 shrink-0" aria-hidden="true" />
-          {readingTime}
-        </span>
-      )}
+    <div
+      class="pointer-events-none relative z-20 mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1"
+    >
+      <Datetime
+        pubDatetime={pubDatetime}
+        modDatetime={modDatetime}
+        timezone={timezone}
+      />
+      {
+        readingTime && (
+          <span class="flex items-center gap-1 text-sm whitespace-nowrap text-foreground/60">
+            <IconClock class="size-4 shrink-0" aria-hidden="true" />
+            {readingTime}
+          </span>
+        )
+      }
     </div>
 
     <p
       id={descriptionId}
-      class="relative z-20 mt-2 line-clamp-2 text-sm leading-relaxed text-foreground/75 pointer-events-auto select-text"
+      class="pointer-events-auto relative z-20 mt-2 line-clamp-2 text-sm leading-relaxed text-foreground/75 select-text"
     >
       {description}
     </p>
 
     <!-- Tags -->
-    {SITE.showTagsInCards && tags.length > 0 && (
-      <ul class="relative z-20 mt-3 flex flex-wrap gap-1.5 pointer-events-auto">
-        {tags.slice(0, 4).map((tag: string) => (
-          <li>
-            <a
-              href={`/tags/${slugifyStr(tag)}/`}
-              class:list={[
-                "inline-flex items-center gap-0.5 rounded-full px-2.5 py-0.5",
-                "text-xs font-medium",
-                "border transition-colors duration-200",
-                isGallery
-                  ? "border-gallery/25 bg-gallery/8 text-gallery/80 hover:border-gallery/50 hover:bg-gallery/15 hover:text-gallery"
-                  : featured
-                    ? "border-featured/25 bg-featured/8 text-featured/80 hover:border-featured/50 hover:bg-featured/15 hover:text-featured"
-                    : "border-border/30 bg-muted/15 text-foreground/60 hover:border-accent/40 hover:bg-accent/10 hover:text-accent",
-              ]}
-            >
-              <span aria-hidden="true" class="opacity-60">#</span>{tag}
-            </a>
-          </li>
-        ))}
-      </ul>
-    )}
+    {
+      SITE.showTagsInCards && tags.length > 0 && (
+        <ul class="pointer-events-auto relative z-20 mt-3 flex flex-wrap gap-1.5">
+          {tags.slice(0, 4).map((tag: string) => (
+            <li>
+              <a
+                href={`/tags/${slugifyStr(tag)}/`}
+                class:list={[
+                  "inline-flex items-center gap-0.5 rounded-full px-2.5 py-0.5",
+                  "text-xs font-medium",
+                  "border transition-colors duration-200",
+                  isGallery
+                    ? "border-gallery/25 bg-gallery/8 text-gallery/80 hover:border-gallery/50 hover:bg-gallery/15 hover:text-gallery"
+                    : featured
+                      ? "border-featured/25 bg-featured/8 text-featured/80 hover:border-featured/50 hover:bg-featured/15 hover:text-featured"
+                      : "border-border/30 bg-muted/15 text-foreground/60 hover:border-accent/40 hover:bg-accent/10 hover:text-accent",
+                ]}
+              >
+                <span aria-hidden="true" class="opacity-60">
+                  #
+                </span>
+                {tag}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
   </div>
 </li>
 
@@ -288,7 +320,9 @@ if (SITE.showCoverImages) {
     object-position: center;
     display: block;
     /* Subtle zoom on hover via the parent group */
-    transition: transform 0.4s ease, filter 0.4s ease;
+    transition:
+      transform 0.4s ease,
+      filter 0.4s ease;
     filter: brightness(0.95) saturate(1.05);
   }
 

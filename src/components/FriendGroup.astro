@@ -20,19 +20,19 @@ const count = friends.length;
   count > 0 && (
     <section class="mt-12" aria-labelledby={`group-${group.id}`}>
       <div class="mb-4 flex items-center gap-2">
-        <span class="h-1.5 w-1.5 rounded-full bg-accent/70 shadow-[0_0_8px_var(--color-accent)]"></span>
+        <span class="h-1.5 w-1.5 rounded-full bg-accent/70 shadow-[0_0_8px_var(--color-accent)]" />
         <h2
           id={`group-${group.id}`}
           class="font-firacode text-[10px] tracking-widest text-accent/80 uppercase"
         >
           {group.name}
         </h2>
-        <div class="h-px flex-1 bg-linear-to-r from-accent/20 to-transparent"></div>
+        <div class="h-px flex-1 bg-linear-to-r from-accent/20 to-transparent" />
         <span class="text-xs text-foreground/45">{count} 个</span>
       </div>
 
       {group.description && (
-        <p class="mb-4 -mt-2 text-sm italic text-foreground/55">
+        <p class="-mt-2 mb-4 text-sm text-foreground/55 italic">
           {group.description}
         </p>
       )}

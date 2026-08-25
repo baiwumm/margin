@@ -17,12 +17,12 @@ draft: false
 // 对象解构
 const obj = { a: 1, b: 2 };
 const { a, b } = obj;
-console.log(a, b)
+console.log(a, b);
 
 // 数组解构
 const arr = [1, 2, 3];
 const [a, b] = arr;
-console.log(a, b)
+console.log(a, b);
 ```
 
 工作中我们最经常用的就是类似上面的对象和数组解构，好多同学就不禁问了，这个不是很简单吗。
@@ -32,7 +32,7 @@ console.log(a, b)
 ```js
 // 不改动下面代码，如何使等式成立
 const [a, b] = { a: 1, b: 2 };
-console.log(a, b)
+console.log(a, b);
 ```
 
 你觉得这个打印出来什么呢？
@@ -58,10 +58,10 @@ console.log(a, b)
 ```js
 const arr = [1, 2, 3];
 const iter = arr[Symbol.iterator]();
-console.log(iter.next())
-console.log(iter.next())
-console.log(iter.next())
-console.log(iter.next())
+console.log(iter.next());
+console.log(iter.next());
+console.log(iter.next());
+console.log(iter.next());
 ```
 
 我们看一下打印结果：
@@ -80,7 +80,7 @@ const arr = [1, 2, 3];
 const iter = arr[Symbol.iterator]();
 const a = iter.next().value;
 const b = iter.next().value;
-console.log(a, b)
+console.log(a, b);
 ```
 
 ## 对象解构
@@ -105,9 +105,9 @@ const b = obj.b;
 ```js
 Object.prototype[Symbol.iterator] = function () {
   return Object.values(this)[Symbol.iterator]();
-}
+};
 const [a, b] = { a: 1, b: 2 };
-console.log(a, b)
+console.log(a, b);
 ```
 
 这样就能使等式成立，而且如果你的 **ES6** 功底足够的扎实，还知道什么叫 [生成器Generator](https://es6.ruanyifeng.com/#docs/generator)，那你还可以这样写：
@@ -115,9 +115,9 @@ console.log(a, b)
 ```js
 Object.prototype[Symbol.iterator] = function* () {
   yield* Object.values(this);
-}
+};
 const [a, b] = { a: 1, b: 2 };
-console.log(a, b)
+console.log(a, b);
 ```
 
 最终效果是一样的。

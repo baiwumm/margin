@@ -38,7 +38,7 @@ const initial = (name.trim().charAt(0) || "?").toUpperCase();
     class:list={[
       "card-glow group/card relative flex h-full flex-col rounded-2xl border backdrop-blur-sm",
       "transition-[border-color,background-color,box-shadow,transform] duration-300 ease-out motion-reduce:transform-none motion-reduce:transition-none",
-      "focus-within:-translate-y-0.5 hover:-translate-y-0.5 focus-within:shadow-lg hover:shadow-lg",
+      "focus-within:-translate-y-0.5 focus-within:shadow-lg hover:-translate-y-0.5 hover:shadow-lg",
       "border-border/25 bg-muted/10",
       "focus-within:border-accent/40 focus-within:bg-accent/5 hover:border-accent/40 hover:bg-accent/5",
       "focus-within:shadow-accent/10 hover:shadow-accent/10",
@@ -50,23 +50,26 @@ const initial = (name.trim().charAt(0) || "?").toUpperCase();
     <div
       class="card-glow-effect pointer-events-none absolute inset-0 z-0 rounded-2xl opacity-0 transition-opacity duration-300 group-focus-within/card:opacity-100 group-hover/card:opacity-100 motion-reduce:transition-none"
       aria-hidden="true"
-    ></div>
+    >
+    </div>
 
     <div class="relative z-5 flex h-full flex-col p-4 sm:p-5">
       <!-- 头像 + 名称/地址（上半） -->
       <div class="flex items-center gap-3">
         <span class="friend-avatar" aria-hidden="true">
           <span class="friend-avatar-fallback">{initial}</span>
-          {avatar && (
-            <img
-              src={avatar}
-              alt={`${name} 的头像`}
-              loading="lazy"
-              referrerpolicy="no-referrer"
-              class="friend-avatar-img"
-              onerror="this.classList.add('is-broken');"
-            />
-          )}
+          {
+            avatar && (
+              <img
+                src={avatar}
+                alt={`${name} 的头像`}
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                class="friend-avatar-img"
+                onerror="this.classList.add('is-broken');"
+              />
+            )
+          }
         </span>
 
         <span class="min-w-0 flex-1">

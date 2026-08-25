@@ -124,7 +124,10 @@ const ATTR_PAIR_RE = new RegExp(
 );
 
 function extractAttr(attrs: string, key: string): string | undefined {
-  const pattern = new RegExp(`(?:^|\\s)${key}\\s*=\\s*${ATTR_PAIR_RE.source}`, "i");
+  const pattern = new RegExp(
+    `(?:^|\\s)${key}\\s*=\\s*${ATTR_PAIR_RE.source}`,
+    "i"
+  );
   const match = pattern.exec(attrs);
   const value = match?.[1]?.trim();
   return value || undefined;
@@ -251,11 +254,14 @@ const rawPosts = import.meta.glob<string>("/src/data/blog/**/[^_]*.{md,mdx}", {
   eager: true,
 });
 
-const rawGalleries = import.meta.glob<string>("/src/data/galleries/**/index.{md,mdx}", {
-  query: "?raw",
-  import: "default",
-  eager: true,
-});
+const rawGalleries = import.meta.glob<string>(
+  "/src/data/galleries/**/index.{md,mdx}",
+  {
+    query: "?raw",
+    import: "default",
+    eager: true,
+  }
+);
 
 function extractYaml(fm: string, key: string): string | undefined {
   const match = new RegExp(`^${key}\\s*:\\s*(.*)$`, "m").exec(fm);
@@ -291,7 +297,11 @@ function parseFrontmatterTdk(raw: string): Tdk | undefined {
  */
 function buildLocalTdkMap(): Map<string, Tdk> {
   const map = new Map<string, Tdk>();
-  const collect = (entries: Record<string, string>, prefix: string, withImage: boolean) => {
+  const collect = (
+    entries: Record<string, string>,
+    prefix: string,
+    withImage: boolean
+  ) => {
     for (const [absPath, raw] of Object.entries(entries)) {
       const rel = absPath
         .replace(/^\/src\/data\/(blog|galleries)\//, "")
@@ -365,7 +375,10 @@ export function remarkLinkCard() {
     const collect = (node: MdNode) => {
       if (node.type !== "paragraph" || !node.children) return;
       // 拼接整段文本（GFM autolink 会把 URL 拆成 link 节点，需递归取文本）
-      const text = node.children.map(child => collectText(child)).join("").trim();
+      const text = node.children
+        .map(child => collectText(child))
+        .join("")
+        .trim();
       const match = DIRECTIVE_RE.exec(text);
       if (!match) return;
       const attrs = match[2]?.trim() ?? "";

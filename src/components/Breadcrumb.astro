@@ -21,19 +21,28 @@ const currentPageLabel = breadcrumbs.at(-1)?.label ?? "Home";
   class:list={["app-layout mt-6 mb-2", { "overflow-hidden": withBackButton }]}
   aria-label={withBackButton ? "Contextual navigation" : "breadcrumb"}
 >
-  <div class:list={["flex items-center gap-3", { "justify-between": withBackButton }]}>
-    {withBackButton && (
-      <a
-        id="back-button"
-        href="/"
-        class="breadcrumb-bar back-btn group flex-shrink-0 !gap-2 text-foreground/60 transition-colors duration-200 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background font-firacode text-sm"
-        aria-label={`Go back to the previous page. Current context: ${currentPageLabel}`}
-      >
-        <IconChevronLeft class="size-4 opacity-70 transition-transform duration-200 group-hover:-translate-x-0.5 rtl:rotate-180 rtl:group-hover:translate-x-0.5" />
-        <span aria-hidden="true" class="tracking-wide">cd ..</span>
-        <span class="visually-hidden">Go back</span>
-      </a>
-    )}
+  <div
+    class:list={[
+      "flex items-center gap-3",
+      { "justify-between": withBackButton },
+    ]}
+  >
+    {
+      withBackButton && (
+        <a
+          id="back-button"
+          href="/"
+          class="breadcrumb-bar back-btn group flex-shrink-0 !gap-2 font-firacode text-sm text-foreground/60 transition-colors duration-200 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+          aria-label={`Go back to the previous page. Current context: ${currentPageLabel}`}
+        >
+          <IconChevronLeft class="size-4 opacity-70 transition-transform duration-200 group-hover:-translate-x-0.5 rtl:rotate-180 rtl:group-hover:translate-x-0.5" />
+          <span aria-hidden="true" class="tracking-wide">
+            cd ..
+          </span>
+          <span class="visually-hidden">Go back</span>
+        </a>
+      )
+    }
 
     <ol
       class:list={[
@@ -43,10 +52,13 @@ const currentPageLabel = breadcrumbs.at(-1)?.label ?? "Home";
         },
       ]}
     >
-      <li class:list={["breadcrumb-item", { "is-root": withBackButton }]}> 
+      <li class:list={["breadcrumb-item", { "is-root": withBackButton }]}>
         <a
           href="/"
-          class:list={["breadcrumb-home", { "breadcrumb-link-soft": withBackButton }]}
+          class:list={[
+            "breadcrumb-home",
+            { "breadcrumb-link-soft": withBackButton },
+          ]}
           aria-label="Home"
           title="Home"
         >
@@ -54,21 +66,25 @@ const currentPageLabel = breadcrumbs.at(-1)?.label ?? "Home";
           <span class="visually-hidden">Home</span>
         </a>
       </li>
-    {
-      breadcrumbs.map(item => (
-        <li class:list={["breadcrumb-item", { "is-current": !item.href }]}>
-          {item.href ? (
-            <a href={item.href} class="breadcrumb-link">
-              {item.label}
-            </a>
-          ) : (
-            <span class="breadcrumb-current" aria-current="page" title={item.label}>
-              {item.label}
-            </span>
-          )}
-        </li>
-      ))
-    }
+      {
+        breadcrumbs.map(item => (
+          <li class:list={["breadcrumb-item", { "is-current": !item.href }]}>
+            {item.href ? (
+              <a href={item.href} class="breadcrumb-link">
+                {item.label}
+              </a>
+            ) : (
+              <span
+                class="breadcrumb-current"
+                aria-current="page"
+                title={item.label}
+              >
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))
+      }
     </ol>
   </div>
 </nav>
@@ -279,9 +295,8 @@ const currentPageLabel = breadcrumbs.at(-1)?.label ?? "Home";
     }
 
     function updateGoBackUrl() {
-      const backButton = document.querySelector<HTMLAnchorElement>(
-        BACK_BUTTON_SELECTOR
-      );
+      const backButton =
+        document.querySelector<HTMLAnchorElement>(BACK_BUTTON_SELECTOR);
 
       if (!backButton) return;
 

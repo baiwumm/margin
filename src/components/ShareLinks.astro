@@ -20,7 +20,9 @@ const shareBtnClass =
 ---
 
 <div class:list={["share-links flex shrink-0 flex-col gap-2", className]}>
-  <span class="font-app text-[12px] tracking-wider text-foreground/70 uppercase select-none">
+  <span
+    class="font-app text-[12px] tracking-wider text-foreground/70 uppercase select-none"
+  >
     分享
   </span>
   <div class="flex items-center gap-1">
@@ -31,8 +33,12 @@ const shareBtnClass =
       title="复制文章链接"
       aria-label="复制文章链接"
     >
-      <IconCopy class="share-icon-copy size-4 fill-transparent stroke-current stroke-2" />
-      <IconCheck class="share-icon-copied hidden size-4 fill-transparent stroke-current stroke-2" />
+      <IconCopy
+        class="share-icon-copy size-4 fill-transparent stroke-current stroke-2"
+      />
+      <IconCheck
+        class="share-icon-copied hidden size-4 fill-transparent stroke-current stroke-2"
+      />
     </button>
 
     {
@@ -46,7 +52,8 @@ const shareBtnClass =
         >
           <social.icon
             class:list={[
-              social.iconClass ?? "size-4 fill-transparent stroke-current stroke-2",
+              social.iconClass ??
+                "size-4 fill-transparent stroke-current stroke-2",
             ]}
           />
           <span class="sr-only">{social.linkTitle}</span>

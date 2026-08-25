@@ -50,7 +50,7 @@ const READ_MODE_SHORTCUT = "r";
         <span
           class="animate-reading-halo pointer-events-none absolute -inset-1.5 -z-10 rounded-full bg-accent/20 blur-md"
           aria-hidden="true"
-        ></span>
+        />
         <div class="read-mode-bar-inner">
           <div class="read-mode-segment" role="group" aria-label="阅读字体">
             <button
@@ -73,7 +73,7 @@ const READ_MODE_SHORTCUT = "r";
             </button>
           </div>
 
-          <span class="read-mode-divider" aria-hidden="true"></span>
+          <span class="read-mode-divider" aria-hidden="true" />
 
           <div class="read-mode-zoom" role="group" aria-label="字号缩放">
             <button
@@ -94,7 +94,9 @@ const READ_MODE_SHORTCUT = "r";
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
             </button>
-            <span class="read-mode-zoom-label" data-read-zoom-label>100%</span>
+            <span class="read-mode-zoom-label" data-read-zoom-label>
+              100%
+            </span>
             <button
               type="button"
               class="read-mode-zoom-btn"
@@ -116,7 +118,7 @@ const READ_MODE_SHORTCUT = "r";
             </button>
           </div>
 
-          <span class="read-mode-divider" aria-hidden="true"></span>
+          <span class="read-mode-divider" aria-hidden="true" />
 
           <button
             type="button"
@@ -192,9 +194,7 @@ const READ_MODE_SHORTCUT = "r";
 
     // Don't let `r` / `Esc` fight with the search modal or shortcuts panel
     const dialogOpen = () =>
-      document
-        .querySelector("#search-modal")
-        ?.classList.contains("active") ||
+      document.querySelector("#search-modal")?.classList.contains("active") ||
       document
         .querySelector("[data-shortcuts-panel]")
         ?.classList.contains("active");
@@ -265,10 +265,7 @@ const READ_MODE_SHORTCUT = "r";
       });
 
     const updateScale = (delta: number) => {
-      const next = Math.min(
-        SCALE_MAX,
-        Math.max(SCALE_MIN, getScale() + delta)
-      );
+      const next = Math.min(SCALE_MAX, Math.max(SCALE_MIN, getScale() + delta));
       localStorage.setItem("read-mode-scale", String(next));
       root.style.setProperty("--read-scale", String(next / 100));
       syncBar();

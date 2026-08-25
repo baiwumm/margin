@@ -49,7 +49,7 @@ QQ音乐与网易云共用同一套卡片与数据层，只需把 `platform` 换
 ```mdx
 <Music id="212233" />
 
-<Music id="212233"  platform="netease" />
+<Music id="212233" platform="netease" />
 ```
 
 两种入口最终共用同一套视觉与数据层，效果完全一致。纯 `.md` 文章请用上面的 `::music` 指令。

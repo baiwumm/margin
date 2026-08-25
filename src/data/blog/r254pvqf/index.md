@@ -43,40 +43,45 @@ TweakCN 不仅界面简洁直观，更深度集成了 shadcn/ui 的设计规范�
 ```css
 :root {
   --background: oklch(1 0 0);
-  --foreground: oklch(0.1450 0 0);
+  --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.1450 0 0);
+  --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.1450 0 0);
-  --primary: oklch(0.2050 0 0);
-  --primary-foreground: oklch(0.9850 0 0);
-  --secondary: oklch(0.9700 0 0);
-  --secondary-foreground: oklch(0.2050 0 0);
-  --muted: oklch(0.9700 0 0);
-  --muted-foreground: oklch(0.5560 0 0);
-  --accent: oklch(0.9700 0 0);
-  --accent-foreground: oklch(0.2050 0 0);
-  --destructive: oklch(0.5770 0.2450 27.3250);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.9220 0 0);
-  --input: oklch(0.9220 0 0);
-  --ring: oklch(0.7080 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.9850 0 0);
-  --sidebar-foreground: oklch(0.1450 0 0);
-  --sidebar-primary: oklch(0.2050 0 0);
-  --sidebar-primary-foreground: oklch(0.9850 0 0);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(92.2% 0 0);
-  --sidebar-accent-foreground: oklch(0.2050 0 0);
-  --sidebar-border: oklch(0.9220 0 0);
-  --sidebar-ring: oklch(0.7080 0 0);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
   --radius: 0.625rem;
   --shadow-x: 0;
   --shadow-y: 1px;
@@ -86,52 +91,61 @@ TweakCN 不仅界面简洁直观，更深度集成了 shadcn/ui 的设计规范�
   --shadow-color: oklch(0 0 0);
   --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
-  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
-  --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
-  --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
-  --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
+  --shadow-sm:
+    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+  --shadow-md:
+    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+  --shadow-lg:
+    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+  --shadow-xl:
+    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 }
 
 .dark {
-  --background: oklch(0.1450 0 0);
-  --foreground: oklch(0.9850 0 0);
-  --card: oklch(0.2050 0 0);
-  --card-foreground: oklch(0.9850 0 0);
-  --popover: oklch(0.2690 0 0);
-  --popover-foreground: oklch(0.9850 0 0);
-  --primary: oklch(0.9220 0 0);
-  --primary-foreground: oklch(0.2050 0 0);
-  --secondary: oklch(0.2690 0 0);
-  --secondary-foreground: oklch(0.9850 0 0);
-  --muted: oklch(0.2690 0 0);
-  --muted-foreground: oklch(0.7080 0 0);
-  --accent: oklch(0.3710 0 0);
-  --accent-foreground: oklch(0.9850 0 0);
-  --destructive: oklch(0.7040 0.1910 22.2160);
-  --destructive-foreground: oklch(0.9850 0 0);
-  --border: oklch(0.2750 0 0);
-  --input: oklch(0.3250 0 0);
-  --ring: oklch(0.5560 0 0);
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.269 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.371 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.275 0 0);
+  --input: oklch(0.325 0 0);
+  --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.2050 0 0);
-  --sidebar-foreground: oklch(0.9850 0 0);
-  --sidebar-primary: oklch(0.4880 0.2430 264.3760);
-  --sidebar-primary-foreground: oklch(0.9850 0 0);
-  --sidebar-accent: oklch(0.2690 0 0);
-  --sidebar-accent-foreground: oklch(0.9850 0 0);
-  --sidebar-border: oklch(0.2750 0 0);
-  --sidebar-ring: oklch(0.4390 0 0);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.275 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
   --radius: 0.625rem;
   --shadow-x: 0;
   --shadow-y: 1px;
@@ -141,11 +155,15 @@ TweakCN 不仅界面简洁直观，更深度集成了 shadcn/ui 的设计规范�
   --shadow-color: oklch(0 0 0);
   --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
   --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
-  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
-  --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
-  --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
-  --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
+  --shadow-sm:
+    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+  --shadow-md:
+    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+  --shadow-lg:
+    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+  --shadow-xl:
+    0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
 }
 ```
@@ -154,13 +172,13 @@ TweakCN 不仅界面简洁直观，更深度集成了 shadcn/ui 的设计规范�
 
 ```css
 /* Amber Minimal */
-:root.theme-amber-minimal{
+:root.theme-amber-minimal {
 }
-.dark.theme-amber-minimal{
+.dark.theme-amber-minimal {
 }
 
 /* Amethyst Haze */
-:root.theme-amethyst-haze{
+:root.theme-amethyst-haze {
 }
 .dark.theme-amethyst-haze {
 }
@@ -189,48 +207,81 @@ pnpm add zustand
  * @description: 主题色
  */
 export const THEME_PRIMARY_COLOR = Enum({
-  DEFAULT: { value: 'default', label: 'Default', color: 'oklch(0.205 0 0)' },
-  AMBER_MINIMAL: { value: 'amber-minimal', label: 'Amber', color: 'oklch(0.7686 0.1647 70.0804)' },
-  AMETHYST_HAZE: { value: 'amethyst-haze', label: 'Amethyst', color: 'oklch(0.6104 0.0767 299.7335)' },
-  CANDYLAND: { value: 'candyland', label: 'Candyland', color: 'oklch(0.8677 0.0735 7.0855)' },
-  DARKMATTER: { value: 'darkmatter', label: 'Darkmatter', color: 'oklch(0.6716 0.1368 48.5130)' },
-  ELEGANT_LUXURY: { value: 'elegant-luxury', label: 'Elegant', color: 'oklch(0.4650 0.1470 24.9381)' },
-  SAGE_GARDEN: { value: 'sage-garden', label: 'Garden', color: 'oklch(0.6333 0.0309 154.9039)' },
-  SUPABASE: { value: 'supabase', label: 'Supabase', color: 'oklch(0.8348 0.1302 160.9080)' },
-  TWITTER: { value: 'twitter', label: 'Twitter', color: 'oklch(0.6723 0.1606 244.9955)' },
+  DEFAULT: { value: "default", label: "Default", color: "oklch(0.205 0 0)" },
+  AMBER_MINIMAL: {
+    value: "amber-minimal",
+    label: "Amber",
+    color: "oklch(0.7686 0.1647 70.0804)",
+  },
+  AMETHYST_HAZE: {
+    value: "amethyst-haze",
+    label: "Amethyst",
+    color: "oklch(0.6104 0.0767 299.7335)",
+  },
+  CANDYLAND: {
+    value: "candyland",
+    label: "Candyland",
+    color: "oklch(0.8677 0.0735 7.0855)",
+  },
+  DARKMATTER: {
+    value: "darkmatter",
+    label: "Darkmatter",
+    color: "oklch(0.6716 0.1368 48.5130)",
+  },
+  ELEGANT_LUXURY: {
+    value: "elegant-luxury",
+    label: "Elegant",
+    color: "oklch(0.4650 0.1470 24.9381)",
+  },
+  SAGE_GARDEN: {
+    value: "sage-garden",
+    label: "Garden",
+    color: "oklch(0.6333 0.0309 154.9039)",
+  },
+  SUPABASE: {
+    value: "supabase",
+    label: "Supabase",
+    color: "oklch(0.8348 0.1302 160.9080)",
+  },
+  TWITTER: {
+    value: "twitter",
+    label: "Twitter",
+    color: "oklch(0.6723 0.1606 244.9955)",
+  },
 });
 ```
 
 3、新建 `store/useAppStore.ts` 文件：
 
 ```ts
-'use client'
-import { create } from 'zustand'
-import { createJSONStorage, persist } from 'zustand/middleware'
+"use client";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
-import { THEME_PRIMARY_COLOR } from '@/enums';
-import { initializePrimaryColor } from '@/lib/utils';
+import { THEME_PRIMARY_COLOR } from "@/enums";
+import { initializePrimaryColor } from "@/lib/utils";
 
 type AppState = {
   primaryColor: typeof THEME_PRIMARY_COLOR.valueType; // 主题色
   setPrimaryColor: (color: typeof THEME_PRIMARY_COLOR.valueType) => void; // 设置主题色
-}
+};
 
 export const useAppStore = create(
   persist<AppState>(
-    (set) => ({
+    set => ({
       primaryColor: THEME_PRIMARY_COLOR.DEFAULT, // 默认主题色
-      setPrimaryColor: (color) => {
-        set({ primaryColor: color })
+      setPrimaryColor: color => {
+        set({ primaryColor: color });
         initializePrimaryColor(color);
-      }
+      },
     }),
     {
-      name: 'app-theme', // 用于存储在 localStorage 中的键名
-      storage: createJSONStorage(() => localStorage)// 指定使用 localStorage 存储
-    }))
+      name: "app-theme", // 用于存储在 localStorage 中的键名
+      storage: createJSONStorage(() => localStorage), // 指定使用 localStorage 存储
+    }
+  )
+);
 ```
-    
 
 4、创建主题色初始化函数：
 
@@ -239,21 +290,23 @@ export const useAppStore = create(
  * @description: 初始化主题色
  * @param {typeof} color
  */
-export const initializePrimaryColor = (color: typeof THEME_PRIMARY_COLOR.valueType) => {
-  if (typeof document !== 'undefined') {
+export const initializePrimaryColor = (
+  color: typeof THEME_PRIMARY_COLOR.valueType
+) => {
+  if (typeof document !== "undefined") {
     // 清空 theme- 开头的类名
     const html = document.documentElement;
     Array.from(html.classList)
-      .filter((className) => className.startsWith("theme-"))
-      .forEach((className) => {
-        html.classList.remove(className)
-      })
+      .filter(className => className.startsWith("theme-"))
+      .forEach(className => {
+        html.classList.remove(className);
+      });
     // 如果不是默认主题色，则添加对应的类名
     if (color !== THEME_PRIMARY_COLOR.DEFAULT) {
       html.classList.add(`theme-${color}`);
     }
   }
-}
+};
 ```
 
 5、创建主题切换按钮：
@@ -261,40 +314,42 @@ export const initializePrimaryColor = (color: typeof THEME_PRIMARY_COLOR.valueTy
 ```tsx
 import { type FC, useCallback } from "react";
 
-import { getClipKeyframes } from '@/components/animate-ui/primitives/effects/theme-toggler';
-import { Button } from '@/components/ui';
-import { THEME_PRIMARY_COLOR } from '@/enums';
-import { useAppStore } from '@/store/useAppStore';
+import { getClipKeyframes } from "@/components/animate-ui/primitives/effects/theme-toggler";
+import { Button } from "@/components/ui";
+import { THEME_PRIMARY_COLOR } from "@/enums";
+import { useAppStore } from "@/store/useAppStore";
 
 const PrimaryColorPicker: FC = () => {
-  const primaryColor = useAppStore((s) => s.primaryColor);
-  const setPrimaryColor = useAppStore((s) => s.setPrimaryColor);
-  const themeModeDirection = useAppStore((s) => s.themeModeDirection);
+  const primaryColor = useAppStore(s => s.primaryColor);
+  const setPrimaryColor = useAppStore(s => s.setPrimaryColor);
+  const themeModeDirection = useAppStore(s => s.themeModeDirection);
 
   const [fromClip, toClip] = getClipKeyframes(themeModeDirection);
 
   // 点击颜色切换
-  const onChangeColor = useCallback(async (color: typeof THEME_PRIMARY_COLOR.valueType) => {
-    if (primaryColor === color) {
-      return;
-    }
-    if ((!document.startViewTransition)) {
-      setPrimaryColor(color);
-      return;
-    }
-    await document.startViewTransition(async () => {
-      setPrimaryColor(color);
-    }).ready;
-    document.documentElement
-      .animate(
+  const onChangeColor = useCallback(
+    async (color: typeof THEME_PRIMARY_COLOR.valueType) => {
+      if (primaryColor === color) {
+        return;
+      }
+      if (!document.startViewTransition) {
+        setPrimaryColor(color);
+        return;
+      }
+      await document.startViewTransition(async () => {
+        setPrimaryColor(color);
+      }).ready;
+      document.documentElement.animate(
         { clipPath: [fromClip, toClip] },
         {
           duration: 700,
-          easing: 'ease-in-out',
-          pseudoElement: '::view-transition-new(root)',
-        },
-      )
-  }, [primaryColor, setPrimaryColor, fromClip, toClip])
+          easing: "ease-in-out",
+          pseudoElement: "::view-transition-new(root)",
+        }
+      );
+    },
+    [primaryColor, setPrimaryColor, fromClip, toClip]
+  );
   return (
     <>
       <div className="grid grid-cols-3 gap-2">
@@ -304,19 +359,21 @@ const PrimaryColorPicker: FC = () => {
             aria-label="PrimaryColorPicker"
             variant={primaryColor === value ? "secondary" : "outline"}
             key={value}
-            className="text-xs justify-start"
+            className="justify-start text-xs"
             onClick={() => onChangeColor(value)}
           >
-            <span className="inline-block size-2 rounded-full"
-              style={{ backgroundColor: raw.color }} />
+            <span
+              className="inline-block size-2 rounded-full"
+              style={{ backgroundColor: raw.color }}
+            />
             {label}
           </Button>
         ))}
       </div>
       <style>{`::view-transition-old(root), ::view-transition-new(root){animation:none;mix-blend-mode:normal;}`}</style>
     </>
-  )
-}
+  );
+};
 export default PrimaryColorPicker;
 ```
 
@@ -325,15 +382,15 @@ export default PrimaryColorPicker;
 6、页面刷新的时候需要同步，在 `Provider.tsx` 中初始化：
 
 ```tsx
-import { initializePrimaryColor } from '@/lib/utils';
-const primaryColor = useAppStore((s) => s.primaryColor);
+import { initializePrimaryColor } from "@/lib/utils";
+const primaryColor = useAppStore(s => s.primaryColor);
 
 // 初始化主题色
 useEffect(() => {
   if (primaryColor) {
     initializePrimaryColor(primaryColor);
   }
-}, [primaryColor])
+}, [primaryColor]);
 ```
 
 ## 效果预览

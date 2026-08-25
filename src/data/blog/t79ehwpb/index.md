@@ -165,56 +165,54 @@ draft: false
 ```html
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <style>
-    .ball{
-      width:100px;
-      height:100px;
-      background: #f40;
-      border-radius: 50%;
-      margin:30px;
-    }
-    .ball1{
-      animation: move1 1s alternate infinite ease-in-out;
-    }
-    .ball2{
-      position: absolute;
-      left: 0;
-      animation: move2 1s alternate infinite ease-in-out;
-    }
-    @keyframes move1{
-      to{
-        transform: translate(100px);
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .ball {
+        width: 100px;
+        height: 100px;
+        background: #f40;
+        border-radius: 50%;
+        margin: 30px;
       }
-    }
-    @keyframes move2{
-      to{
-        left:100px;
+      .ball1 {
+        animation: move1 1s alternate infinite ease-in-out;
       }
-    }
-  </style>
-</head>
+      .ball2 {
+        position: absolute;
+        left: 0;
+        animation: move2 1s alternate infinite ease-in-out;
+      }
+      @keyframes move1 {
+        to {
+          transform: translate(100px);
+        }
+      }
+      @keyframes move2 {
+        to {
+          left: 100px;
+        }
+      }
+    </style>
+  </head>
 
-<body>
-  <button id="btn">死循环</button>
-  <div class="ball ball1"></div>
-  <div class="ball ball2"></div>
-  <script>
-    function delay(duration){
-      var start = Date.now();
-      while (Date.now() - start < duration){}
-    }
-    btn.onclick = function (){
-      delay(5000)
-    }
-  </script>
-</body>
-
+  <body>
+    <button id="btn">死循环</button>
+    <div class="ball ball1"></div>
+    <div class="ball ball2"></div>
+    <script>
+      function delay(duration) {
+        var start = Date.now();
+        while (Date.now() - start < duration) {}
+      }
+      btn.onclick = function () {
+        delay(5000);
+      };
+    </script>
+  </body>
 </html>
 ```
 
@@ -227,22 +225,21 @@ draft: false
 ## 总结
 
 1.  解析 **HTML**，生成 **DOM树** 和 **CSSOM树**
-    
+
 2.  计算样式，让每一个 **DOM** 里边，得到最终的样式
-    
+
 3.  **布局**，计算每一个 **DOM节点** 的几何信息，**布局树** 和 **DOM树** 不一样，不能对应
-    
+
 4.  **Layer分层**，为了提高后续的渲染效率，浏览器会把页面根据一套策略分成几个图层，每个图层可以单独进行绘制
-    
+
 5.  下一步产生**绘制指令**，把这个指令交给合成线程的**分块**
-    
+
 6.  合成线程对每个图层进行分块，将其划分为更多的小区域
-    
+
 7.  分块完成过后，变成很多的小块，对每一个小块，对每一个层进行**光栅化**
-    
+
 8.  **光栅化**后就变成一个个像素点，变成位图有限光栅化靠近屏幕的小块
-    
+
 9.  最后把那些靠近屏幕的小块发送到 **GPU** 画出来
-    
 
 正是因为浏览器做了这么多的优化，才让我们现代如此丰富的页面展示下，页面还能够非常的流畅。

@@ -53,8 +53,9 @@ const socialImageURL = new URL(ogImage, Astro.url);
 // Whether this page is a blog post (has a publish date)
 const isArticle = Boolean(pubDatetime);
 
-const finalStructuredData = structuredDataProp ?? (
-  isArticle
+const finalStructuredData =
+  structuredDataProp ??
+  (isArticle
     ? {
         "@context": "https://schema.org",
         "@type": "BlogPosting",
@@ -101,12 +102,12 @@ const finalStructuredData = structuredDataProp ?? (
             mainEntity: {
               "@type": "Person",
               name: author,
-              description: "Developer, student, and gamer. Creator of Astro Devosfera.",
+              description:
+                "Developer, student, and gamer. Creator of Astro Devosfera.",
               ...(profile && { url: profile }),
             },
           }
-        : null
-);
+        : null);
 
 const showCursorGlow = SITE.backdropEffects.cursorGlow;
 const showGrain = SITE.backdropEffects.grain;
@@ -205,7 +206,6 @@ const showGrain = SITE.backdropEffects.grain;
       href={new URL("rss.xml", Astro.site)}
     />
 
-
     {
       // If PUBLIC_GOOGLE_SITE_VERIFICATION is set in the environment variable,
       // include google-site-verification tag in the heading
@@ -266,10 +266,14 @@ const showGrain = SITE.backdropEffects.grain;
   </head>
   <body>
     <!-- Global decorative backdrop (grid, glow, cursor glow, noise) -->
-    <div class="site-backdrop pointer-events-none" aria-hidden="true" transition:persist>
+    <div
+      class="site-backdrop pointer-events-none"
+      aria-hidden="true"
+      transition:persist
+    >
       <div class="site-grid"></div>
-      {showCursorGlow && <div class="site-cursor-glow"></div>}
-      {showGrain && <div class="site-grain"></div>}
+      {showCursorGlow && <div class="site-cursor-glow" />}
+      {showGrain && <div class="site-grain" />}
     </div>
 
     <slot />
@@ -346,7 +350,8 @@ const showGrain = SITE.backdropEffects.grain;
     height: 800px;
     margin-left: -400px;
     margin-top: -400px;
-    transform: translate(var(--site-cx, 50vw), var(--site-cy, 50vh)) translateZ(0);
+    transform: translate(var(--site-cx, 50vw), var(--site-cy, 50vh))
+      translateZ(0);
     background: radial-gradient(
       circle,
       color-mix(in oklab, var(--accent) 8%, transparent) 0%,
@@ -397,14 +402,14 @@ const showGrain = SITE.backdropEffects.grain;
 
       // Skip on touch devices and respect reduced-motion preference.
       if (
-        window
-          .matchMedia("(pointer: coarse), (prefers-reduced-motion: reduce)")
+        window.matchMedia("(pointer: coarse), (prefers-reduced-motion: reduce)")
           .matches
       ) {
         return;
       }
 
-      const cursorGlow = document.querySelector<HTMLElement>(".site-cursor-glow");
+      const cursorGlow =
+        document.querySelector<HTMLElement>(".site-cursor-glow");
       let ticking = false;
       let isActive = false;
 
@@ -453,8 +458,7 @@ const showGrain = SITE.backdropEffects.grain;
 
     // 触摸设备与减少动态效果偏好下不跟踪鼠标
     if (
-      window
-        .matchMedia("(pointer: coarse), (prefers-reduced-motion: reduce)")
+      window.matchMedia("(pointer: coarse), (prefers-reduced-motion: reduce)")
         .matches
     ) {
       return;

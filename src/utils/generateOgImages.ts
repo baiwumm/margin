@@ -24,4 +24,3 @@ export async function generateOgImageForTag(tagName: string) {
   const svg = await tagOgImage(tagName);
   return svgBufferToPngBuffer(svg);
 }
-

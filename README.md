@@ -63,12 +63,12 @@ astro.config.ts     # 站点配置、字体、Shiki、集成
 
 ## 🔤 字体
 
-| 用途 | 字体 |
-| --- | --- |
-| 正文 | Maple Mono CN（本地子集化，Wotfard 兜底） |
-| 代码 / 等宽 / 终端风 | Fira Code |
-| 斜体 / 装饰 | Sriracha |
-| OG 图（构建期） | Wotfard + Maple Mono CN（TTF） |
+| 用途                 | 字体                                      |
+| -------------------- | ----------------------------------------- |
+| 正文                 | Maple Mono CN（本地子集化，Wotfard 兜底） |
+| 代码 / 等宽 / 终端风 | Fira Code                                 |
+| 斜体 / 装饰          | Sriracha                                  |
+| OG 图（构建期）      | Wotfard + Maple Mono CN（TTF）            |
 
 字体统一存放在 `public/giscus/fonts/`，主站与 Giscus 评论共用一份，避免重复。
 
@@ -81,12 +81,12 @@ astro.config.ts     # 站点配置、字体、Shiki、集成
 ```yaml
 ---
 title: "文章标题"
-pubDatetime: 2026-01-15T10:00:00+08:00   # 必填，ISO 8601
-description: "SEO 与卡片摘要"               # 必填
+pubDatetime: 2026-01-15T10:00:00+08:00 # 必填，ISO 8601
+description: "SEO 与卡片摘要" # 必填
 tags: ["astro"]
-featured: false          # 首页精选（金色卡片）
-draft: false             # 草稿（生产构建隐藏）
-modDatetime: 2026-02-01T10:00:00+08:00    # 可选，实质更新时补充
+featured: false # 首页精选（金色卡片）
+draft: false # 草稿（生产构建隐藏）
+modDatetime: 2026-02-01T10:00:00+08:00 # 可选，实质更新时补充
 timezone: "Asia/Shanghai" # 可选，覆盖 SITE.timezone
 ---
 ```

@@ -29,7 +29,8 @@
 .music-card.is-playing .music-inner {
   border-color: color-mix(in srgb, var(--accent) 45%, transparent);
   background-color: color-mix(in srgb, var(--accent) 5%, transparent);
-  box-shadow: 0 14px 36px -16px color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow: 0 14px 36px -16px
+    color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
 /* ── 黑胶唱片 ── */
@@ -55,7 +56,11 @@
       color-mix(in srgb, var(--foreground) 22%, transparent) 0 1px,
       transparent 1px 3px
     ),
-    radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--foreground) 14%, transparent), color-mix(in srgb, var(--foreground) 6%, transparent) 70%);
+    radial-gradient(
+      circle at 35% 30%,
+      color-mix(in srgb, var(--foreground) 14%, transparent),
+      color-mix(in srgb, var(--foreground) 6%, transparent) 70%
+    );
   box-shadow:
     inset 0 0 0 1px color-mix(in srgb, var(--foreground) 10%, transparent),
     0 4px 14px -6px color-mix(in srgb, var(--foreground) 40%, transparent);
@@ -121,8 +126,12 @@
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   color: var(--accent);
   cursor: pointer;
-  box-shadow: 0 2px 8px -2px color-mix(in srgb, var(--foreground) 30%, transparent);
-  transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 2px 8px -2px
+    color-mix(in srgb, var(--foreground) 30%, transparent);
+  transition:
+    transform 0.15s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .music-toggle:hover {
@@ -287,7 +296,9 @@
   background-image: none !important;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .music-open:hover,
@@ -380,7 +391,9 @@
   background: color-mix(in srgb, var(--accent) 10%, transparent);
   color: var(--accent);
   cursor: pointer;
-  transition: transform 0.15s ease, background-color 0.2s ease;
+  transition:
+    transform 0.15s ease,
+    background-color 0.2s ease;
 }
 
 .music-mini-toggle:hover {

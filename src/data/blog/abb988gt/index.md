@@ -15,119 +15,108 @@ draft: false
 ### 手动续签SSL证书的痛点
 
 1.  **频繁操作，容易遗忘**
-    
-    -   免费的SSL证书（如Let’s Encrypt）有效期仅有**90天**，这意味着每年至少需要手动续签4次。
-        
-    -   一旦忘记续签，网站将面临**安全警告**，甚至被浏览器标记为“不安全”，严重影响用户体验和SEO排名。
-        
+
+    - 免费的SSL证书（如Let’s Encrypt）有效期仅有**90天**，这意味着每年至少需要手动续签4次。
+
+    - 一旦忘记续签，网站将面临**安全警告**，甚至被浏览器标记为“不安全”，严重影响用户体验和SEO排名。
+
 2.  **操作复杂，容易出错**
-    
-    -   手动续签涉及生成CSR、提交CA、域名验证、证书部署等多个步骤，稍有不慎就会导致配置错误或服务中断。
-        
-    -   对于多服务器或分布式架构，手动管理证书更是耗时耗力。
-        
+
+    - 手动续签涉及生成CSR、提交CA、域名验证、证书部署等多个步骤，稍有不慎就会导致配置错误或服务中断。
+
+    - 对于多服务器或分布式架构，手动管理证书更是耗时耗力。
+
 3.  **服务中断风险**
-    
-    -   证书过期后，HTTPS服务会立即失效，可能导致用户无法访问，甚至触发安全警报。
-        
-    -   紧急修复时，可能因操作仓促而引入新的问题。
-        
+
+    - 证书过期后，HTTPS服务会立即失效，可能导致用户无法访问，甚至触发安全警报。
+
+    - 紧急修复时，可能因操作仓促而引入新的问题。
 
 ### 自动化续签：解放开发者，保障业务连续性
 
 为了避免这些问题，越来越多的开发者转向**自动化SSL证书管理工具**（如Certbot、Certimate、acme.sh）。这些工具能够：
 
--   ✅ **自动监控证书有效期**，提前续签，避免过期风险。
-    
--   ✅ **一键部署**，支持Nginx、Apache、云服务等多种环境。
-    
--   ✅ **支持多域名和通配符证书**，简化批量管理。
-    
+- ✅ **自动监控证书有效期**，提前续签，避免过期风险。
+
+- ✅ **一键部署**，支持Nginx、Apache、云服务等多种环境。
+
+- ✅ **支持多域名和通配符证书**，简化批量管理。
 
 在本文中，我们将对比几款主流的SSL自动化工具（Certbot、Certimate、acme.sh），帮助你选择最适合的解决方案，彻底告别手动续签的烦恼。
 
 ## SSL 证书续签工具对比
 
-| 功能/特性 | **Certbot** | **Certimate** | **acme.sh** |
-| :---: | :---: | :---: | :---: |
-| **是否开源** | ✅   | ✅   | ✅   |
-| **开发方** | Let's Encrypt 官方推荐 | [开源社区](https://github.com/certimate-go/certimate) | [开源社区](https://github.com/acmesh-official/acme.sh) |
-| **自动化续签** | ✅   | ✅   | ✅   |
-| **支持的CA** | Let's Encrypt | Let's Encrypt, 其他ACME CA | Let's Encrypt, ZeroSSL, Buypass |
-| **部署目标** | Nginx, Apache, 手动 | 自动部署（Nginx, Apache, 云服务） | 需自定义脚本 |
-| **日志与监控** | 基础日志 | 详细日志 + 告警通知 | 基础日志 |
-| **操作方式** | 命令行 + cron | Web UI + 后台服务 | 纯 shell 脚本 |
+|   功能/特性    |      **Certbot**       |                     **Certimate**                     |                      **acme.sh**                       |
+| :------------: | :--------------------: | :---------------------------------------------------: | :----------------------------------------------------: |
+|  **是否开源**  |           ✅           |                          ✅                           |                           ✅                           |
+|   **开发方**   | Let's Encrypt 官方推荐 | [开源社区](https://github.com/certimate-go/certimate) | [开源社区](https://github.com/acmesh-official/acme.sh) |
+| **自动化续签** |           ✅           |                          ✅                           |                           ✅                           |
+|  **支持的CA**  |     Let's Encrypt      |              Let's Encrypt, 其他ACME CA               |            Let's Encrypt, ZeroSSL, Buypass             |
+|  **部署目标**  |  Nginx, Apache, 手动   |           自动部署（Nginx, Apache, 云服务）           |                      需自定义脚本                      |
+| **日志与监控** |        基础日志        |                  详细日志 + 告警通知                  |                        基础日志                        |
+|  **操作方式**  |     命令行 + cron      |                   Web UI + 后台服务                   |                     纯 shell 脚本                      |
 
 ## 为什么选择 Certimate ？
 
 `Certimate` 就是为了解决上述问题而产生的，它具有以下优势：
 
--   **本地部署**：一键安装，只需要下载二进制文件，然后直接运行即可。同时也支持 Docker 部署、源代码部署等方式。​
-    
--   **数据安全**：由于是私有部署，所有数据均存储在自己的服务器上，不会经过第三方，确保数据的隐私和安全。​
-    
--   **操作简单**：简单配置即可轻松申请 SSL 证书并部署到指定的目标上，在证书即将过期前自动续期，从申请证书到使用证书完全自动化，无需人工操作。​
-    
+- **本地部署**：一键安装，只需要下载二进制文件，然后直接运行即可。同时也支持 Docker 部署、源代码部署等方式。​
+
+- **数据安全**：由于是私有部署，所有数据均存储在自己的服务器上，不会经过第三方，确保数据的隐私和安全。​
+
+- **操作简单**：简单配置即可轻松申请 SSL 证书并部署到指定的目标上，在证书即将过期前自动续期，从申请证书到使用证书完全自动化，无需人工操作。​
 
 > `Certimate` **旨在为用户提供一个安全、简便的 SSL 证书管理解决方案。**
 
 ## 特性
 
--   灵活的工作流编排方式，证书从申请到部署完全自动化；
-    
--   支持单域名、多域名、泛域名证书，可选 RSA、ECC 签名算法；
-    
--   支持 PEM、PFX、JKS 等多种格式输出证书；
-    
--   支持 30+ 域名托管商（如阿里云、腾讯云、Cloudflare 等）；
-    
--   支持 100+ 部署目标（如 Kubernetes、CDN、WAF、负载均衡等）；
-    
--   支持邮件、钉钉、飞书、企业微信、Webhook 等多种通知渠道；
-    
--   支持 Let's Encrypt、Buypass、Google Trust Services、SSL.com、ZeroSSL 等多种 ACME 证书颁发机构；
-    
--   更多特性等待探索。
-    
+- 灵活的工作流编排方式，证书从申请到部署完全自动化；
+
+- 支持单域名、多域名、泛域名证书，可选 RSA、ECC 签名算法；
+
+- 支持 PEM、PFX、JKS 等多种格式输出证书；
+
+- 支持 30+ 域名托管商（如阿里云、腾讯云、Cloudflare 等）；
+
+- 支持 100+ 部署目标（如 Kubernetes、CDN、WAF、负载均衡等）；
+
+- 支持邮件、钉钉、飞书、企业微信、Webhook 等多种通知渠道；
+
+- 支持 Let's Encrypt、Buypass、Google Trust Services、SSL.com、ZeroSSL 等多种 ACME 证书颁发机构；
+
+- 更多特性等待探索。
 
 ## 安装部署
 
 1.  在 1Panel 面板的应用商店搜索 `certimate` ，点击安装：
-    
 
 ![1Panel 应用商店搜索并安装 certimate](./01-1panel-appstore-install.webp)
 
 2.  打开 Web 页面，初始账号： `admin@certimate.fun`，密码： `1234567890` ：
-    
 
 ![Certimate Web 登录页面](./02-certimate-web-login.webp)
 
 ## 授权管理
 
 1.  点击左侧的 `授权管理` ，新建授权，添加 **添加主机提供商——1Panel**：
-    
 
 ![Certimate 新建授权并添加 1Panel 主机提供商](./03-certimate-add-1panel-access.webp)
 
 2.  获取 1Panel 接口密钥，`面板设置` - `API接口` - `详情` ：
-    
 
 ![1Panel 面板 API 接口密钥详情](./04-1panel-api-key-detail.webp)
 
 3.  添加 DNS 提供商，这里以腾讯云为例：
-    
 
 ![Certimate 添加腾讯云 DNS 提供商](./05-certimate-add-tencent-dns.webp)
 
 `SecretId` 和 `SecretKey` 获取方式：[主账号访问密钥管理](https://cloud.tencent.com/document/product/598/40488)
 
 4.  这里的 `证书颁发机构` ，我们使用内置的 `Let's Encrypt` 即可，也可以添加其他机构：
-    
 
 ![Certimate 选择内置的 Let's Encrypt 证书颁发机构](./06-certimate-select-lets-encrypt.webp)
 
 5.  添加通知渠道，这里我们添加邮件通知，用于接收 SSL 证书续签的通知：
-    
 
 ![Certimate 添加邮件通知渠道](./07-certimate-add-email-notify.webp)
 
@@ -138,32 +127,26 @@ draft: false
 ## 创建工作流
 
 1.  点击左侧的 `工作流` ，点击 `新建工作流` ，选择 `标准模板` ：
-    
 
 ![Certimate 新建工作流并选择标准模板](./08-certimate-new-workflow-template.webp)
 
 2.  点击 `开始` ，设置触发方式：
-    
 
 ![Certimate 设置工作流触发方式](./09-certimate-workflow-trigger.webp)
 
 3.  点击 `申请` ，根据要求设置证书：
-    
 
 ![Certimate 证书申请配置](./10-certimate-cert-apply-config.webp)
 
 4.  点击 `部署` ，设置部署目标：
-    
 
 ![Certimate 设置证书部署目标](./11-certimate-cert-deploy-target.webp)
 
 5.  这里的 `1Panel 证书 ID` 后续可能会更新为直接选择，现阶段只能通过开发者工具抓取：
-    
 
 ![通过开发者工具抓取 1Panel 证书 ID](./12-devtools-grab-1panel-cert-id.webp)
 
 6.  点击 `通知` ，创建推送通知：
-    
 
 ![Certimate 创建工作流推送通知](./13-certimate-workflow-push-notify.webp)
 

@@ -89,9 +89,8 @@ draft: false
 这里我们就涉及到两个问题：
 
 1.  下一次分片什么时候开始？
-    
+
 2.  每一次分片执行多少
-    
 
 这里我们就要用到一个 **API** ：[requestIdleCallback](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/requestIdleCallback)
 
@@ -191,11 +190,10 @@ draft: false
 这里我们已经完成这项任务的分片执行，但我们希望这个分片函数针对的不仅仅是这个任务，它应该是通用的，所以我们要提取一些操作，让用户自己去执行，比如说：
 
 1.  具体任务的执行过程
-    
+
 2.  分片任务执行的时机？每一次具体分片多少？
-    
+
 3.  如果是 **node** 环境呢？
-    
 
 这些都应该由开发者去定义，基于这些，我们封装成一个更加通用的高阶函数：
 
@@ -258,7 +256,7 @@ draft: false
 
     /**
      * @description: 浏览器执行环境
-     */  
+     */
     const broswerPerformChunk = (datas, taskHandler) => {
       const scheduler = (task) => {
           requestIdleCallback((idle) => {
@@ -266,7 +264,7 @@ draft: false
           })
         }
         performChunk(datas, taskHandler,scheduler)
-    }    
+    }
     </script>
 </body>
 
@@ -278,7 +276,7 @@ draft: false
 通过本篇文章我们可以学习到什么？
 
 1.  [requestIdleCallback](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/requestIdleCallback) **API** 的用法
-    
+
 2.  浏览器的渲染原理
-    
+
 3.  分片高阶函数的封装

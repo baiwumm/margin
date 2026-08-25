@@ -56,16 +56,20 @@ type MusicCache = Record<string, CacheRecord>;
 /* ── 平台元信息 ───────────────────────────────────────────────────── */
 const PLATFORM_META: Record<
   MusicPlatform,
-  { label: string; url: (id: string) => string; fetch?: (id: string) => Promise<CacheRecord | null> }
+  {
+    label: string;
+    url: (id: string) => string;
+    fetch?: (id: string) => Promise<CacheRecord | null>;
+  }
 > = {
   netease: {
     label: "网易云音乐",
-    url: (id) => `https://music.163.com/song?id=${id}`,
+    url: id => `https://music.163.com/song?id=${id}`,
     fetch: fetchNetease,
   },
   qq: {
     label: "QQ音乐",
-    url: (id) => `https://y.qq.com/n/ryqq/songDetail/${id}`,
+    url: id => `https://y.qq.com/n/ryqq/songDetail/${id}`,
     fetch: fetchQQ,
   },
 };
@@ -80,7 +84,10 @@ const UA =
 const CACHE_MAX_AGE_MS = 0;
 
 /** 本地音频目录（相对项目根）：public/audio */
-const AUDIO_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../public/audio");
+const AUDIO_DIR = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../../public/audio"
+);
 
 /**
  * 去除不可见控制字符（U+0000–U+001F、U+007F），避免接口脏字符显示乱码。
@@ -109,7 +116,10 @@ function probeLocalAudio(id: string): string {
 }
 
 /* ── 缓存文件读写 ─────────────────────────────────────────────────── */
-const CACHE_PATH = join(dirname(fileURLToPath(import.meta.url)), "music-cache.json");
+const CACHE_PATH = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "music-cache.json"
+);
 
 function loadCache(): MusicCache {
   try {
@@ -128,7 +138,11 @@ const cacheStore: MusicCache = loadCache();
 function saveCache() {
   if (!cacheDirty) return;
   try {
-    writeFileSync(CACHE_PATH, JSON.stringify(cacheStore, null, 2) + "\n", "utf-8");
+    writeFileSync(
+      CACHE_PATH,
+      JSON.stringify(cacheStore, null, 2) + "\n",
+      "utf-8"
+    );
     cacheDirty = false;
   } catch {
     // 写回失败（如只读环境）仅告警降级，不影响构建产物
@@ -276,10 +290,7 @@ export async function resolveTrack(
   const cached = readCached(platform, id);
   if (cached && (cached.cover || cached.name)) {
     const audioUrl =
-      explicitAudio ||
-      probeLocalAudio(id) ||
-      cached.audioUrl ||
-      "";
+      explicitAudio || probeLocalAudio(id) || cached.audioUrl || "";
     return {
       id,
       platform,
@@ -300,8 +311,7 @@ export async function resolveTrack(
   }
   saveCache();
 
-  const audioUrl =
-    explicitAudio || probeLocalAudio(id) || rec?.audioUrl || "";
+  const audioUrl = explicitAudio || probeLocalAudio(id) || rec?.audioUrl || "";
   return {
     id,
     platform,

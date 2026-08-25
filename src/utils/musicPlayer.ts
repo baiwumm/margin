@@ -29,7 +29,7 @@ function initMusicPlayers() {
   );
   if (cards.length === 0) return;
 
-  cards.forEach((card) => {
+  cards.forEach(card => {
     if (card.dataset.musicInitialized === "true") return;
     card.dataset.musicInitialized = "true";
 
@@ -37,7 +37,9 @@ function initMusicPlayers() {
     const audioSrc = card.dataset.audio || "";
     const href = card.dataset.href || "#";
     const label = card.dataset.label || "MUSIC";
-    const progressTrack = card.querySelector<HTMLElement>("[data-music-progress]");
+    const progressTrack = card.querySelector<HTMLElement>(
+      "[data-music-progress]"
+    );
     const progressBar = card.querySelector<HTMLElement>("[data-music-bar]");
     const currentEl = card.querySelector<HTMLElement>("[data-music-current]");
     const totalEl = card.querySelector<HTMLElement>("[data-music-total]");
@@ -98,9 +100,11 @@ function initMusicPlayers() {
         getStore().audio.pause();
       } else {
         // 本卡未在播 → 把单例切到本卡并播放（若之前在播别的会自动停掉）
-        getStore().audio.play().catch(() => {
-          /* 浏览器拦截自动播放：忽略 */
-        });
+        getStore()
+          .audio.play()
+          .catch(() => {
+            /* 浏览器拦截自动播放：忽略 */
+          });
       }
     });
 

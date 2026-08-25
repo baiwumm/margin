@@ -48,8 +48,9 @@ export function getWordCount(body: string): number {
     .replace(/^\s*[-*+>|]\s*/gm, ""); // lists, blockquotes, tables
 
   const cjkCount = (plainText.match(/[\u4e00-\u9fff]/g) ?? []).length;
-  const latinWords = (plainText.match(/[A-Za-z0-9]+(?:[-'][A-Za-z0-9]+)*/g) ?? [])
-    .length;
+  const latinWords = (
+    plainText.match(/[A-Za-z0-9]+(?:[-'][A-Za-z0-9]+)*/g) ?? []
+  ).length;
 
   return cjkCount + latinWords;
 }

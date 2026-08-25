@@ -9,7 +9,6 @@ draft: false
 description: "这篇文章介绍了如何基于 Supabase 与 GitHub OAuth 实现 Nuxt3 网站的第三方登录鉴权，包括 Auth Providers 配置与登录页面开发。"
 ---
 
-
 ## 前言
 
 [Supabase](https://supabase.com/) 使用的是 [postgresql](https://www.postgresql.org/) 的 [Row Level Security (RLS)](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)，可以限制不同用户对同一张表的不同数据行的访问权限。这种安全机制可以确保只有授权用户才能访问其所需要的数据行，保护敏感数据免受未授权的访问和操作。
@@ -25,22 +24,18 @@ description: "这篇文章介绍了如何基于 Supabase 与 GitHub OAuth 实现
 ## 配置 Github OAuth Apps
 
 1.  打开 OAuth Apps 页面，点击 **New Oauth App**
-    
 
 ![GitHub 新建 OAuth App 页面](./02-oauth-app-new.png)
 
 2.  填入项目的信息，这里的 **Homepage URL** 我们可以先填本地开发的地址，等部署上线再改成线上地址，**Authorization callback URL** 填入 [Supabase](https://supabase.com/) 提供的 **Callback URL (for OAuth)**，然后点击 **Register Application**
-    
 
 ![填写 OAuth App 的 Homepage 与 Callback URL](./03-oauth-app-info.png)
 
 3.  打开刚创建的 **Oauth App**，这里可以根据需要设置 **Oauth App** 信息，点击 **Generate a new client secret** 复制密钥
-    
 
 ![生成 GitHub OAuth Client Secret 密钥](./04-oauth-client-secret.png)
 
 4.  打开 [Supabase Providers](https://supabase.com/dashboard/project/athbiwlqrieaoetfapxd/auth/providers) 页面，找到 **Github**，将 **Client ID** 和 **Client Secret** 分别填入，点击 **Save**。
-    
 
 ![在 Supabase 中填写 Client ID 与 Client Secret](./05-supabase-client-config.png)
 
@@ -49,24 +44,27 @@ description: "这篇文章介绍了如何基于 Supabase 与 GitHub OAuth 实现
 [Nuxt3](https://nuxt.com/) 中集成了 [@nuxtjs/supabase](https://supabase.nuxtjs.org/)，我们只需要准备两个文件即可：**login.vue**、**confirm.vue**。
 
 1.  新建 **/pages/login/index.vue** 文件：
+
 ```vue
 <script setup lang="ts">
-const colorMode = useColorMode()
-const user = useSupabaseUser()
-const { auth } = useSupabaseClient()
+const colorMode = useColorMode();
+const user = useSupabaseUser();
+const { auth } = useSupabaseClient();
 
-const redirectTo = `${useRuntimeConfig().public.baseUrl}/confirm`
+const redirectTo = `${useRuntimeConfig().public.baseUrl}/confirm`;
 
 watchEffect(() => {
   if (user.value) {
-    navigateTo('/')
+    navigateTo("/");
   }
-})
+});
 </script>
 
 <template>
-  <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-    <h2 class="my-6 text-center text-3xl font-extrabold u-text-white">登录您的账户</h2>
+  <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <h2 class="u-text-white my-6 text-center text-3xl font-extrabold">
+      登录您的账户
+    </h2>
     <el-card class="sm:mx-auto sm:w-full sm:max-w-md">
       <el-divider>请选择</el-divider>
       <el-button
@@ -74,9 +72,11 @@ watchEffect(() => {
         size="large"
         :dark="colorMode.value === 'dark'"
         class="w-full"
-        @click="auth.signInWithOAuth({ provider: 'github', options: { redirectTo } })"
+        @click="
+          auth.signInWithOAuth({ provider: 'github', options: { redirectTo } })
+        "
       >
-        <Icon name="i-simple-icons-github" class="h-5 w-5 mr-2" />
+        <Icon name="i-simple-icons-github" class="mr-2 h-5 w-5" />
         Github
       </el-button>
     </el-card>
@@ -84,21 +84,21 @@ watchEffect(() => {
 </template>
 ```
 
-
 2.  新建 **/pages/confirm/index.vue** 文件：
+
 ```vue
 <script setup lang="ts">
-const user = useSupabaseUser()
+const user = useSupabaseUser();
 
 watch(
   user,
   () => {
     if (user.value) {
-      return navigateTo('/')
+      return navigateTo("/");
     }
   },
   { immediate: true }
-)
+);
 </script>
 
 <template>
@@ -107,7 +107,6 @@ watch(
   </div>
 </template>
 ```
-
 
 ## 最终效果
 

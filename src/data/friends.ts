@@ -68,7 +68,8 @@ const techie: Friend[] = [
     name: "回忆航线",
     description: "喜欢捣鼓的博主",
     url: "https://kunkunyu.com",
-    avatar: "https://api.minio.yyds.pink/moony/files/2025/02/YU%20logo%20-%20%E6%AD%A3%E6%96%B9%E5%BD%A2.svg",
+    avatar:
+      "https://api.minio.yyds.pink/moony/files/2025/02/YU%20logo%20-%20%E6%AD%A3%E6%96%B9%E5%BD%A2.svg",
   },
   {
     name: "韩小韩博客",
@@ -104,7 +105,8 @@ const techie: Friend[] = [
     name: "Akilarの糖果屋",
     description: "欢迎光临糖果屋",
     url: "https://akilar.top/",
-    avatar: "https://npm.elemecdn.com/akilar-friends@latest/avatar/akilar.top.jpg",
+    avatar:
+      "https://npm.elemecdn.com/akilar-friends@latest/avatar/akilar.top.jpg",
   },
   {
     name: "张洪Heo",
@@ -206,7 +208,8 @@ const kindred: Friend[] = [
     name: "礼印外盒",
     description: "繁星",
     url: "https://liyinwaihe.com",
-    avatar: "https://liyinwaihe.com/wp-content/uploads/2025/11/cropped-lywh.png",
+    avatar:
+      "https://liyinwaihe.com/wp-content/uploads/2025/11/cropped-lywh.png",
   },
   {
     name: "故事的程序猿",
@@ -218,7 +221,8 @@ const kindred: Friend[] = [
     name: "ImQi1",
     description: "做技术的分享者、生活的摄影师、时事的评论员",
     url: "https://imqi1.com/",
-    avatar: "https://cn.cravatar.com/avatar/2841d29eeabab633ae116c7b2c97e3bf?s=512",
+    avatar:
+      "https://cn.cravatar.com/avatar/2841d29eeabab633ae116c7b2c97e3bf?s=512",
   },
   {
     name: "陌子夕生活录",
@@ -243,7 +247,7 @@ const kindred: Friend[] = [
     description: "沉墨满纸，一笑若白",
     url: "https://blog.lmb.blue/",
     avatar: "https://files.blog.lmb.blue/assets/img/logo/pink-black.png",
-  }
+  },
 ];
 
 const services: Friend[] = [
@@ -281,7 +285,8 @@ const services: Friend[] = [
     name: "中文独立博客聚合列表",
     description: "又一个聚合网站",
     url: "https://blogroll.online",
-    avatar: "https://blogroll.online/wp-content/uploads/2026/07/android-chrome-512x512-1.png",
+    avatar:
+      "https://blogroll.online/wp-content/uploads/2026/07/android-chrome-512x512-1.png",
   },
   {
     name: "博客星球",

@@ -22,8 +22,12 @@ const [blogPosts, galleryPosts] = await Promise.all([
 const posts = [...blogPosts, ...galleryPosts];
 
 const sortedPosts = getSortedPosts(posts);
-const featuredPosts = sortedPosts.filter(({ data }) => "featured" in data && data.featured);
-const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && data.featured));
+const featuredPosts = sortedPosts.filter(
+  ({ data }) => "featured" in data && data.featured
+);
+const recentPosts = sortedPosts.filter(
+  ({ data }) => !("featured" in data && data.featured)
+);
 ---
 
 <Layout title={`${SITE.desc} | ${SITE.title}`}>
@@ -47,9 +51,9 @@ const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && dat
             <span class="relative inline-flex h-2 w-2 rounded-full bg-accent"
             ></span>
           </span>
-            <span class="text-accent">{SITE.heroTerminalPrompt.prefix}</span>
-            {SITE.heroTerminalPrompt.path}
-            <span class="opacity-40">{SITE.heroTerminalPrompt.suffix}</span>
+          <span class="text-accent">{SITE.heroTerminalPrompt.prefix}</span>
+          {SITE.heroTerminalPrompt.path}
+          <span class="opacity-40">{SITE.heroTerminalPrompt.suffix}</span>
         </div>
 
         <!-- Title -->
@@ -91,8 +95,8 @@ const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && dat
         >
           {SITE.desc}
         </p>
-        <div class="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-          <p class="text-sm opacity-50 flex-shrink-0">
+        <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+          <p class="flex-shrink-0 text-sm opacity-50">
             Written by{" "}
             <LinkButton
               class="font-medium underline decoration-dashed underline-offset-4 hover:text-accent"
@@ -106,7 +110,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && dat
           {
             // only display if at least one social link is enabled
             SOCIALS.length > 0 && (
-              <div class="sm:border-l border-border/40 sm:pl-4">
+              <div class="border-border/40 sm:border-l sm:pl-4">
                 <Socials />
               </div>
             )
@@ -136,7 +140,13 @@ const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && dat
 
           <ul class="grid gap-4 sm:grid-cols-2 [&>li]:my-0">
             {featuredPosts.map((data, index) => (
-              <Card variant="h3" featured={true} {...data} loading={index < 2 ? "eager" : "lazy"} fetchpriority={index < 2 ? "high" : "auto"} />
+              <Card
+                variant="h3"
+                featured={true}
+                {...data}
+                loading={index < 2 ? "eager" : "lazy"}
+                fetchpriority={index < 2 ? "high" : "auto"}
+              />
             ))}
           </ul>
         </section>
@@ -148,18 +158,19 @@ const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && dat
       recentPosts.length > 0 && (
         <section id="recent-posts" class="pt-6 pb-6">
           <div class="mb-6 flex items-center gap-3">
-            <h2 class="text-sm font-bold tracking-widest uppercase">
-              Recent
-            </h2>
+            <h2 class="text-sm font-bold tracking-widest uppercase">Recent</h2>
             <div class="h-px flex-1 bg-border/20" />
             <span class="font-firacode text-xs text-accent/40 select-none">
               [{recentPosts.slice(0, SITE.postPerIndex).length}/
               {recentPosts.length}]
             </span>
           </div>
-          <ul class:list={[
-            SITE.indexPostsGrid && "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-          ]}>
+          <ul
+            class:list={[
+              SITE.indexPostsGrid &&
+                "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3",
+            ]}
+          >
             {recentPosts.map(
               (data, index) =>
                 index < SITE.postPerIndex && (
@@ -174,15 +185,13 @@ const recentPosts = sortedPosts.filter(({ data }) => !("featured" in data && dat
           </ul>
 
           {/* ═══════════════════ CTA ═══════════════════ */}
-          <div class="mt-8 mb-4 flex justify-center w-full">
+          <div class="mt-8 mb-4 flex w-full justify-center">
             <LinkButton
               href="/posts/"
-              class="group inline-flex items-center w-full sm:w-auto justify-center gap-2 rounded-lg border border-accent/20 bg-accent/10 px-5 py-2.5 text-sm font-medium text-accent transition-all duration-300 hover:border-accent hover:bg-accent/20 hover:shadow-lg hover:shadow-accent/20 hover:-translate-y-0.5"
+              class="group inline-flex w-full items-center justify-center gap-2 rounded-lg border border-accent/20 bg-accent/10 px-5 py-2.5 text-sm font-medium text-accent transition-all duration-300 hover:-translate-y-0.5 hover:border-accent hover:bg-accent/20 hover:shadow-lg hover:shadow-accent/20 sm:w-auto"
             >
               查看全部文章
-              <IconArrowRight
-                class="inline-block transition-transform duration-300 group-hover:translate-x-1 rtl:-rotate-180"
-              />
+              <IconArrowRight class="inline-block transition-transform duration-300 group-hover:translate-x-1 rtl:-rotate-180" />
             </LinkButton>
           </div>
         </section>

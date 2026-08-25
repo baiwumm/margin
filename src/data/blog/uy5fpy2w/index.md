@@ -18,32 +18,32 @@ draft: false
 我们看下面一段 **ts** 代码：
 
 ```ts
-const colors = ['red','green','orange','blue']; // 这里 ts 解析的是 string[]
+const colors = ["red", "green", "orange", "blue"]; // 这里 ts 解析的是 string[]
 
 // 这里的 value 类型该如何标注，使它的值只能是 colors 中的值
-const setColors = (value:?) => {
-  console.log('value',value)
+const setColors = (value: ?) => {
+  console.log("value", value);
 };
 ```
 
 我们总不能手动去写成这样：
 
 ```ts
-type Colors = 'red' | 'green' | 'orange' | 'blue';
+type Colors = "red" | "green" | "orange" | "blue";
 ```
 
 这样显得我们很呆，我们应该根据 **colors** 自动生成一个联合类型，做法也很简单：
 
 ```ts
 // 1. 先将 colors 转成元组类型，这里 ts 解析的是 readonly ["red", "green", "orange", "blue"]
-const colors = ['red','green','orange','blue'] as const; 
+const colors = ["red", "green", "orange", "blue"] as const;
 
 // 2. 将元组类型转成联合类型
-type Colors = typeof colors[number];
+type Colors = (typeof colors)[number];
 
 // 这里的 value 类型该如何标注，使它的值只能是 colors 中的值
-const setColors = (value:Colors) => {
-  console.log('value',value)
+const setColors = (value: Colors) => {
+  console.log("value", value);
 };
 ```
 
