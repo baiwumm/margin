@@ -205,15 +205,20 @@ async function fetchNetease(id: string): Promise<CacheRecord | null> {
 /* ── QQ音乐抓取（非官方接口） ─────────────────────────────────────── */
 /**
  * QQ音乐非官方接口：c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg。
- * 入参 id 为歌曲的 songmid（QQ 分享链接里 songmid= 后的字符串），
- * 返回 data[0]：name / singer[].name / album.picUrl（封面）。
+ * 入参 id 支持两种 QQ ID：
+ *   - songmid：字母数字混合（旧版分享链接 songmid= 后的字符串）
+ *   - songid：纯数字（新版 ryqq_v2/songDetail/{id} 用的 ID）
+ * 自动识别：纯数字走 songid 参数，其余走 songmid 参数。
+ * 返回 data[0]：name / singer[].name / album.mid（用来拼封面 CDN 地址）。
  * 失败时返回 null，由上层降级。
  */
 async function fetchQQ(id: string): Promise<CacheRecord | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
-    const url = `https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg?songmid=${encodeURIComponent(
+    const isNumeric = /^\d+$/.test(id);
+    const key = isNumeric ? "songid" : "songmid";
+    const url = `https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg?${key}=${encodeURIComponent(
       id
     )}&platform=yqq&format=json`;
     const res = await fetch(url, {
