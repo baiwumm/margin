@@ -288,8 +288,17 @@ const showGrain = SITE.backdropEffects.grain;
     <!-- 音乐播放器卡片（文章 MD/MDX 与瞬间 Moment 共用） -->
     <script>
       import { initMusicPlayers } from "@/utils/musicPlayer";
-      initMusicPlayers();
-      document.addEventListener("astro:page-load", initMusicPlayers);
+
+      let musicCleanup: AbortController | null = null;
+
+      function setupMusicPlayers() {
+        if (musicCleanup) musicCleanup.abort();
+        musicCleanup = new AbortController();
+        initMusicPlayers(musicCleanup.signal);
+      }
+
+      setupMusicPlayers();
+      document.addEventListener("astro:page-load", setupMusicPlayers);
     </script>
 
     <!-- Vercel Web Analytics -->

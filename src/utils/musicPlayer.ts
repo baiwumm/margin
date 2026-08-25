@@ -23,7 +23,7 @@ const fmt = (secs: number) => {
   return `${Math.floor(s / 60)}:${pad(s % 60)}`;
 };
 
-function initMusicPlayers() {
+function initMusicPlayers(signal?: AbortSignal) {
   const cards = Array.from(
     document.querySelectorAll<HTMLElement>(".music-player")
   );
@@ -50,7 +50,7 @@ function initMusicPlayers() {
     if (!hasAudio && btn) {
       btn.addEventListener("click", () => {
         window.open(href, "_blank", "noopener,noreferrer");
-      });
+      }, { signal });
       return;
     }
     if (!hasAudio) return;
@@ -106,7 +106,7 @@ function initMusicPlayers() {
             /* 浏览器拦截自动播放：忽略 */
           });
       }
-    });
+    }, { signal });
 
     // 进度条点击跳转
     progressTrack?.addEventListener("click", (e: MouseEvent) => {
@@ -114,7 +114,7 @@ function initMusicPlayers() {
       const ratio = (e.clientX - rect.left) / rect.width;
       const audio = getStore().audio;
       if (audio.duration > 0) audio.currentTime = ratio * audio.duration;
-    });
+    }, { signal });
 
     // 进度条键盘跳转
     progressTrack?.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -128,12 +128,12 @@ function initMusicPlayers() {
         e.preventDefault();
         audio.currentTime = Math.max(audio.currentTime - 5, 0);
       }
-    });
+    }, { signal });
 
     window.addEventListener(INTRO_AUDIO_STATE_EVENT, (event: Event) => {
       const custom = event as CustomEvent<IntroAudioState>;
       render(custom.detail);
-    });
+    }, { signal });
 
     // 初始统一显示未播放（若页面加载时已有全局播放，事件会立即同步）
     setPlayingUI(false);

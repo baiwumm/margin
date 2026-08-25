@@ -1,12 +1,12 @@
 /**
  * Calculates the estimated reading time for a given piece of text.
  * Strips markdown/MDX syntax before counting words for a more accurate result.
+ * Supports both CJK (Chinese/Japanese/Korean) and Latin text.
  *
  * @param body - Raw markdown/MDX string content
- * @param wordsPerMinute - Average reading speed (default: 200 wpm)
  * @returns Formatted string like "约 3 分钟" or "不到 1 分钟"
  */
-export function getReadingTime(body: string, wordsPerMinute = 200): string {
+export function getReadingTime(body: string): string {
   // Strip frontmatter
   const withoutFrontmatter = body.replace(/^---[\s\S]*?---\n?/, "");
 
@@ -22,8 +22,14 @@ export function getReadingTime(body: string, wordsPerMinute = 200): string {
     .replace(/\s+/g, " ") // collapse whitespace
     .trim();
 
-  const wordCount = plainText.split(" ").filter(Boolean).length;
-  const minutes = Math.ceil(wordCount / wordsPerMinute);
+  // Count CJK characters and Latin words separately
+  const cjkCount = (plainText.match(/[\u4e00-\u9fff]/g) ?? []).length;
+  const latinWordCount = (
+    plainText.match(/[A-Za-z0-9]+(?:[-'][A-Za-z0-9]+)*/g) ?? []
+  ).length;
+
+  // CJK: ~400 chars/min, Latin: ~200 words/min
+  const minutes = Math.ceil(cjkCount / 400 + latinWordCount / 200);
 
   return minutes < 1 ? "不到 1 分钟" : `约 ${minutes} 分钟`;
 }
