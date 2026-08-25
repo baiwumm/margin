@@ -32,14 +32,14 @@ const monthAtColumn = new Map<number, string>(
       data-gh-section
       aria-label={`GitHub 贡献日历（${calendar.login}，过去一年共 ${calendar.totalContributions} 次贡献）`}
     >
-      <!-- 鼠标跟随辉光（--mouse-x / --mouse-y 由 Layout 的 .card-glow 全局绑定） -->
+      {/* 鼠标跟随辉光（--mouse-x / --mouse-y 由 Layout 的 .card-glow 全局绑定） */}
       <div
         class="card-glow-effect pointer-events-none absolute inset-0 z-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover/gh:opacity-100 motion-reduce:transition-none"
         aria-hidden="true"
-      ></div>
+      />
 
       <div class="relative z-5 p-4 sm:p-6">
-        <!-- 头部：标题 + 总数徽章 + 主页链接 -->
+        {/* 头部：标题 + 总数徽章 + 主页链接 */}
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2.5">
             <span
@@ -84,19 +84,17 @@ const monthAtColumn = new Map<number, string>(
           </div>
         </div>
 
-        <!-- 日历主体：与容器同宽，窄屏横向滚动。
-             pr/pb 内边距吸收格子 hover 放大（scale 1.3）产生的溢出，避免滚动条闪现 -->
+        {/* 日历主体：与容器同宽，窄屏横向滚动。
+             pr/pb 内边距吸收格子 hover 放大（scale 1.3）产生的溢出，避免滚动条闪现 */}
         <div class="mt-4 overflow-x-auto pb-1">
           <div class="w-full pr-1.5 pb-1" style={`min-width: ${MIN_W}px`}>
-            <!-- 月份标签：与下方网格同构（同宽星期列 + 53 个等宽列），标签溢出到后续空列 -->
+            {/* 月份标签：与下方网格同构（同宽星期列 + 53 个等宽列），标签溢出到后续空列 */}
             <div class="flex" style={`gap: ${GAP}px`}>
-              <div class="shrink-0" style={`width: ${DAY_COL}px`}></div>
+              <div class="shrink-0" style={`width: ${DAY_COL}px`} />
               {calendar.weeks.map((_, column) => (
                 <div class="min-w-0 flex-1">
                   {monthAtColumn.get(column) && (
-                    <span
-                      class="block whitespace-nowrap font-firacode text-[10px] leading-none text-foreground/45"
-                    >
+                    <span class="block font-firacode text-[10px] leading-none whitespace-nowrap text-foreground/45">
                       {monthAtColumn.get(column)}
                     </span>
                   )}
@@ -105,29 +103,36 @@ const monthAtColumn = new Map<number, string>(
             </div>
 
             <div class="mt-1 flex" style={`gap: ${GAP}px`}>
-              <!-- 星期标签：一 / 三 / 五（随网格高度自适应对齐） -->
+              {/* 星期标签：一 / 三 / 五（随网格高度自适应对齐） */}
               <div
                 class="flex shrink-0 flex-col"
                 style={`width: ${DAY_COL}px; gap: ${GAP}px`}
                 aria-hidden="true"
               >
                 {Array.from({ length: 7 }, (_, row) => (
-                  <span
-                    class="flex flex-1 items-center font-firacode text-[10px] leading-none text-foreground/45"
-                  >
-                    {row === 1 ? "一" : row === 3 ? "三" : row === 5 ? "五" : ""}
+                  <span class="flex flex-1 items-center font-firacode text-[10px] leading-none text-foreground/45">
+                    {row === 1
+                      ? "一"
+                      : row === 3
+                        ? "三"
+                        : row === 5
+                          ? "五"
+                          : ""}
                   </span>
                 ))}
               </div>
 
-              <!-- 贡献格子：每列一周、每行一天，等宽撑满；本周未来日期不渲染 -->
+              {/* 贡献格子：每列一周、每行一天，等宽撑满；本周未来日期不渲染 */}
               {calendar.weeks.map(week => (
-                <div class="flex min-w-0 flex-1 flex-col" style={`gap: ${GAP}px`}>
+                <div
+                  class="flex min-w-0 flex-1 flex-col"
+                  style={`gap: ${GAP}px`}
+                >
                   {week.map(day =>
                     day ? (
                       <span
                         class:list={[
-                          "gh-cell block w-full shrink-0 aspect-square",
+                          "gh-cell block aspect-square w-full shrink-0",
                           `gh-level-${day.level}`,
                         ]}
                         data-gh-cell
@@ -144,7 +149,7 @@ const monthAtColumn = new Map<number, string>(
           </div>
         </div>
 
-        <!-- 图例 -->
+        {/* 图例 */}
         <div class="mt-2.5 flex items-center justify-end">
           <span class="mr-1 text-[10px] text-foreground/50">少</span>
           {[0, 1, 2, 3, 4].map(level => (
@@ -157,13 +162,13 @@ const monthAtColumn = new Map<number, string>(
         </div>
       </div>
 
-      <!-- 自定义 tooltip（相对 section 定位，玻璃拟态；font-app = 项目主字体 Maple Mono CN） -->
+      {/* 自定义 tooltip（相对 section 定位，玻璃拟态；font-app = 项目主字体 Maple Mono CN） */}
       <div
         class="gh-tooltip font-app"
         data-gh-tooltip
         role="tooltip"
         aria-hidden="true"
-      ></div>
+      />
     </section>
   )
 }
