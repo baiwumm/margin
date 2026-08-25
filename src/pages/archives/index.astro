@@ -5,10 +5,16 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import IconGallery from "@/assets/icons/IconGallery.svg";
-import { getEntryPath } from "@/utils/contentEntry";
+import { getEntryPath, type ContentEntry } from "@/utils/contentEntry";
 import { slugifyStr } from "@/utils/slugify";
 import getPostsByGroupCondition from "@/utils/getPostsByGroupCondition";
 import { SITE } from "@/config";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 if (!SITE.showArchives) {
   return Astro.redirect("/404");
@@ -39,8 +45,19 @@ const months = [
 
 const totalPosts = posts.length;
 
+// 年/月/日分组必须与全站日期展示（Datetime.astro）保持同一时区口径：
+// 文章可用 frontmatter timezone 覆盖 SITE.timezone；直接用 Date 的本地时区方法
+// 会在 UTC 构建环境（如 Vercel）下把东八区凌晨发布的内容归入错误的年/月/日
+const zonedDate = (post: ContentEntry) => {
+  const tz =
+    "timezone" in post.data && post.data.timezone
+      ? post.data.timezone
+      : SITE.timezone;
+  return dayjs(post.data.pubDatetime).tz(tz);
+};
+
 const yearGroups = Object.entries(
-  getPostsByGroupCondition(posts, post => post.data.pubDatetime.getFullYear())
+  getPostsByGroupCondition(posts, post => zonedDate(post).year())
 ).sort(([a], [b]) => Number(b) - Number(a));
 ---
 
@@ -75,7 +92,7 @@ const yearGroups = Object.entries(
           const monthGroups = Object.entries(
             getPostsByGroupCondition(
               yearPosts,
-              post => post.data.pubDatetime.getMonth() + 1
+              post => zonedDate(post).month() + 1
             )
           ).sort(([a], [b]) => Number(b) - Number(a));
 
@@ -104,7 +121,7 @@ const yearGroups = Object.entries(
                           new Date(a.data.pubDatetime).getTime()
                       )
                       .map(post => {
-                        const day = new Date(post.data.pubDatetime).getDate();
+                        const day = zonedDate(post).date();
                         return (
                           <a
                             href={getEntryPath(post)}
