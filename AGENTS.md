@@ -23,7 +23,7 @@ Margin（原 Devosfera）：基于 AstroPaper 深度二次开发的个人博客�
 
 # Tech Stack
 
-- Astro 6（SSG 静态生成），使用 `astro:content`、`astro:transitions`（View Transitions + hover 预取）、`astro:env`、本地字体 API
+- Astro 7（SSG 静态生成），使用 `astro:content`、`astro:transitions`（View Transitions + hover 预取）、`astro:env`、本地字体 API；Markdown 插件通过 `markdown.processor: unified({...})`（来自 `@astrojs/markdown-remark`）接入，不再使用已废弃的 `markdown.remarkPlugins` / `rehypePlugins`
 - TypeScript 6，配置为 `astro/tsconfigs/strict`
 - Tailwind CSS 4（CSS-first 模式）：`@import "tailwindcss"` + `@theme inline`，通过 `@tailwindcss/vite` 插件接入
 - `@tailwindcss/typography`（`app-prose` 文章排版）
@@ -81,6 +81,9 @@ astro.config.ts        # 站点 / 集成 / Markdown / Shiki / 字体 / env schem
 - 直接调用 Astro CLI：`pnpm run astro`
 
 注意：`format` 会格式化整个项目，日常改动不要整仓执行，只格式化改动的文件。
+
+- 换行符约定：全仓 LF。根目录 `.gitattributes`（`* text=auto eol=lf`）覆盖 Windows 的 `core.autocrlf`，保证检出后 `format:check` 可通过；不要删除或放宽该文件，也不要把行尾改回 CRLF。
+- JSX 表达式块内不要写 HTML 注释 `<!-- -->`（babel 无法解析，会导致 prettier 报错并污染同进程后续文件的解析），使用 `{/* */}`。
 
 # Content System
 
