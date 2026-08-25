@@ -33,6 +33,17 @@ function initMusicPlayers(signal?: AbortSignal) {
     if (card.dataset.musicInitialized === "true") return;
     card.dataset.musicInitialized = "true";
 
+    // 调用方（Layout）在每次 astro:page-load 会先 abort 旧控制器再重新初始化。
+    // 初始化标记必须随 abort 一并清除，否则重绑会被上面的守卫跳过，
+    // 导致首次加载（直接调用 + page-load 双触发）时监听全部失效、控件无响应。
+    signal?.addEventListener(
+      "abort",
+      () => {
+        delete card.dataset.musicInitialized;
+      },
+      { once: true }
+    );
+
     const btn = card.querySelector<HTMLButtonElement>("[data-music-toggle]");
     const audioSrc = card.dataset.audio || "";
     const href = card.dataset.href || "#";
@@ -48,9 +59,13 @@ function initMusicPlayers(signal?: AbortSignal) {
 
     // 无音频：播放按钮直接跳外链
     if (!hasAudio && btn) {
-      btn.addEventListener("click", () => {
-        window.open(href, "_blank", "noopener,noreferrer");
-      }, { signal });
+      btn.addEventListener(
+        "click",
+        () => {
+          window.open(href, "_blank", "noopener,noreferrer");
+        },
+        { signal }
+      );
       return;
     }
     if (!hasAudio) return;
@@ -94,46 +109,62 @@ function initMusicPlayers(signal?: AbortSignal) {
     };
 
     // 播放 / 暂停切换：只认本卡当前是否在播；传别人时单例切源会停旧播新
-    btn?.addEventListener("click", () => {
-      if (card.classList.contains("is-playing")) {
-        // 本卡正在播 → 暂停
-        getStore().audio.pause();
-      } else {
-        // 本卡未在播 → 把单例切到本卡并播放（若之前在播别的会自动停掉）
-        getStore()
-          .audio.play()
-          .catch(() => {
-            /* 浏览器拦截自动播放：忽略 */
-          });
-      }
-    }, { signal });
+    btn?.addEventListener(
+      "click",
+      () => {
+        if (card.classList.contains("is-playing")) {
+          // 本卡正在播 → 暂停
+          getStore().audio.pause();
+        } else {
+          // 本卡未在播 → 把单例切到本卡并播放（若之前在播别的会自动停掉）
+          getStore()
+            .audio.play()
+            .catch(() => {
+              /* 浏览器拦截自动播放：忽略 */
+            });
+        }
+      },
+      { signal }
+    );
 
     // 进度条点击跳转
-    progressTrack?.addEventListener("click", (e: MouseEvent) => {
-      const rect = progressTrack.getBoundingClientRect();
-      const ratio = (e.clientX - rect.left) / rect.width;
-      const audio = getStore().audio;
-      if (audio.duration > 0) audio.currentTime = ratio * audio.duration;
-    }, { signal });
+    progressTrack?.addEventListener(
+      "click",
+      (e: MouseEvent) => {
+        const rect = progressTrack.getBoundingClientRect();
+        const ratio = (e.clientX - rect.left) / rect.width;
+        const audio = getStore().audio;
+        if (audio.duration > 0) audio.currentTime = ratio * audio.duration;
+      },
+      { signal }
+    );
 
     // 进度条键盘跳转
-    progressTrack?.addEventListener("keydown", (e: KeyboardEvent) => {
-      const audio = getStore().audio;
-      const total = audio.duration;
-      if (!total || total <= 0) return;
-      if (e.key === "ArrowRight" || e.key === "ArrowUp") {
-        e.preventDefault();
-        audio.currentTime = Math.min(audio.currentTime + 5, total);
-      } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
-        e.preventDefault();
-        audio.currentTime = Math.max(audio.currentTime - 5, 0);
-      }
-    }, { signal });
+    progressTrack?.addEventListener(
+      "keydown",
+      (e: KeyboardEvent) => {
+        const audio = getStore().audio;
+        const total = audio.duration;
+        if (!total || total <= 0) return;
+        if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+          e.preventDefault();
+          audio.currentTime = Math.min(audio.currentTime + 5, total);
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+          e.preventDefault();
+          audio.currentTime = Math.max(audio.currentTime - 5, 0);
+        }
+      },
+      { signal }
+    );
 
-    window.addEventListener(INTRO_AUDIO_STATE_EVENT, (event: Event) => {
-      const custom = event as CustomEvent<IntroAudioState>;
-      render(custom.detail);
-    }, { signal });
+    window.addEventListener(
+      INTRO_AUDIO_STATE_EVENT,
+      (event: Event) => {
+        const custom = event as CustomEvent<IntroAudioState>;
+        render(custom.detail);
+      },
+      { signal }
+    );
 
     // 初始统一显示未播放（若页面加载时已有全局播放，事件会立即同步）
     setPlayingUI(false);
