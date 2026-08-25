@@ -15,7 +15,12 @@
  *   注入的 raw HTML 不在组件 scope 内，scoped 脚本无法生效。
  * - HTML 结构与 src/components/Music.astro 对齐，保证文章/瞬间视觉一致。
  */
-import { resolveTrack, platformLabel, type MusicPlatform } from "./music";
+import {
+  resolveTrack,
+  platformLabel,
+  isMusicPlatform,
+  type MusicPlatform,
+} from "./music";
 
 /* ── 轻量 mdast 类型（不引入 mdast 依赖） ─────────────────────────── */
 type MdNode = {
@@ -133,7 +138,11 @@ export function remarkMusic() {
       const attrs = parseAttrs(match[1]);
       const id = attrs.id;
       if (!id) return;
-      const platform = (attrs.platform as MusicPlatform) || "netease";
+      // platform 来自用户手写的指令属性，必须白名单校验后才能索引 PLATFORM_META，
+      // 否则拼写错误（如 neteasee）会在取数时抛 TypeError 中断构建
+      const rawPlatform = attrs.platform;
+      const platform =
+        rawPlatform && isMusicPlatform(rawPlatform) ? rawPlatform : "netease";
       requests.push({ node, id, platform, audio: attrs.audio });
     };
 

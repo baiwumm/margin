@@ -74,6 +74,11 @@ const PLATFORM_META: Record<
   },
 };
 
+/** 白名单校验：指令属性等外部输入的平台值必须先过此函数，避免 PLATFORM_META[platform] 命中 undefined */
+export function isMusicPlatform(value: string): value is MusicPlatform {
+  return value in PLATFORM_META;
+}
+
 /* ── 抓取配置（与 remarkLinkCard 一致：UA + 超时 + 降级） ──────────── */
 const FETCH_TIMEOUT_MS = 5000;
 const UA =
