@@ -1,0 +1,78 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  icon?: string;
+}
+
+const { title, description, icon } = Astro.props;
+---
+
+<div class="empty-state">
+  {
+    icon && (
+      <div class="empty-icon-wrapper" set:html={icon} />
+    )
+  }
+  <h3 class="empty-title">{title}</h3>
+  {description && <p class="empty-desc">{description}</p>}
+</div>
+
+<style>
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-radius: 1.5rem;
+    border: 2px dashed color-mix(in srgb, var(--border) 40%, transparent);
+    background: color-mix(in srgb, var(--background) 50%, transparent);
+    backdrop-filter: blur(12px);
+  }
+
+  .empty-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 1.25rem;
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent) 15%, transparent),
+      0 10px 30px -10px color-mix(in srgb, var(--accent) 25%, transparent);
+    animation: empty-float 4s ease-in-out infinite alternate;
+  }
+
+  .empty-icon-wrapper :global(svg) {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  @keyframes empty-float {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-8px);
+    }
+  }
+
+  .empty-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-desc {
+    font-size: 0.95rem;
+    color: var(--muted-foreground);
+    max-width: 300px;
+    margin: 0 auto;
+  }
+</style>

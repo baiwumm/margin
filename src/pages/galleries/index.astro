@@ -5,6 +5,7 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
+import EmptyState from "@/components/EmptyState.astro";
 import GalleryCard from "@/components/GalleryCard.astro";
 import { SITE } from "@/config";
 import { getGallerySlug } from "@/utils/contentEntry";
@@ -81,9 +82,10 @@ const galleries = rawGalleries
     <!-- Gallery grid -->
     {
       galleries.length === 0 ? (
-        <p class="mt-12 text-center text-foreground/50 italic">
-          暂无画廊，敬请期待。
-        </p>
+        <EmptyState
+          title="暂无画廊"
+          description="敬请期待。"
+        />
       ) : (
         <ul
           class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"

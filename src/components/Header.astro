@@ -784,7 +784,7 @@ const isActive = (path: string) => {
     headerCleanup = new AbortController();
     const { signal } = headerCleanup;
 
-    const menuBtn = document.querySelector("#menu-btn");
+    const menuBtn = document.querySelector<HTMLElement>("#menu-btn");
     const mobileMenu = document.querySelector("#mobile-menu");
     const backdrop = document.querySelector(".mobile-menu-backdrop");
 
@@ -824,6 +824,18 @@ const isActive = (path: string) => {
     mobileMenu.querySelectorAll("a").forEach(link => {
       link.addEventListener("click", closeMenu, { signal });
     });
+
+    // Close on Escape key
+    document.addEventListener(
+      "keydown",
+      e => {
+        if (e.key === "Escape" && mobileMenu.classList.contains("is-open")) {
+          closeMenu();
+          menuBtn.focus();
+        }
+      },
+      { signal }
+    );
   }
 
   function setupMoreMenu() {

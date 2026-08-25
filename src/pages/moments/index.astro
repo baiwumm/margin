@@ -5,6 +5,7 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
+import EmptyState from "@/components/EmptyState.astro";
 import MomentCard from "@/components/MomentCard.astro";
 import MomentLightbox from "@/components/MomentLightbox.astro";
 import { SITE } from "@/config";
@@ -92,9 +93,10 @@ const totalImages = moments.reduce((acc, m) => acc + m.images.length, 0);
     <!-- Masonry feed -->
     {
       moments.length === 0 ? (
-        <p class="mt-12 text-center text-foreground/50 italic">
-          暂无动态，敬请期待。
-        </p>
+        <EmptyState
+          title="暂无动态"
+          description="敬请期待。"
+        />
       ) : (
         <div class="moments-masonry" data-moments-masonry>
           {moments.map(({ moment, images }) => (

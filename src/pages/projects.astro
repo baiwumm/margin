@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
+import EmptyState from "@/components/EmptyState.astro";
 import ProjectCard from "@/components/ProjectCard.astro";
 import ContributionCalendar from "@/components/ContributionCalendar.astro";
 import { projects } from "@/data/projects";
@@ -70,10 +71,10 @@ const totalForks = effectiveProjects.reduce(
     <div class="w-full">
       {
         effectiveProjects.length === 0 ? (
-          <div class="empty-state">
-            <h3 class="empty-title">还没有开源项目</h3>
-            <p class="empty-desc">稍后再来看看，这里会有新的项目。</p>
-          </div>
+          <EmptyState
+            title="还没有开源项目"
+            description="稍后再来看看，这里会有新的项目。"
+          />
         ) : (
           <ul
             data-pagefind-body
@@ -154,31 +155,5 @@ const totalForks = effectiveProjects.reduce(
     .projects-hero {
       padding: 3rem;
     }
-  }
-
-  /* Empty State */
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 2rem;
-    text-align: center;
-    border-radius: 1.5rem;
-    border: 2px dashed color-mix(in srgb, var(--border) 40%, transparent);
-    background: color-mix(in srgb, var(--background) 50%, transparent);
-    backdrop-filter: blur(12px);
-  }
-
-  .empty-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--color-foreground);
-  }
-
-  .empty-desc {
-    margin-top: 0.5rem;
-    font-size: 0.85rem;
-    opacity: 0.6;
   }
 </style>
