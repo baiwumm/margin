@@ -75,6 +75,12 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .aurora-orb {
+    animation: none;
+  }
+}
+
 /* `.aurora-mouse-follow` 是标签页使用的同名变体 */
 .aurora-mouse,
 .aurora-mouse-follow {

@@ -65,7 +65,7 @@ const totalImages = moments.reduce((acc, m) => acc + m.images.length, 0);
 >
   <Header />
   <Breadcrumb />
-  <main id="main-content" class="app-layout pb-12">
+  <main id="main-content" class="app-layout pb-8">
     <!-- Hero -->
     <div class="moments-hero" data-moments-hero>
       <div class="aurora-orb aurora-orb-1"></div>
@@ -103,10 +103,7 @@ const totalImages = moments.reduce((acc, m) => acc + m.images.length, 0);
     <!-- Masonry feed -->
     {
       moments.length === 0 ? (
-        <EmptyState
-          title="暂无动态"
-          description="敬请期待。"
-        />
+        <EmptyState title="暂无动态" description="敬请期待。" />
       ) : (
         <div class="moments-masonry" data-moments-masonry>
           {moments.map(({ moment, images }) => (
@@ -220,7 +217,7 @@ const totalImages = moments.reduce((acc, m) => acc + m.images.length, 0);
     overflow: hidden;
     border-radius: 1.5rem;
     padding: 2.5rem 2rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
     background: color-mix(
       in srgb,
       var(--color-foreground) 3%,

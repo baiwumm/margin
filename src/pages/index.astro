@@ -158,7 +158,9 @@ const recentPosts = sortedPosts.filter(
       recentPosts.length > 0 && (
         <section id="recent-posts" class="pt-6 pb-6">
           <div class="mb-6 flex items-center gap-3">
-            <h2 class="text-sm font-bold tracking-widest text-accent uppercase">Recent</h2>
+            <h2 class="text-sm font-bold tracking-widest text-accent uppercase">
+              Recent
+            </h2>
             <div class="h-px flex-1 bg-border/20" />
             <span class="font-firacode text-xs text-accent/40 select-none">
               [{recentPosts.slice(0, SITE.postPerIndex).length}/
@@ -167,8 +169,10 @@ const recentPosts = sortedPosts.filter(
           </div>
           <ul
             class:list={[
-              SITE.indexPostsGrid &&
-                "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3",
+              SITE.indexPostsGrid
+                ? "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+                : "grid grid-cols-1 gap-4 sm:grid-cols-2",
+              "[&>li]:my-0",
             ]}
           >
             {recentPosts.map(

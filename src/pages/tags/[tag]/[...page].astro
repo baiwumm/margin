@@ -69,7 +69,9 @@ const nextURL = page.url.next
     titleTransition={tag}
     pageDesc={`包含标签「${tagName}」的全部内容。`}
   >
-    <ul>
+    <ul
+      class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 [&>li]:my-0"
+    >
       {
         page.data.map((data, index) => (
           <Card

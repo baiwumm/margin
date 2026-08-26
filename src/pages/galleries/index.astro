@@ -64,7 +64,7 @@ const totalImages = galleries.reduce(
 <Layout title={`画廊 | ${SITE.title}`}>
   <Header />
   <Breadcrumb />
-  <main id="main-content" class="app-layout pb-12">
+  <main id="main-content" class="app-layout pb-8">
     <!-- Hero -->
     <div class="galleries-hero" data-galleries-hero>
       <div class="aurora-orb aurora-orb-1"></div>
@@ -102,10 +102,7 @@ const totalImages = galleries.reduce(
     <!-- Gallery grid -->
     {
       galleries.length === 0 ? (
-        <EmptyState
-          title="暂无画廊"
-          description="敬请期待。"
-        />
+        <EmptyState title="暂无画廊" description="敬请期待。" />
       ) : (
         <ul
           class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
@@ -138,9 +135,7 @@ const totalImages = galleries.reduce(
     const { signal } = galleriesCleanup;
 
     // Hero mouse-follow aurora
-    const hero = document.querySelector(
-      "[data-galleries-hero]"
-    ) as HTMLElement;
+    const hero = document.querySelector("[data-galleries-hero]") as HTMLElement;
     const heroMouse = document.querySelector(
       "[data-galleries-mouse]"
     ) as HTMLElement;
@@ -175,7 +170,7 @@ const totalImages = galleries.reduce(
     overflow: hidden;
     border-radius: 1.5rem;
     padding: 2.5rem 2rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
     background: color-mix(
       in srgb,
       var(--color-foreground) 3%,

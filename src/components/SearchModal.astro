@@ -761,6 +761,12 @@ import "@pagefind/default-ui/css/ui.css";
     line-height: 1.5;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .empty-icon {
+      animation: none;
+    }
+  }
+
   /* ===== Footer ===== */
   .search-modal-footer {
     position: relative;

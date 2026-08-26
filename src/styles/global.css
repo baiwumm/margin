@@ -138,6 +138,9 @@ html[data-accent="rose"] {
 }
 
 @theme inline {
+  /* 全站字体统一为 Maple Mono CN；
+     --font-sriracha / --font-firacode 是历史遗留别名（大量类名与样式引用），
+     统一指向 --font-app，勿单独注册字体 */
   --font-app: "Maple Mono CN", var(--font-wotfard);
   --font-sriracha: var(--font-app);
   --font-firacode: var(--font-app);

@@ -117,6 +117,8 @@ export default defineConfig({
   },
 
   fonts: [
+    // 全站字体统一为 Maple Mono CN（经 Layout 内联的 /giscus/fonts CSS 加载），
+    // Wotfard 仅作字体栈兜底；此前的 Sriracha / Fira Code 注册已被移除
     {
       name: "Wotfard",
       cssVariable: "--font-wotfard",
@@ -126,32 +128,6 @@ export default defineConfig({
         variants: [
           {
             src: ["./src/assets/fonts/wotfard.woff2"],
-          },
-        ],
-      },
-    },
-    {
-      name: "Sriracha",
-      cssVariable: "--font-sriracha",
-      fallbacks: ["cursive"],
-      provider: fontProviders.local(),
-      options: {
-        variants: [
-          {
-            src: ["./src/assets/fonts/sriracha.woff2"],
-          },
-        ],
-      },
-    },
-    {
-      name: "Fira Code",
-      cssVariable: "--font-firacode",
-      fallbacks: ["monospace"],
-      provider: fontProviders.local(),
-      options: {
-        variants: [
-          {
-            src: ["./src/assets/fonts/firacode.woff2"],
           },
         ],
       },

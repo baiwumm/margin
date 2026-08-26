@@ -9,11 +9,7 @@ const { title, description, icon } = Astro.props;
 ---
 
 <div class="empty-state">
-  {
-    icon && (
-      <div class="empty-icon-wrapper" set:html={icon} />
-    )
-  }
+  {icon && <div class="empty-icon-wrapper" set:html={icon} />}
   <h3 class="empty-title">{title}</h3>
   {description && <p class="empty-desc">{description}</p>}
 </div>
@@ -74,5 +70,11 @@ const { title, description, icon } = Astro.props;
     color: var(--muted-foreground);
     max-width: 300px;
     margin: 0 auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .empty-icon-wrapper {
+      animation: none;
+    }
   }
 </style>

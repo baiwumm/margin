@@ -30,7 +30,7 @@ const maxCount = Math.max(...tagsWithCount.map(t => t.count));
 <Layout title={`Tags | ${SITE.title}`}>
   <Header />
   <Breadcrumb />
-  <main id="main-content" class="app-layout pb-12">
+  <main id="main-content" class="app-layout pb-8">
     <!-- Hero with mouse-tracking aurora -->
     <div class="tags-hero" data-aurora-hero>
       <div class="aurora-orb aurora-orb-1"></div>
@@ -185,7 +185,7 @@ const maxCount = Math.max(...tagsWithCount.map(t => t.count));
     overflow: hidden;
     border-radius: 1.5rem;
     padding: 2.5rem 2rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
     background: color-mix(
       in srgb,
       var(--color-foreground) 3%,
