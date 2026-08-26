@@ -111,7 +111,7 @@ const gallerySchema = {
   {SITE.showBackButton && <Breadcrumb withBackButton />}
   <main
     id="main-content"
-    class:list={["relative app-layout pb-16", { "mt-8": !SITE.showBackButton }]}
+    class:list={["relative app-layout pb-8", { "mt-8": !SITE.showBackButton }]}
   >
     <!-- Gallery header -->
     <header class="relative mb-10 text-center">
@@ -154,7 +154,9 @@ const gallerySchema = {
           class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm"
         >
           <!-- Author chip -->
-          <div class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm">
+          <div
+            class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm"
+          >
             <svg
               class="size-3.5 text-accent/70"
               viewBox="0 0 24 24"
@@ -171,7 +173,9 @@ const gallerySchema = {
           </div>
 
           <!-- Date chip -->
-          <div class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm">
+          <div
+            class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm"
+          >
             <svg
               class="size-3.5 text-accent/70"
               viewBox="0 0 24 24"
@@ -194,12 +198,12 @@ const gallerySchema = {
           </div>
 
           <!-- Gallery images count chip -->
-          <div class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm">
+          <div
+            class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm"
+          >
             <IconGallery class="size-3.5 text-accent/70" />
-            <span
-              class="opacity-70"
-            >
-              {images.length}张图片
+            <span class="opacity-70">
+              {images.length} 张图片
             </span>
           </div>
         </div>
@@ -553,7 +557,16 @@ const gallerySchema = {
 
 <script>
   // Build image array from DOM
+  let galleryLightboxCleanup: AbortController | null = null;
+
   function initGallery() {
+    // 清理上一次初始化绑定的事件（含 document 级监听），
+    // 避免 View Transitions 下监听器累积；abort 须在 early return 之前，
+    // 离开画廊页时也能移除旧监听
+    if (galleryLightboxCleanup) galleryLightboxCleanup.abort();
+    galleryLightboxCleanup = new AbortController();
+    const { signal } = galleryLightboxCleanup;
+
     const grid = document.getElementById("gallery-grid");
     const lightbox = document.getElementById(
       "lightbox"
@@ -651,9 +664,13 @@ const gallerySchema = {
     ) as HTMLElement | null;
     const preloadCache = new Set<string>();
 
-    lightboxStage?.addEventListener("animationend", () => {
-      lightboxStage.classList.remove("slide-in-left", "slide-in-right");
-    });
+    lightboxStage?.addEventListener(
+      "animationend",
+      () => {
+        lightboxStage.classList.remove("slide-in-left", "slide-in-right");
+      },
+      { signal }
+    );
 
     // 从 srcset 中取最大尺寸的版本，保证灯箱放大后清晰
     function pickLargestSrc(el: HTMLImageElement): string {
@@ -736,19 +753,23 @@ const gallerySchema = {
     }
 
     items.forEach((btn, idx) => {
-      btn.addEventListener("click", () => open(idx));
+      btn.addEventListener("click", () => open(idx), { signal });
     });
 
-    closeBtn?.addEventListener("click", close);
-    prevBtn?.addEventListener("click", () => open(current - 1));
-    nextBtn?.addEventListener("click", () => open(current + 1));
-    zoomInBtn?.addEventListener("click", () => zoomBy(1.5));
-    zoomOutBtn?.addEventListener("click", () => zoomBy(1 / 1.5));
-    resetBtn?.addEventListener("click", resetTransform);
-    rotateBtn?.addEventListener("click", () => {
-      rotation = (rotation + 90) % 360;
-      applyTransform(true);
-    });
+    closeBtn?.addEventListener("click", close, { signal });
+    prevBtn?.addEventListener("click", () => open(current - 1), { signal });
+    nextBtn?.addEventListener("click", () => open(current + 1), { signal });
+    zoomInBtn?.addEventListener("click", () => zoomBy(1.5), { signal });
+    zoomOutBtn?.addEventListener("click", () => zoomBy(1 / 1.5), { signal });
+    resetBtn?.addEventListener("click", resetTransform, { signal });
+    rotateBtn?.addEventListener(
+      "click",
+      () => {
+        rotation = (rotation + 90) % 360;
+        applyTransform(true);
+      },
+      { signal }
+    );
 
     // 滚轮缩放
     lightboxImg.addEventListener(
@@ -757,61 +778,69 @@ const gallerySchema = {
         e.preventDefault();
         zoomBy(e.deltaY < 0 ? 1.15 : 1 / 1.15);
       },
-      { passive: false }
+      { passive: false, signal }
     );
 
     // 双指缩放 + 拖拽平移
-    lightboxImg.addEventListener("pointerdown", e => {
-      lightboxImg.setPointerCapture(e.pointerId);
-      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      lightboxImg.style.transition = "none";
-      if (pointers.size === 2) {
-        const [a, b] = [...pointers.values()];
-        pinchStartDistance = Math.hypot(a.x - b.x, a.y - b.y);
-        pinchStartScale = scale;
-        panStart = null;
-      } else if (pointers.size === 1 && scale > 1) {
-        panStart = { x: e.clientX, y: e.clientY, tx, ty };
-        lightboxImg.classList.add("is-panning");
-      }
-    });
-    lightboxImg.addEventListener("pointermove", e => {
-      const prev = pointers.get(e.pointerId);
-      if (!prev) return;
-      if (pointers.size === 2) {
-        const other = [...pointers.entries()].find(
-          ([id]) => id !== e.pointerId
-        );
-        if (other && pinchStartDistance > 0) {
-          const [, a] = other;
-          const dist = Math.hypot(a.x - e.clientX, a.y - e.clientY);
-          const next = Math.min(
-            4,
-            Math.max(1, pinchStartScale * (dist / pinchStartDistance))
-          );
-          if (next === 1) {
-            tx = 0;
-            ty = 0;
-          }
-          scale = next;
-          applyTransform(false);
+    lightboxImg.addEventListener(
+      "pointerdown",
+      e => {
+        lightboxImg.setPointerCapture(e.pointerId);
+        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        lightboxImg.style.transition = "none";
+        if (pointers.size === 2) {
+          const [a, b] = [...pointers.values()];
+          pinchStartDistance = Math.hypot(a.x - b.x, a.y - b.y);
+          pinchStartScale = scale;
+          panStart = null;
+        } else if (pointers.size === 1 && scale > 1) {
+          panStart = { x: e.clientX, y: e.clientY, tx, ty };
+          lightboxImg.classList.add("is-panning");
         }
-        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      } else if (panStart) {
-        const { maxX, maxY } = panRange();
-        tx = Math.max(
-          -maxX,
-          Math.min(maxX, panStart.tx + (e.clientX - panStart.x))
-        );
-        ty = Math.max(
-          -maxY,
-          Math.min(maxY, panStart.ty + (e.clientY - panStart.y))
-        );
-        applyTransform(false);
-      } else {
-        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      }
-    });
+      },
+      { signal }
+    );
+    lightboxImg.addEventListener(
+      "pointermove",
+      e => {
+        const prev = pointers.get(e.pointerId);
+        if (!prev) return;
+        if (pointers.size === 2) {
+          const other = [...pointers.entries()].find(
+            ([id]) => id !== e.pointerId
+          );
+          if (other && pinchStartDistance > 0) {
+            const [, a] = other;
+            const dist = Math.hypot(a.x - e.clientX, a.y - e.clientY);
+            const next = Math.min(
+              4,
+              Math.max(1, pinchStartScale * (dist / pinchStartDistance))
+            );
+            if (next === 1) {
+              tx = 0;
+              ty = 0;
+            }
+            scale = next;
+            applyTransform(false);
+          }
+          pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        } else if (panStart) {
+          const { maxX, maxY } = panRange();
+          tx = Math.max(
+            -maxX,
+            Math.min(maxX, panStart.tx + (e.clientX - panStart.x))
+          );
+          ty = Math.max(
+            -maxY,
+            Math.min(maxY, panStart.ty + (e.clientY - panStart.y))
+          );
+          applyTransform(false);
+        } else {
+          pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        }
+      },
+      { signal }
+    );
     const endPointer = (e: PointerEvent) => {
       pointers.delete(e.pointerId);
       lightboxImg.classList.remove("is-panning");
@@ -823,33 +852,41 @@ const gallerySchema = {
         panStart = null;
       }
     };
-    lightboxImg.addEventListener("pointerup", endPointer);
-    lightboxImg.addEventListener("pointercancel", endPointer);
-    lightboxImg.addEventListener("lostpointercapture", endPointer);
+    lightboxImg.addEventListener("pointerup", endPointer, { signal });
+    lightboxImg.addEventListener("pointercancel", endPointer, { signal });
+    lightboxImg.addEventListener("lostpointercapture", endPointer, { signal });
 
     // 双击缩放 / 还原
-    lightboxImg.addEventListener("dblclick", () => {
-      if (scale > 1) {
-        resetTransform();
-      } else {
-        scale = 2;
-        applyTransform(true);
-      }
-    });
+    lightboxImg.addEventListener(
+      "dblclick",
+      () => {
+        if (scale > 1) {
+          resetTransform();
+        } else {
+          scale = 2;
+          applyTransform(true);
+        }
+      },
+      { signal }
+    );
 
-    document.addEventListener("keydown", e => {
-      if (!lb.open) return;
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowLeft") open(current - 1);
-      if (e.key === "ArrowRight") open(current + 1);
-      if (e.key === "+" || e.key === "=") zoomBy(1.25);
-      if (e.key === "-" || e.key === "_") zoomBy(1 / 1.25);
-      if (e.key === "0") resetTransform();
-      if (e.key.toLowerCase() === "r") {
-        rotation = (rotation + 90) % 360;
-        applyTransform(true);
-      }
-    });
+    document.addEventListener(
+      "keydown",
+      e => {
+        if (!lb.open) return;
+        if (e.key === "Escape") close();
+        if (e.key === "ArrowLeft") open(current - 1);
+        if (e.key === "ArrowRight") open(current + 1);
+        if (e.key === "+" || e.key === "=") zoomBy(1.25);
+        if (e.key === "-" || e.key === "_") zoomBy(1 / 1.25);
+        if (e.key === "0") resetTransform();
+        if (e.key.toLowerCase() === "r") {
+          rotation = (rotation + 90) % 360;
+          applyTransform(true);
+        }
+      },
+      { signal }
+    );
   }
 
   // Initialize on first load and SPA navigations (View Transitions)

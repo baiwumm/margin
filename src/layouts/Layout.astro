@@ -102,8 +102,7 @@ const finalStructuredData =
             mainEntity: {
               "@type": "Person",
               name: author,
-              description:
-                "Developer, student, and gamer. Creator of Astro Devosfera.",
+              description: `${SITE.author} 的个人博客：${SITE.desc}`,
               ...(profile && { url: profile }),
             },
           }
@@ -132,7 +131,7 @@ const showGrain = SITE.backdropEffects.grain;
     {next && <link rel="next" href={next} />}
 
     <!-- Load Fonts -->
-    <!-- Only preload the primary body font. Others load async to avoid bandwidth contention. -->
+    <!-- 全站字体为 Maple Mono CN（下方本地 CSS 提供）；Wotfard 仅作字体栈兜底 -->
     <link
       rel="stylesheet"
       href="/giscus/fonts/maple-mono-cn/maple-mono-cn.css"
@@ -141,8 +140,6 @@ const showGrain = SITE.backdropEffects.grain;
       cssVariable="--font-wotfard"
       preload={[{ subset: "latin", weight: 400, style: "normal" }]}
     />
-    <Font cssVariable="--font-sriracha" />
-    <Font cssVariable="--font-firacode" />
 
     <!-- General Meta Tags -->
     <title>{title}</title>

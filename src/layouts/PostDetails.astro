@@ -103,7 +103,7 @@ const nextPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
   }
   <main
     id="main-content"
-    class:list={["relative app-layout pb-12", { "mt-8": !SITE.showBackButton }]}
+    class:list={["relative app-layout pb-8", { "mt-8": !SITE.showBackButton }]}
     data-pagefind-body
   >
     <!-- Post header section -->
@@ -114,7 +114,7 @@ const nextPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
       >
         <!-- Title -->
         <h1
-          transition:name={slugifyStr(title)}
+          transition:name={slugifyStr(title.replaceAll(".", "-"))}
           class="post-title text-3xl leading-tight font-bold tracking-tight sm:text-4xl lg:text-[2.75rem]"
         >
           {title}
