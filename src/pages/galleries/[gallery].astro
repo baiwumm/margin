@@ -7,6 +7,7 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
 import Datetime from "@/components/Datetime.astro";
+import Comments from "@/components/Comments.astro";
 import IconGallery from "@/assets/icons/IconGallery.svg";
 import { slugifyStr } from "@/utils/slugify";
 import { SITE } from "@/config";
@@ -14,18 +15,32 @@ import { SITE } from "@/config";
 export async function getStaticPaths() {
   if (!SITE.showGalleries) return [];
 
+  const slugOf = (id: string) =>
+    id.replace(/\/index\.(md|mdx)$/, "").replace(/\.(md|mdx)$/, "");
+
   const galleries = await getCollection("galleries", ({ data }) => !data.draft);
-  return galleries.map(gallery => ({
-    params: {
-      gallery: gallery.id
-        .replace(/\/index\.(md|mdx)$/, "")
-        .replace(/\.(md|mdx)$/, ""),
+  const sorted = [...galleries].sort(
+    (a, b) =>
+      new Date(b.data.pubDatetime).getTime() -
+      new Date(a.data.pubDatetime).getTime()
+  );
+
+  return sorted.map((gallery, idx) => ({
+    params: { gallery: slugOf(gallery.id) },
+    props: {
+      entry: gallery,
+      prevGallery: idx < sorted.length - 1 ? sorted[idx + 1] : null,
+      nextGallery: idx > 0 ? sorted[idx - 1] : null,
+      prevPath:
+        idx < sorted.length - 1
+          ? `/galleries/${slugOf(sorted[idx + 1].id)}`
+          : null,
+      nextPath: idx > 0 ? `/galleries/${slugOf(sorted[idx - 1].id)}` : null,
     },
-    props: { entry: gallery },
   }));
 }
 
-const { entry } = Astro.props;
+const { entry, prevGallery, nextGallery, prevPath, nextPath } = Astro.props;
 const { gallery: slug } = Astro.params;
 const { title, description, pubDatetime, coverImage, tags } = entry.data;
 
@@ -99,48 +114,66 @@ const gallerySchema = {
     class:list={["relative app-layout pb-16", { "mt-8": !SITE.showBackButton }]}
   >
     <!-- Gallery header -->
-    <header class="mb-14 border-b border-border/10 pt-8 pb-10 sm:pb-14">
+    <header class="relative mb-10 text-center">
+      <div class="gallery-hero-bg"></div>
       <div
-        class="flex flex-col gap-8 md:flex-row md:items-end md:justify-between"
+        class="relative z-10 rounded-3xl border border-border/20 bg-muted/5 px-6 py-8 backdrop-blur-md sm:px-10 sm:py-12"
       >
-        <div class="max-w-3xl">
-          <div class="mb-5 inline-flex items-center gap-2 text-accent">
-            <IconGallery class="size-5" />
-            <span
-              class="font-firacode text-xs font-bold tracking-[0.2em] uppercase opacity-90"
-            >
-              画廊 // {images.length} 张图片
-            </span>
-          </div>
+        <h1
+          transition:name={slugifyStr(String(title).replaceAll(".", "-"))}
+          class="post-title text-3xl leading-tight font-bold tracking-tight sm:text-4xl lg:text-[2.75rem]"
+        >
+          {title}
+        </h1>
 
-          <h1
-            class="text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
-            style={{
-              viewTransitionName: slugifyStr(
-                String(title).replaceAll(".", "-")
-              ),
-            }}
-          >
-            {title}
-          </h1>
+        {
+          description && (
+            <p class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-foreground/60">
+              {description}
+            </p>
+          )
+        }
 
+        <!-- Tags as badges -->
+        <div class="mt-6 flex flex-wrap justify-center gap-2">
           {
-            description && (
-              <p class="mt-6 text-lg leading-relaxed text-foreground/60 sm:text-xl">
-                {description}
-              </p>
-            )
+            tags.map(tag => (
+              <a
+                href={`/tags/${slugifyStr(tag)}/`}
+                class="inline-flex items-center gap-1 rounded-full border border-accent/20 bg-accent/5 px-2.5 py-0.5 text-xs text-accent transition-all duration-200 hover:border-accent/40 hover:bg-accent/10 hover:shadow-sm hover:shadow-accent/10"
+              >
+                <span class="opacity-50">#</span>
+                {tag}
+              </a>
+            ))
           }
         </div>
 
+        <!-- Metadata row -->
         <div
-          class="flex w-full shrink-0 flex-col gap-4 md:w-auto md:items-end md:pb-2"
+          class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm"
         >
-          <div
-            class="inline-flex items-center gap-2 font-firacode text-sm text-foreground/40"
-          >
+          <!-- Author chip -->
+          <div class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm">
             <svg
-              class="size-4 opacity-50"
+              class="size-3.5 text-accent/70"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span class="opacity-70">{SITE.author}</span>
+          </div>
+
+          <!-- Date chip -->
+          <div class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm">
+            <svg
+              class="size-3.5 text-accent/70"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -153,26 +186,22 @@ const gallerySchema = {
               <line x1="8" y1="2" x2="8" y2="6"></line>
               <line x1="3" y1="10" x2="21" y2="10"></line>
             </svg>
-            <Datetime pubDatetime={pubDatetime} class="mb-0 [&>svg]:hidden" />
+            <Datetime
+              pubDatetime={pubDatetime}
+              size="sm"
+              class="opacity-70 [&>svg]:hidden"
+            />
           </div>
 
-          {
-            tags.length > 0 && (
-              <div class="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm md:mt-0 md:justify-end">
-                {tags.map(tag => (
-                  <a
-                    href={`/tags/${slugifyStr(tag)}/`}
-                    class="group relative inline-flex items-center font-firacode text-foreground/50 transition-colors duration-300 hover:text-accent"
-                  >
-                    <span class="mr-1 text-accent/40 transition-colors duration-300 group-hover:text-accent">
-                      #
-                    </span>
-                    {tag}
-                  </a>
-                ))}
-              </div>
-            )
-          }
+          <!-- Gallery images count chip -->
+          <div class="inline-flex items-center gap-1.5 rounded-lg border border-border/25 bg-muted/10 px-2.5 py-1 backdrop-blur-sm">
+            <IconGallery class="size-3.5 text-accent/70" />
+            <span
+              class="opacity-70"
+            >
+              {images.length}张图片
+            </span>
+          </div>
         </div>
       </div>
     </header>
@@ -231,6 +260,107 @@ const gallerySchema = {
         </p>
       )
     }
+
+    <Comments />
+
+    <!-- ═══════ Gallery footer section ═══════ -->
+    <div
+      class="post-end-divider relative mt-12 mb-8 flex items-center justify-center gap-4"
+      aria-hidden="true"
+    >
+      <div
+        class="relative h-px flex-1 bg-linear-to-r from-transparent via-border/30 to-accent/20"
+      >
+        <div
+          class="absolute inset-0 bg-linear-to-r from-transparent via-accent/40 to-accent/40 blur-[2px]"
+        >
+        </div>
+      </div>
+
+      <div
+        class="relative z-10 flex items-center gap-2 font-firacode text-[10px] tracking-widest text-accent/40 uppercase select-none"
+      >
+        <span
+          class="h-1.5 w-1.5 rounded-full bg-accent/50 shadow-[0_0_8px_var(--color-accent)]"
+        ></span>
+        end
+      </div>
+
+      <div
+        class="relative h-px flex-1 bg-linear-to-l from-transparent via-border/30 to-accent/20"
+      >
+        <div
+          class="absolute inset-0 bg-linear-to-l from-transparent via-accent/40 to-accent/40 blur-[2px]"
+        >
+        </div>
+      </div>
+    </div>
+
+    <!-- Previous/Next Gallery Navigation -->
+    <div data-pagefind-ignore class="post-pagination grid grid-cols-2 gap-3">
+      {
+        prevGallery ? (
+          <a
+            href={prevPath}
+            class="post-nav-link group relative flex flex-col gap-1 rounded-2xl border border-border/20 px-5 py-4 transition-all duration-300 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5"
+          >
+            <div class="post-nav-bg" />
+            <div class="flex items-center gap-1.5">
+              <svg
+                class="size-3.5 text-accent/50 transition-transform duration-300 group-hover:-translate-x-1 rtl:rotate-180"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12 19 5 12 12 5" />
+              </svg>
+              <span class="font-firacode text-[10px] tracking-wider text-foreground/35 uppercase">
+                Previous
+              </span>
+            </div>
+            <span class="line-clamp-2 text-sm leading-snug font-medium text-foreground/70 transition-colors duration-200 group-hover:text-accent">
+              {prevGallery.data.title}
+            </span>
+          </a>
+        ) : (
+          <div />
+        )
+      }
+      {
+        nextGallery && (
+          <a
+            href={nextPath}
+            class="post-nav-link group relative col-start-2 flex flex-col items-end gap-1 rounded-2xl border border-border/20 px-5 py-4 text-end transition-all duration-300 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5"
+          >
+            <div class="post-nav-bg" />
+            <div class="flex items-center gap-1.5">
+              <span class="font-firacode text-[10px] tracking-wider text-foreground/35 uppercase">
+                Next
+              </span>
+              <svg
+                class="size-3.5 text-accent/50 transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </div>
+            <span class="line-clamp-2 text-sm leading-snug font-medium text-foreground/70 transition-colors duration-200 group-hover:text-accent">
+              {nextGallery.data.title}
+            </span>
+          </a>
+        )
+      }
+    </div>
   </main>
   <Footer />
 </Layout>
@@ -728,6 +858,101 @@ const gallerySchema = {
 </script>
 
 <style>
+  /* ── Header (与文章详情 PostDetails 一致的风格) ── */
+  .post-title {
+    background: linear-gradient(
+      135deg,
+      var(--accent) 0%,
+      color-mix(in oklab, var(--accent) 60%, var(--foreground)) 25%,
+      var(--foreground) 50%,
+      var(--foreground) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Hero glow layer — gradient-only, no filter:blur (avoids repaint) */
+  .gallery-hero-bg {
+    position: absolute;
+    inset: -2px;
+    opacity: 0.6;
+    background:
+      radial-gradient(
+        circle at 20% 5%,
+        color-mix(in oklab, var(--accent) 12%, transparent) 0%,
+        transparent 45%
+      ),
+      radial-gradient(
+        ellipse 80% 60% at 80% 95%,
+        color-mix(in oklab, var(--accent) 8%, transparent) 0%,
+        transparent 55%
+      );
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 1.5rem; /* matches rounded-3xl */
+  }
+
+  /* ── Prev/Next navigation (与文章详情一致) ── */
+  .post-nav-link {
+    /* No backdrop-filter here — .post-nav-bg already provides the
+     blur effect via filter:blur(16px), avoiding a second compositing layer */
+    background: color-mix(in srgb, var(--muted) 5%, transparent);
+    position: relative;
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s ease,
+      border-color 0.3s ease,
+      background-color 0.3s ease;
+  }
+
+  .post-nav-link:hover {
+    background: color-mix(in srgb, var(--accent) 4%, transparent);
+    transform: translateY(-2px);
+  }
+
+  .post-nav-link:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Aurora glow layer — opacity-only transition, single blur value */
+  .post-nav-bg {
+    position: absolute;
+    inset: -1px;
+    opacity: 0.4;
+    transition: opacity 0.35s ease;
+    background:
+      radial-gradient(
+        ellipse 80% 60% at 20% 80%,
+        color-mix(in oklab, var(--accent) 12%, transparent) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 60% 70% at 80% 20%,
+        color-mix(in oklab, var(--accent) 8%, transparent) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 90% 40% at 50% 100%,
+        color-mix(in oklab, var(--accent) 6%, transparent) 0%,
+        transparent 50%
+      );
+    filter: blur(16px); /* single value — no change on hover → no repaint */
+    pointer-events: none;
+    z-index: -1;
+    border-radius: inherit;
+  }
+
+  .post-nav-link:hover .post-nav-bg {
+    opacity: 1; /* only opacity transitions — compositor-friendly */
+  }
+
+  @media (pointer: fine) {
+    .post-nav-bg {
+      will-change: opacity;
+    }
+  }
+
   /* ── Image grid ── */
   .gallery-grid {
     display: grid;
