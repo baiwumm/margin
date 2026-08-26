@@ -54,6 +54,11 @@ const galleries = rawGalleries
       imageCount: folderImages.length,
     };
   });
+
+const totalImages = galleries.reduce(
+  (sum, { imageCount }) => sum + imageCount,
+  0
+);
 ---
 
 <Layout title={`画廊 | ${SITE.title}`}>
@@ -61,12 +66,22 @@ const galleries = rawGalleries
   <Breadcrumb />
   <main id="main-content" class="app-layout pb-12">
     <!-- Hero -->
-    <div class="archive-hero" data-archive-hero>
+    <div class="galleries-hero" data-galleries-hero>
       <div class="aurora-orb aurora-orb-1"></div>
       <div class="aurora-orb aurora-orb-2"></div>
       <div class="aurora-orb aurora-orb-3"></div>
-      <div class="aurora-mouse" data-archive-mouse></div>
+      <div class="aurora-mouse" data-galleries-mouse></div>
       <div class="relative z-10">
+        <!-- Terminal prompt badge -->
+        <div
+          class="mb-4 inline-flex items-center gap-2 rounded-full border border-border/40 bg-muted/20 px-3.5 py-1.5 font-firacode text-xs sm:text-sm"
+        >
+          <span class="text-accent">~</span>
+          <span>/galleries</span>
+          <span class="opacity-40">$</span>
+          <span class="opacity-60">ls -la</span>
+        </div>
+
         <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
           <span class="glow-text">画廊</span>
         </h1>
@@ -75,6 +90,11 @@ const galleries = rawGalleries
         </p>
         <div class="mt-4 flex flex-wrap items-center gap-2">
           <span class="hero-badge">{galleries.length} 个画廊</span>
+          {
+            totalImages > 0 && (
+              <span class="hero-badge">{totalImages} 张图片</span>
+            )
+          }
         </div>
       </div>
     </div>
@@ -88,7 +108,7 @@ const galleries = rawGalleries
         />
       ) : (
         <ul
-          class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
           role="list"
         >
           {galleries.map(({ gallery, slug, fallbackImage, imageCount }) => (
@@ -107,3 +127,66 @@ const galleries = rawGalleries
   </main>
   <Footer />
 </Layout>
+
+<script>
+  let galleriesCleanup: AbortController | null = null;
+
+  document.addEventListener("astro:page-load", () => {
+    // Cleanup previous listeners
+    if (galleriesCleanup) galleriesCleanup.abort();
+    galleriesCleanup = new AbortController();
+    const { signal } = galleriesCleanup;
+
+    // Hero mouse-follow aurora
+    const hero = document.querySelector(
+      "[data-galleries-hero]"
+    ) as HTMLElement;
+    const heroMouse = document.querySelector(
+      "[data-galleries-mouse]"
+    ) as HTMLElement;
+    if (hero && heroMouse) {
+      hero.addEventListener(
+        "mousemove",
+        e => {
+          requestAnimationFrame(() => {
+            const rect = hero.getBoundingClientRect();
+            heroMouse.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+            heroMouse.style.setProperty("--my", `${e.clientY - rect.top}px`);
+            heroMouse.style.opacity = "1";
+          });
+        },
+        { signal }
+      );
+      hero.addEventListener(
+        "mouseleave",
+        () => {
+          heroMouse.style.opacity = "0";
+        },
+        { signal }
+      );
+    }
+  });
+</script>
+
+<style>
+  /* ===== Hero ===== */
+  .galleries-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
+    margin-bottom: 2.5rem;
+    background: color-mix(
+      in srgb,
+      var(--color-foreground) 3%,
+      var(--color-background)
+    );
+    border: 1px solid color-mix(in srgb, var(--color-accent) 12%, transparent);
+  }
+
+  @media (min-width: 640px) {
+    .galleries-hero {
+      padding: 3rem;
+    }
+  }
+</style>
