@@ -58,6 +58,21 @@ const moments = defineCollection({
         audio: z.string().optional(),
       })
       .optional(),
+    // 可选视频：id（B 站 BV/av 号、视频页链接、b23.tv 短链；非 B 站降级为跳转卡片）
+    // 与 src（mp4 直链或 / 开头的站内路径）二选一，同时设置时 src 优先；
+    // ratio 如 "9/16"（竖屏），默认 16/9
+    video: z
+      .object({
+        id: z.string().optional(),
+        src: z.string().optional(),
+        poster: z.string().optional(),
+        title: z.string().optional(),
+        ratio: z.string().optional(),
+      })
+      .refine(v => Boolean(v.id || v.src), {
+        message: "video 需要提供 id 或 src 之一",
+      })
+      .optional(),
   }),
 });
 

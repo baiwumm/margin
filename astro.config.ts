@@ -12,6 +12,7 @@ import { transformerFileName } from "./src/utils/transformers/fileName";
 import { remarkRemoveTocMarker } from "./src/utils/remarkRemoveTocMarker";
 import { remarkLinkCard } from "./src/utils/remarkLinkCard";
 import { remarkMusic } from "./src/utils/remarkMusic";
+import { remarkVideo } from "./src/utils/remarkVideo";
 import { rehypeExternalLinks } from "./src/utils/rehypeExternalLinks";
 import { SITE } from "./src/config";
 
@@ -35,7 +36,12 @@ export default defineConfig({
   ],
   markdown: {
     processor: unified({
-      remarkPlugins: [remarkRemoveTocMarker, remarkLinkCard, remarkMusic],
+      remarkPlugins: [
+        remarkRemoveTocMarker,
+        remarkLinkCard,
+        remarkMusic,
+        remarkVideo,
+      ],
       rehypePlugins: [rehypeExternalLinks],
     }),
     shikiConfig: {

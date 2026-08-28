@@ -11,6 +11,7 @@ import TextToSpeech from "@/components/TextToSpeech.astro";
 import ReadMode from "@/components/ReadMode.astro";
 import GalleryEmbed from "@/components/GalleryEmbed.astro";
 import Music from "@/components/Music.astro";
+import Video from "@/components/Video.astro";
 import PostLightbox from "@/components/PostLightbox.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
 import Comments from "@/components/Comments.astro";
@@ -267,7 +268,7 @@ const nextPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
         id="article"
         class="app-prose w-full max-w-app min-w-0 prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
       >
-        <Content components={{ GalleryEmbed, Music }} />
+        <Content components={{ GalleryEmbed, Music, Video }} />
       </article>
 
       <aside class="post-toc-aside hidden lg:sticky lg:top-24 lg:block">

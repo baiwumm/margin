@@ -298,6 +298,22 @@ const showGrain = SITE.backdropEffects.grain;
       document.addEventListener("astro:page-load", setupMusicPlayers);
     </script>
 
+    <!-- 视频播放器卡片（文章 MD/MDX 与瞬间 Moment 共用） -->
+    <script>
+      import { initVideoPlayers } from "@/utils/videoPlayer";
+
+      let videoCleanup: AbortController | null = null;
+
+      function setupVideoPlayers() {
+        if (videoCleanup) videoCleanup.abort();
+        videoCleanup = new AbortController();
+        initVideoPlayers(videoCleanup.signal);
+      }
+
+      setupVideoPlayers();
+      document.addEventListener("astro:page-load", setupVideoPlayers);
+    </script>
+
     <!-- Vercel Web Analytics -->
     <VercelAnalytics />
 

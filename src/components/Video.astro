@@ -1,0 +1,36 @@
+---
+/**
+ * Video — 视频播放器卡片（构建期确定形态，静态 HTML 输出）。
+ *
+ * 三种形态，由数据层 resolveVideo 按输入自动选择：
+ *   1. direct：src 直链（本地 public 路径或第三方 mp4），自定义控制条站内播放；
+ *   2. bilibili：id 为 B 站 BV/av 号、视频页链接或 b23.tv 短链 → 封面 facade，
+ *      点击后展开官方 iframe 外链播放器；
+ *   3. fallback：非 B 站链接降级为 link-card 跳转卡片。
+ *
+ * 用法（MDX）：
+ *   <Video src="https://example.com/demo.mp4" />
+ *   <Video id="BV1GJ411x7h7" />
+ *   <Video id="https://b23.tv/xxxx" title="覆盖标题" />
+ * 用法（Markdown，remarkVideo 指令）：
+ *   ::video{src=https://example.com/demo.mp4}
+ *   ::video{id=BV1GJ411x7h7}
+ *   ::video{id=https://www.bilibili.com/video/BV1GJ411x7h7 ratio=9/16}
+ *
+ * HTML 由 src/utils/video.ts 的 buildVideoCardHtml 统一构建（与 .md 指令共用，
+ * 保证两入口标记一致）；播放/展开逻辑在全局脚本 src/utils/videoPlayer.ts
+ * （由 Layout 注册），样式在全局 src/styles/video.css。
+ */
+import {
+  resolveVideo,
+  buildVideoCardHtml,
+  type VideoCardInput,
+} from "@/utils/video";
+
+type Props = VideoCardInput & { class?: string };
+
+const { class: className, ...input } = Astro.props;
+const html = buildVideoCardHtml(await resolveVideo(input), className);
+---
+
+<Fragment set:html={html} />

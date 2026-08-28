@@ -39,7 +39,7 @@ type MdRoot = {
 };
 
 /* ── 卡片数据 ─────────────────────────────────────────────────────── */
-type Tdk = {
+export type Tdk = {
   title?: string;
   description?: string;
   keywords?: string;
@@ -47,12 +47,16 @@ type Tdk = {
   image?: string;
 };
 
-type CardRequest = {
-  node: MdNode;
+/** 卡片构建入参（remarkVideo 的降级卡片复用 buildCardHtml 时使用） */
+export type LinkCardData = {
   url: string;
   note?: string;
   overrideTitle?: string;
   overrideDescription?: string;
+};
+
+type CardRequest = LinkCardData & {
+  node: MdNode;
 };
 
 /* ── 常量 ─────────────────────────────────────────────────────────── */
@@ -215,7 +219,7 @@ function parseTdk(html: string, pageUrl: string): Tdk | null {
   return { title: title || undefined, description, keywords, image };
 }
 
-async function fetchTdk(url: string): Promise<Tdk | null> {
+export async function fetchTdk(url: string): Promise<Tdk | null> {
   const cached = tdkCache.get(url);
   if (cached !== undefined) return cached;
 
@@ -329,7 +333,10 @@ const ARROW_SVG =
   '<line x1="7" y1="17" x2="17" y2="7"></line>' +
   '<polyline points="7 7 17 7 17 17"></polyline></svg>';
 
-function buildCardHtml(card: CardRequest, tdk: Tdk | undefined): string {
+export function buildCardHtml(
+  card: LinkCardData,
+  tdk: Tdk | undefined
+): string {
   const { url, note, overrideTitle, overrideDescription } = card;
   const internal = isInternalLink(url);
   const domain = escapeHtml(getDomain(url));
