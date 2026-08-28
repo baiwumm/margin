@@ -4,4 +4,6 @@ text: 这满满的高级感，爱了
 featured: true
 video:
   src: /video/atyjcue6.mp4
+tags:
+  - 日常
 ---
