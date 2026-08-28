@@ -137,6 +137,9 @@ const totalImages = moments.reduce((acc, m) => acc + m.images.length, 0);
     };
 
     const relayout = () => {
+      // 进入/退出全屏（如视频卡片）会触发 resize；重排会临时把卡片移出 DOM，
+      // 导致浏览器立即退出全屏，故全屏期间跳过（退出时的 resize 会再触发一次重排）
+      if (document.fullscreenElement) return;
       const count = getColCount();
       // 收集所有卡片（无论已在列容器内还是直接子级），保持文档顺序
       const cards = Array.from(
