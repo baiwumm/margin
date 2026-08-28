@@ -1,7 +1,8 @@
 ---
 title: "Markdown 语法演示：本站文章的书写指南"
-description: "这篇文章以真实渲染效果演示本站文章支持的全部 Markdown 语法，包括基础排版、Shiki 代码块扩展，以及 ::link-card 链接卡片等自建语法。"
+description: "这篇文章以真实渲染效果演示本站文章支持的全部 Markdown 语法，包括基础排版、Shiki 代码块扩展，以及 ::link-card 链接卡片、::video 视频卡片等自建语法。"
 pubDatetime: 2026-08-19T14:05:00+08:00
+modDatetime: 2026-08-28T19:30:00+08:00
 tags:
   - Markdown
   - Astro
@@ -9,7 +10,7 @@ tags:
 draft: false
 ---
 
-这篇文章本身就是一份「活演示」：你现在看到的标题层级、文字样式、列表、表格、代码高亮和链接卡片，全部来自正文的 Markdown 源码。每一段示例都会先给出书写方式，再紧跟着展示真实渲染效果，方便对照学习。
+这篇文章本身就是一份「活演示」：你现在看到的标题层级、文字样式、列表、表格、代码高亮、链接卡片和视频卡片，全部来自正文的 Markdown 源码。每一段示例都会先给出书写方式，再紧跟着展示真实渲染效果，方便对照学习。
 
 ## Frontmatter 与文章结构
 
@@ -245,6 +246,58 @@ console.log(repo);
 
 ::link-card[https://example.invalid]
 
+## 自建语法：视频卡片 ::video
+
+`::video` 与 `::music` 同一套插件机制：**独立成段**写一行，支持三种形态——填 B 站 ID 自动抓取封面与标题（点击封面在站内展开官方播放器）、mp4 直链自绘控制条播放器、非 B 站链接自动降级为链接卡片。写法：
+
+```
+::video{id=BV1GJ411x7h7}
+::video{id=https://www.bilibili.com/video/BV1GJ411x7h7/}
+::video{src=/video/demo.mp4 poster=/video/demo.jpg ratio=9/16}
+```
+
+`id` 与 `src` 二选一，同时填写时 `src` 优先；`poster`、`title` 等显式属性优先于自动抓取的结果。
+
+> 注意：本指南是 `.mdx` 文件，花括号会被 MDX 解析为 JSX 表达式，所以下面用全局注册的 `<Video />` 组件做真实演示；纯 `.md` 文章直接写 `::video{...}` 指令即可，两种入口视觉完全一致。
+
+### B 站视频卡片
+
+只填 BV 号（或 av 号、视频页链接、b23.tv 短链），构建期自动从 B 站公开接口抓取标题、UP主、时长与封面；点击封面才加载官方外链播放器：
+
+```mdx
+<Video id="BV1GJ411x7h7" />
+```
+
+<Video id="BV1GJ411x7h7" />
+
+### mp4 直链播放器
+
+`src` 指向 mp4 文件（`public/` 下的本地路径或稳定直链）时渲染为自定义控制条的播放器：有 `poster` 时首屏零字节，无封面时仅预载元数据并显示视频首帧；竖屏视频用 `ratio` 指定宽高比：
+
+```mdx
+<Video
+  src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+  title="CC0 示例视频"
+/>
+```
+
+<Video
+  src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+  title="CC0 示例视频"
+/>
+
+### 非 B 站链接自动降级
+
+`id` 不是 B 站视频（或 BV 号取数失败）时自动降级为链接卡片，不影响构建：
+
+```mdx
+<Video id="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
+```
+
+<Video id="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
+
+视频卡片在「瞬间」里同样可用（frontmatter 声明 `video: { id: "..." }` 或 `video: { src: "..." }`），完整说明见《视频卡片：在文章里嵌入一个视频》一文。
+
 ## 自建组件：GalleryEmbed（MDX）
 
 在 `.mdx` 文章里可以直接内嵌画廊（组件已由 PostDetails 全局注册，无需 import）。下面内嵌了「金沙湾」画廊的前三张照片：
@@ -288,6 +341,6 @@ console.log(repo);
 
 ## 结语
 
-到这里，本站文章的书写语法就完整过了一遍：基础排版（标题、文字、链接、引用、列表、表格、图片、分割线）、代码块扩展（文件名徽章、高亮行、增删标记、词高亮）、自建语法（`::link-card` 链接卡片、`GalleryEmbed` 画廊内嵌），以及 MDX 的 JSX 能力。
+到这里，本站文章的书写语法就完整过了一遍：基础排版（标题、文字、链接、引用、列表、表格、图片、分割线）、代码块扩展（文件名徽章、高亮行、增删标记、词高亮）、自建语法（`::link-card` 链接卡片、`::video` 视频卡片、`GalleryEmbed` 画廊内嵌），以及 MDX 的 JSX 能力。
 
 如果还有想了解的写法，欢迎在评论区留言，我会继续补充这份指南。
