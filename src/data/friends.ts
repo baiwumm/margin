@@ -248,6 +248,12 @@ const kindred: Friend[] = [
     url: "https://blog.lmb.blue/",
     avatar: "https://files.blog.lmb.blue/assets/img/logo/pink-black.png",
   },
+  {
+    name: "QiuMonster's Ocean Book",
+    description: "在文字的深海里，拾贝而行。",
+    url: "https://blog.somoe.xyz/",
+    avatar: "https://blog.somoe.xyz/QiuMonster.jpg",
+  },
 ];
 
 const services: Friend[] = [
