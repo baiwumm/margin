@@ -119,14 +119,6 @@ export default defineConfig({
         context: "client",
         optional: true,
       }),
-      // ── Cloudflare Web Analytics ─────────────────────────────────────────
-      // Beacon token from Cloudflare Dashboard → Analytics & Logs → Web
-      // Analytics. Leave unset to disable the analytics script entirely.
-      PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN: envField.string({
-        access: "public",
-        context: "client",
-        optional: true,
-      }),
     },
   },
 

@@ -1,10 +1,7 @@
 ---
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
-import {
-  PUBLIC_GOOGLE_SITE_VERIFICATION,
-  PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN,
-} from "astro:env/client";
+import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
 import SearchModal from "@/components/SearchModal.astro";
 import ShortcutsPanel from "@/components/ShortcutsPanel.astro";
@@ -321,19 +318,6 @@ const showGrain = SITE.backdropEffects.grain;
       document.addEventListener("astro:page-load", setupVideoPlayers);
     </script>
 
-    <!-- Cloudflare Web Analytics(未配置 token 时不注入) -->
-    {
-      PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN && (
-        <script
-          is:inline
-          defer
-          src="https://static.cloudflareinsights.com/beacon.min.js"
-          data-cf-beacon={JSON.stringify({
-            token: PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN,
-          })}
-        />
-      )
-    }
   </body>
 </html>
 
