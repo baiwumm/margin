@@ -1,0 +1,4 @@
+# Cloudflare Workers/Pages 静态资源响应头(构建后位于 dist 根目录,部署平台自动读取)
+# giscus 自定义主题 CSS 需要允许跨域加载(原 vercel.json 的等价配置)
+/giscus/*
+  Access-Control-Allow-Origin: *
