@@ -416,8 +416,16 @@ const { ref, toggleTheme } = useThemeAnimation({
 
 包已经发布在 npm（`theme-switch-animation`），源码与每种动画的在线 demo 都在文档站上：
 
-- npm：<https://www.npmjs.com/package/theme-switch-animation>
-- 文档站：<https://theme-switch-animation.baiwumm.com>
-- 仓库：<https://github.com/baiwumm/theme-switch-animation>
+- npm：
+
+::link-card[https://www.npmjs.com/package/theme-switch-animation]
+
+- 文档站：
+
+::link-card[https://theme-switch-animation.baiwumm.com]
+
+- 仓库：
+
+::link-card[https://github.com/baiwumm/theme-switch-animation]
 
 如果你也在做主题切换，希望它能帮你省掉推导蒙版尺寸的那几个晚上。
