@@ -5,10 +5,12 @@
  * 视觉沿用现有 `Card` 的设计语言：card-glow 鼠标辉光、rounded-2xl、
  * 玻璃拟态半透明背景、hover 上升 + accent 边框辉光。
  * 有 `repoUrl` 时标题左侧显示 GitHub 图标，点击标题跳转仓库；
+ * 有 `npmUrl` 时标题旁追加 npm 图标链接；
  * 有 `homepageUrl` 时卡片底部显示「在线体验」胶囊按钮。
  */
 import type { Project } from "@/data/projects";
 import IconGitHub from "@/assets/icons/IconGitHub.svg";
+import IconNpm from "@/assets/icons/IconNpm.svg";
 
 type Props = Project;
 
@@ -16,6 +18,7 @@ const {
   name,
   description,
   repoUrl,
+  npmUrl,
   homepageUrl,
   language,
   languageColor,
@@ -161,6 +164,21 @@ const {
           </a>
         ) : (
           <span class="min-w-0 truncate font-firacode">{name}</span>
+        )
+      }
+
+      {
+        npmUrl && (
+          <a
+            href={npmUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="shrink-0 rounded-sm text-foreground/55 transition-colors duration-200 hover:text-accent focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:ring-accent focus-visible:outline-none"
+            aria-label={`${name}（npm 包）`}
+            title="npm 包"
+          >
+            <IconNpm class="size-4" />
+          </a>
         )
       }
     </h3>

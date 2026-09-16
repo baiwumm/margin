@@ -14,6 +14,8 @@ export type Project = {
   description: string;
   /** GitHub 仓库链接（可选，无仓库的项目省略即可） */
   repoUrl?: string;
+  /** npm 包链接（可选，有则卡片渲染 npm 图标） */
+  npmUrl?: string;
   /** 在线体验链接（可选） */
   homepageUrl?: string;
   /** 主要语言 */
@@ -32,6 +34,18 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    name: "theme-switch-animation",
+    description:
+      "基于 View Transitions API 与纯 mask 动画的跨框架主题切换动画库，内置 13 种揭幕动画，支持 React / Vue / Next.js / Nuxt，浏览器不支持时自动降级。",
+    repoUrl: "https://github.com/baiwumm/theme-switch-animation",
+    npmUrl: "https://www.npmjs.com/package/theme-switch-animation",
+    homepageUrl: "https://theme-switch-animation.baiwumm.com",
+    language: "TypeScript",
+    languageColor: "#3178c6",
+    tags: ["View Transitions", "React", "Vue", "Nuxt"],
+    featured: true,
+  },
+  {
     name: "next-daily-hot",
     description:
       "基于 Next.js 构建的热点聚合平台，实时汇聚微博、知乎、B 站、抖音、GitHub 等 30+ 平台的热门内容。",
@@ -40,7 +54,6 @@ export const projects: Project[] = [
     language: "TypeScript",
     languageColor: "#3178c6",
     tags: ["Next.js", "Hero UI"],
-    featured: true,
   },
   {
     name: "Easy Api",
@@ -49,7 +62,6 @@ export const projects: Project[] = [
     language: "TypeScript",
     languageColor: "#3178c6",
     tags: ["Next.js", "Hero UI", "Supabase"],
-    featured: true,
   },
   {
     name: "Better Nav",
@@ -59,17 +71,6 @@ export const projects: Project[] = [
     language: "TypeScript",
     languageColor: "#3178c6",
     tags: ["Next.js", "Hero UI", "Supabase"],
-    featured: true,
-  },
-  {
-    name: "Better Nuxt",
-    description:
-      "基于 Nuxt.js + Better-auth + Nuxt UI + Drizzle ORM + PostgreSQL，构建高性能、类型安全的全栈应用",
-    repoUrl: "https://github.com/baiwumm/better-nuxt",
-    homepageUrl: "https://nuxt.baiwumm.com/",
-    language: "TypeScript",
-    languageColor: "#3178c6",
-    tags: ["Nuxt.js", "Better-Auth", "Drizzle"],
   },
   {
     name: "Vue3 Admin",
