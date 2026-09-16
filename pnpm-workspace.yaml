@@ -4,3 +4,12 @@ allowBuilds:
 onlyBuiltDependencies:
   - esbuild
   - sharp
+
+# 供应链信任策略：拒绝安装「发布时信任证据弱于该包历史版本」的版本
+# （能拦截账号被盗后绕过 CI 手工发布、丢失 provenance 的版本）
+trustPolicy: no-downgrade
+# 精准豁免：chokidar@4.0.3 是本策略的已知误报
+# 该版本由 Astro 的 @astrojs/check 传递引入；维护者更换发布流程后丢失了
+# provenance 证据，被判定为 trust downgrade，并非被投毒（pnpm 官方文档亦以它为例）
+trustPolicyExclude:
+  - 'chokidar@4.0.3'
