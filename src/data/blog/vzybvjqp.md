@@ -5,7 +5,6 @@ pubDatetime: 2025-07-18T00:00:00+08:00
 tags:
   - 生活
   - 随笔
-featured: true
 draft: false
 ---
 
