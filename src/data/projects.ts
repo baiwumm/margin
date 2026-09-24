@@ -34,6 +34,16 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    name: "Better Admin",
+    description: "一套 Admin 系统，五种技术栈实现",
+    repoUrl: "https://github.com/baiwumm/better-admin",
+    homepageUrl: "https://better-admin.baiwumm.com/",
+    language: "TypeScript",
+    languageColor: "#3178c6",
+    tags: ["React.js", "Vue.js", "Nuxt.js","Next.js","Nest.js"],
+    featured: true,
+  },
+  {
     name: "theme-switch-animation",
     description:
       "基于 View Transitions API 与纯 mask 动画的跨框架主题切换动画库，内置 13 种揭幕动画，支持 React / Vue / Next.js / Nuxt，浏览器不支持时自动降级。",
@@ -42,7 +52,7 @@ export const projects: Project[] = [
     homepageUrl: "https://theme-switch-animation.baiwumm.com",
     language: "TypeScript",
     languageColor: "#3178c6",
-    tags: ["View Transitions", "React", "Vue", "Nuxt"],
+    tags: ["View Transitions", "React.js", "Vue.js", "Nuxt.js"],
     featured: true,
   },
   {
@@ -73,13 +83,23 @@ export const projects: Project[] = [
     tags: ["Next.js", "Hero UI", "Supabase"],
   },
   {
-    name: "Vue3 Admin",
-    description:
-      "前端基于 Soybean Admin 二次开发、后端基于 Nest.js + Prisma + PostgreSQL 的全栈后台管理系统。",
-    repoUrl: "https://github.com/baiwumm/vue3-admin",
-    homepageUrl: "https://vue3.baiwumm.com/",
+    name: "vue3-okr-tree",
+    description: "Vue 3 组织架构树 / OKR 树组件",
+    repoUrl: "https://github.com/baiwumm/vue3-okr-tree",
+    npmUrl: "https://www.npmjs.com/package/vue3-okr-tree",
+    homepageUrl: "https://vue3-okr-tree.baiwumm.com",
     language: "TypeScript",
     languageColor: "#3178c6",
-    tags: ["Vue3", "Nest.js", "Prisma"],
+    tags: ["Vue.js"],
+  },
+  {
+    name: "react-okr-tree",
+    description: "React 组织架构树 / OKR 树组件",
+    repoUrl: "https://github.com/baiwumm/react-okr-tree",
+    npmUrl: "https://www.npmjs.com/package/react-okr-tree",
+    homepageUrl: "https://react-okr-tree.baiwumm.com",
+    language: "TypeScript",
+    languageColor: "#3178c6",
+    tags: ["React.js"],
   },
 ];
