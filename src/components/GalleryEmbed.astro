@@ -373,6 +373,8 @@ const gridClass = {
 </dialog>
 
 <script>
+  import { attachLightboxGestures } from "@/utils/lightboxGestures";
+
   let galleryCleanup: AbortController | null = null;
 
   function initEmbeds() {
@@ -429,35 +431,9 @@ const gridClass = {
         const lbCaption = document.getElementById(`${lbId}-caption`);
         const lbCounter = document.getElementById(`${lbId}-counter`);
 
-        // ── 缩放 / 旋转 / 平移状态 ──
-        let scale = 1;
-        let rotation = 0;
-        let tx = 0;
-        let ty = 0;
-        const pointers = new Map<number, { x: number; y: number }>();
-        let pinchStartDistance = 0;
-        let pinchStartScale = 1;
-        let panStart: { x: number; y: number; tx: number; ty: number } | null =
-          null;
         const reduceMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)"
         ).matches;
-
-        function applyTransform(smooth = false) {
-          if (!lbImg) return;
-          lbImg.style.transition =
-            smooth && !reduceMotion ? "transform 0.2s ease-out" : "none";
-          lbImg.style.transform = `translate(${tx}px, ${ty}px) rotate(${rotation}deg) scale(${scale})`;
-        }
-
-        function resetTransform() {
-          scale = 1;
-          rotation = 0;
-          tx = 0;
-          ty = 0;
-          lbImg?.classList.remove("is-panning");
-          applyTransform(true);
-        }
 
         function setScrollLock(locked: boolean) {
           const docEl = document.documentElement;
@@ -473,24 +449,19 @@ const gridClass = {
           }
         }
 
-        function panRange() {
-          if (!lbImg) return { maxX: 0, maxY: 0 };
-          const rect = lbImg.getBoundingClientRect();
-          return {
-            maxX: Math.max((rect.width - dialog.clientWidth) / 2, 0) + 40,
-            maxY: Math.max((rect.height - dialog.clientHeight) / 2, 0) + 40,
-          };
-        }
-
-        function zoomBy(factor: number) {
-          const next = Math.min(4, Math.max(1, scale * factor));
-          if (next === 1) {
-            tx = 0;
-            ty = 0;
-          }
-          scale = next;
-          applyTransform(true);
-        }
+        // 手势引擎：滚轮/双指缩放、平移、双击、旋转、单指滑动切换（四处灯箱共用）；
+        // lbImg 缺失时降级为 no-op，灯箱仅退化为无缩放/手势的查看器
+        const lbGestures = lbImg
+          ? attachLightboxGestures({
+              img: lbImg,
+              viewport: dialog,
+              signal,
+              onSwipe: direction => {
+                const next = current + direction;
+                if (next >= 0 && next < items.length) open(next);
+              },
+            })
+          : null;
 
         let current = 0;
         let openSeq = 0;
@@ -517,10 +488,15 @@ const gridClass = {
             if (nb) preloadImage(pickLargestSrc(nb));
           }
 
-          // 等新图解码完成再一起更新文案并播放动画，避免“先显示 Alt”
+          // 等新图解码完成再一起更新文案并播放动画，避免“先显示 Alt”；
+          // 带超时兜底（dialog 未打开时图片不可见，decode 可能迟迟不兑现），
+          // 与 MomentLightbox 一致，不卡死交互
           if (!reduceMotion && direction !== 0) {
             try {
-              await lbImg.decode();
+              await Promise.race([
+                lbImg.decode(),
+                new Promise(resolve => setTimeout(resolve, 600)),
+              ]);
             } catch {
               // 解码失败时直接显示
             }
@@ -530,7 +506,7 @@ const gridClass = {
           if (lbCaption) lbCaption.textContent = img.alt;
           if (lbCounter)
             lbCounter.textContent = `${current + 1} / ${items.length}`;
-          resetTransform();
+          lbGestures?.resetTransform();
 
           if (!reduceMotion && stage && direction !== 0) {
             stage.classList.remove("slide-in-left", "slide-in-right");
@@ -570,128 +546,26 @@ const gridClass = {
         );
         lb.querySelector("[data-lb-zoom-in]")?.addEventListener(
           "click",
-          () => zoomBy(1.5),
+          () => lbGestures?.zoomBy(1.5),
           { signal }
         );
         lb.querySelector("[data-lb-zoom-out]")?.addEventListener(
           "click",
-          () => zoomBy(1 / 1.5),
+          () => lbGestures?.zoomBy(1 / 1.5),
           { signal }
         );
         lb.querySelector("[data-lb-reset]")?.addEventListener(
           "click",
-          resetTransform,
+          () => lbGestures?.resetTransform(),
           { signal }
         );
         lb.querySelector("[data-lb-rotate]")?.addEventListener(
           "click",
-          () => {
-            rotation = (rotation + 90) % 360;
-            applyTransform(true);
-          },
+          () => lbGestures?.rotate(),
           { signal }
         );
 
-        if (lbImg) {
-          // 滚轮缩放
-          lbImg.addEventListener(
-            "wheel",
-            e => {
-              e.preventDefault();
-              zoomBy(e.deltaY < 0 ? 1.15 : 1 / 1.15);
-            },
-            { passive: false, signal }
-          );
-
-          // 双指缩放 + 拖拽平移
-          lbImg.addEventListener(
-            "pointerdown",
-            e => {
-              lbImg.setPointerCapture(e.pointerId);
-              pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-              lbImg.style.transition = "none";
-              if (pointers.size === 2) {
-                const [a, b] = [...pointers.values()];
-                pinchStartDistance = Math.hypot(a.x - b.x, a.y - b.y);
-                pinchStartScale = scale;
-                panStart = null;
-              } else if (pointers.size === 1 && scale > 1) {
-                panStart = { x: e.clientX, y: e.clientY, tx, ty };
-                lbImg.classList.add("is-panning");
-              }
-            },
-            { signal }
-          );
-          lbImg.addEventListener(
-            "pointermove",
-            e => {
-              const prev = pointers.get(e.pointerId);
-              if (!prev) return;
-              if (pointers.size === 2) {
-                const other = [...pointers.entries()].find(
-                  ([id]) => id !== e.pointerId
-                );
-                if (other && pinchStartDistance > 0) {
-                  const [, a] = other;
-                  const dist = Math.hypot(a.x - e.clientX, a.y - e.clientY);
-                  const next = Math.min(
-                    4,
-                    Math.max(1, pinchStartScale * (dist / pinchStartDistance))
-                  );
-                  if (next === 1) {
-                    tx = 0;
-                    ty = 0;
-                  }
-                  scale = next;
-                  applyTransform(false);
-                }
-                pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-              } else if (panStart) {
-                const { maxX, maxY } = panRange();
-                tx = Math.max(
-                  -maxX,
-                  Math.min(maxX, panStart.tx + (e.clientX - panStart.x))
-                );
-                ty = Math.max(
-                  -maxY,
-                  Math.min(maxY, panStart.ty + (e.clientY - panStart.y))
-                );
-                applyTransform(false);
-              } else {
-                pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-              }
-            },
-            { signal }
-          );
-          const endPointer = (e: PointerEvent) => {
-            pointers.delete(e.pointerId);
-            lbImg.classList.remove("is-panning");
-            if (pointers.size < 2) pinchStartDistance = 0;
-            if (pointers.size === 1) {
-              const [, p] = [...pointers.entries()][0];
-              panStart = scale > 1 ? { x: p.x, y: p.y, tx, ty } : null;
-            } else if (pointers.size === 0) {
-              panStart = null;
-            }
-          };
-          lbImg.addEventListener("pointerup", endPointer, { signal });
-          lbImg.addEventListener("pointercancel", endPointer, { signal });
-          lbImg.addEventListener("lostpointercapture", endPointer, { signal });
-
-          // 双击缩放 / 还原
-          lbImg.addEventListener(
-            "dblclick",
-            () => {
-              if (scale > 1) {
-                resetTransform();
-              } else {
-                scale = 2;
-                applyTransform(true);
-              }
-            },
-            { signal }
-          );
-        }
+        // 手势（滚轮 / 双指 / 双击 / 滑动）由 attachLightboxGestures 统一绑定
 
         // Keyboard — only if THIS lightbox is open
         document.addEventListener(
@@ -701,13 +575,10 @@ const gridClass = {
             if (e.key === "Escape") close();
             if (e.key === "ArrowLeft") open(current - 1);
             if (e.key === "ArrowRight") open(current + 1);
-            if (e.key === "+" || e.key === "=") zoomBy(1.25);
-            if (e.key === "-" || e.key === "_") zoomBy(1 / 1.25);
-            if (e.key === "0") resetTransform();
-            if (e.key.toLowerCase() === "r") {
-              rotation = (rotation + 90) % 360;
-              applyTransform(true);
-            }
+            if (e.key === "+" || e.key === "=") lbGestures?.zoomBy(1.25);
+            if (e.key === "-" || e.key === "_") lbGestures?.zoomBy(1 / 1.25);
+            if (e.key === "0") lbGestures?.resetTransform();
+            if (e.key.toLowerCase() === "r") lbGestures?.rotate();
           },
           { signal }
         );
