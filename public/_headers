@@ -2,3 +2,8 @@
 # giscus 自定义主题 CSS 需要允许跨域加载(原 vercel.json 的等价配置)
 /giscus/*
   Access-Control-Allow-Origin: *
+
+# 小程序导出管线（M0，D17/D25）：图片变体内容寻址，长缓存 immutable
+# 只加这一组；HTML / JSON 维持 must-revalidate + ETag（api-contract §7）
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
