@@ -14,6 +14,7 @@
  * - 播放逻辑由全局脚本 src/utils/musicPlayer.ts 处理（Layout 注册），因为 remark
  *   注入的 raw HTML 不在组件 scope 内，scoped 脚本无法生效。
  * - HTML 结构与 src/components/Music.astro 对齐，保证文章/瞬间视觉一致。
+ * - parseMusicCard 导出给小程序导出层旁路复用同一解析（M0-0 探针 B）。
  */
 import {
   resolveTrack,
@@ -23,7 +24,7 @@ import {
 } from "./music";
 
 /* ── 轻量 mdast 类型（不引入 mdast 依赖） ─────────────────────────── */
-type MdNode = {
+export type MdNode = {
   type?: string;
   value?: string;
   children?: MdNode[];
@@ -35,6 +36,13 @@ type MdRoot = {
 
 /* ── 指令与属性解析 ───────────────────────────────────────────────── */
 const DIRECTIVE_RE = /^::music\s*\{([^}]*)\}\s*$/;
+
+/** `::music` 指令的结构化属性（小程序导出层旁路复用，M0-0 探针 B） */
+export type MusicCardAttrs = {
+  id: string;
+  platform: MusicPlatform;
+  audio?: string;
+};
 
 function collectText(node: MdNode): string {
   if (node.type === "text") return node.value ?? "";
@@ -51,6 +59,29 @@ function parseAttrs(raw: string): Record<string, string> {
     attrs[key] = val.trim();
   }
   return attrs;
+}
+
+/**
+ * 判定一个段落节点是否为 `::music{...}` 指令，是则返回结构化属性，否则返回 null。
+ * 插件本体与小程序导出层共用同一实现（M0-0 探针 B 抽出），保证端上拿到的
+ * 数据与站点渲染永远同源。
+ */
+export function parseMusicCard(node: MdNode): MusicCardAttrs | null {
+  if (node.type !== "paragraph" || !node.children) return null;
+  const text = node.children
+    .map(child => collectText(child))
+    .join("")
+    .trim();
+  const match = DIRECTIVE_RE.exec(text);
+  if (!match) return null;
+  const attrs = parseAttrs(match[1]);
+  if (!attrs.id) return null;
+  // platform 来自用户手写的指令属性，必须白名单校验后才能索引 PLATFORM_META，
+  // 否则拼写错误（如 neteasee）会在取数时抛 TypeError 中断构建
+  const rawPlatform = attrs.platform;
+  const platform =
+    rawPlatform && isMusicPlatform(rawPlatform) ? rawPlatform : "netease";
+  return { id: attrs.id, platform, audio: attrs.audio };
 }
 
 /* ── HTML 转义 ────────────────────────────────────────────────────── */
@@ -117,7 +148,7 @@ function buildHtml(opts: {
   );
 }
 
-/* ── 插件主入口 ───────────────────────────────────────────────────── */
+/* ── 插件主入口：parse → resolveTrack → buildHtml ────────────────── */
 export function remarkMusic() {
   return async (tree: MdRoot) => {
     const requests: {
@@ -128,22 +159,8 @@ export function remarkMusic() {
     }[] = [];
 
     const collect = (node: MdNode) => {
-      if (node.type !== "paragraph" || !node.children) return;
-      const text = node.children
-        .map(child => collectText(child))
-        .join("")
-        .trim();
-      const match = DIRECTIVE_RE.exec(text);
-      if (!match) return;
-      const attrs = parseAttrs(match[1]);
-      const id = attrs.id;
-      if (!id) return;
-      // platform 来自用户手写的指令属性，必须白名单校验后才能索引 PLATFORM_META，
-      // 否则拼写错误（如 neteasee）会在取数时抛 TypeError 中断构建
-      const rawPlatform = attrs.platform;
-      const platform =
-        rawPlatform && isMusicPlatform(rawPlatform) ? rawPlatform : "netease";
-      requests.push({ node, id, platform, audio: attrs.audio });
+      const attrs = parseMusicCard(node);
+      if (attrs) requests.push({ node, ...attrs });
     };
 
     const walk = (node: MdNode) => {

@@ -15,11 +15,12 @@
  * - 兼容性：remark-smartypants 会把属性引号转成弯引号，parseAttrs 已做兼容；
  *   属性值在数据层拼入 HTML 前统一转义，防止注入。
  * - 播放/展开逻辑由全局脚本 src/utils/videoPlayer.ts 处理（Layout 注册）。
+ * - parseVideoCard 导出给小程序导出层旁路复用同一解析（M0-0 探针 B）。
  */
 import { resolveVideo, buildVideoCardHtml } from "./video";
 
 /* ── 轻量 mdast 类型（不引入 mdast 依赖） ─────────────────────────── */
-type MdNode = {
+export type MdNode = {
   type?: string;
   value?: string;
   children?: MdNode[];
@@ -31,6 +32,15 @@ type MdRoot = {
 
 /* ── 指令与属性解析 ───────────────────────────────────────────────── */
 const DIRECTIVE_RE = /^::video\s*\{([^}]*)\}\s*$/;
+
+/** `::video` 指令的结构化属性（小程序导出层旁路复用，M0-0 探针 B） */
+export type VideoCardAttrs = {
+  id?: string;
+  src?: string;
+  poster?: string;
+  title?: string;
+  ratio?: string;
+};
 
 function collectText(node: MdNode): string {
   if (node.type === "text") return node.value ?? "";
@@ -49,23 +59,39 @@ function parseAttrs(raw: string): Record<string, string> {
   return attrs;
 }
 
-/* ── 插件主入口 ───────────────────────────────────────────────────── */
+/**
+ * 判定一个段落节点是否为 `::video{...}` 指令，是则返回结构化属性，否则返回 null。
+ * 插件本体与小程序导出层共用同一实现（M0-0 探针 B 抽出），保证端上拿到的
+ * 数据与站点渲染永远同源。
+ */
+export function parseVideoCard(node: MdNode): VideoCardAttrs | null {
+  if (node.type !== "paragraph" || !node.children) return null;
+  const text = node.children
+    .map(child => collectText(child))
+    .join("")
+    .trim();
+  const match = DIRECTIVE_RE.exec(text);
+  if (!match) return null;
+  const attrs = parseAttrs(match[1]);
+  // src / id 至少其一，否则视为误写的普通文本，保留原样
+  if (!attrs.src && !attrs.id) return null;
+  return {
+    id: attrs.id || undefined,
+    src: attrs.src || undefined,
+    poster: attrs.poster || undefined,
+    title: attrs.title || undefined,
+    ratio: attrs.ratio || undefined,
+  };
+}
+
+/* ── 插件主入口：parse → resolve → buildHtml ─────────────────────── */
 export function remarkVideo() {
   return async (tree: MdRoot) => {
-    const requests: { node: MdNode; attrs: Record<string, string> }[] = [];
+    const requests: { node: MdNode; attrs: VideoCardAttrs }[] = [];
 
     const collect = (node: MdNode) => {
-      if (node.type !== "paragraph" || !node.children) return;
-      const text = node.children
-        .map(child => collectText(child))
-        .join("")
-        .trim();
-      const match = DIRECTIVE_RE.exec(text);
-      if (!match) return;
-      const attrs = parseAttrs(match[1]);
-      // src / id 至少其一，否则视为误写的普通文本，保留原样
-      if (!attrs.src && !attrs.id) return;
-      requests.push({ node, attrs });
+      const attrs = parseVideoCard(node);
+      if (attrs) requests.push({ node, attrs });
     };
 
     const walk = (node: MdNode) => {
@@ -77,13 +103,7 @@ export function remarkVideo() {
     if (requests.length === 0) return;
 
     for (const req of requests) {
-      const card = await resolveVideo({
-        id: req.attrs.id || undefined,
-        src: req.attrs.src || undefined,
-        poster: req.attrs.poster || undefined,
-        title: req.attrs.title || undefined,
-        ratio: req.attrs.ratio || undefined,
-      });
+      const card = await resolveVideo(req.attrs);
       req.node.type = "html";
       req.node.value = buildVideoCardHtml(card);
       delete req.node.children;

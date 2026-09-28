@@ -24,11 +24,12 @@
  *   会把属性引号转成弯引号，本插件按节点后代文本拼接并对引号做兼容，
  *   因此无需作者做任何转义。
  * - 卡片样式见 src/styles/typography.css 的 .link-card-* 规则。
+ * - parseLinkCard 导出给小程序导出层旁路复用同一解析（M0-0 探针 B，纯解析不联网）。
  */
 import { SITE } from "../config";
 
 /* ── 轻量 mdast 类型（不引入 mdast 依赖） ─────────────────────────── */
-type MdNode = {
+export type MdNode = {
   type?: string;
   value?: string;
   children?: MdNode[];
@@ -148,6 +149,34 @@ const ATTRS_ONLY_RE = new RegExp(
 function collectText(node: MdNode): string {
   if (node.type === "text") return node.value ?? "";
   return (node.children ?? []).map(collectText).join("");
+}
+
+/**
+ * 判定一个段落节点是否为 `::link-card[...]` 指令，是则返回结构化卡片数据，
+ * 否则返回 null。插件本体与小程序导出层共用同一实现（M0-0 探针 B 抽出），
+ * 保证端上拿到的数据与站点渲染永远同源。注意：本函数只做纯解析，
+ * 不发任何网络请求（外链 TDK 抓取仍只发生在插件本体）。
+ */
+export function parseLinkCard(node: MdNode): LinkCardData | null {
+  if (node.type !== "paragraph" || !node.children) return null;
+  // 拼接整段文本（GFM autolink 会把 URL 拆成 link 节点，需递归取文本）
+  const text = node.children
+    .map(child => collectText(child))
+    .join("")
+    .trim();
+  const match = DIRECTIVE_RE.exec(text);
+  if (!match) return null;
+  const attrs = match[2]?.trim() ?? "";
+  // 属性段只允许 title/description 覆盖，避免吞掉段落里误混的其他文字
+  if (attrs && !ATTRS_ONLY_RE.test(attrs)) return null;
+  const { url, note } = splitUrlAndNote(match[1]);
+  if (!isUsableUrl(url)) return null;
+  return {
+    url,
+    note,
+    overrideTitle: extractAttr(attrs, "title"),
+    overrideDescription: extractAttr(attrs, "description"),
+  };
 }
 
 /* ── HTML 实体处理 ────────────────────────────────────────────────── */
@@ -374,32 +403,14 @@ export function buildCardHtml(
   );
 }
 
-/* ── 插件主入口 ───────────────────────────────────────────────────── */
+/* ── 插件主入口：parse → TDK → buildCardHtml ─────────────────────── */
 export function remarkLinkCard() {
   return async (tree: MdRoot) => {
     const requests: CardRequest[] = [];
 
     const collect = (node: MdNode) => {
-      if (node.type !== "paragraph" || !node.children) return;
-      // 拼接整段文本（GFM autolink 会把 URL 拆成 link 节点，需递归取文本）
-      const text = node.children
-        .map(child => collectText(child))
-        .join("")
-        .trim();
-      const match = DIRECTIVE_RE.exec(text);
-      if (!match) return;
-      const attrs = match[2]?.trim() ?? "";
-      // 属性段只允许 title/description 覆盖，避免吞掉段落里误混的其他文字
-      if (attrs && !ATTRS_ONLY_RE.test(attrs)) return;
-      const { url, note } = splitUrlAndNote(match[1]);
-      if (!isUsableUrl(url)) return;
-      requests.push({
-        node,
-        url,
-        note,
-        overrideTitle: extractAttr(attrs, "title"),
-        overrideDescription: extractAttr(attrs, "description"),
-      });
+      const data = parseLinkCard(node);
+      if (data) requests.push({ node, ...data });
     };
 
     const walk = (node: MdNode) => {
