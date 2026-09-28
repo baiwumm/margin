@@ -74,6 +74,11 @@ export const SITE = {
   dir: "ltr", // "rtl" | "auto"
   lang: "zh-CN", // html lang code. Set this empty and default will be "en"
   timezone: "Asia/Shanghai", // Default global timezone (IANA format) https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  // 备案信息，展示在页脚底部；置为空字符串可隐藏对应条目
+  beian: {
+    icp: "粤ICP备2023007649号-2", // 工信部 ICP 备案号，链接固定指向 beian.miit.gov.cn
+    police: "粤公网安备44030402006402号", // 公安备案号，链接由其中数字自动生成
+  },
   introAudio: {
     enabled: true, // show/hide intro player in home and compact player while navigating
     // src: path to file (relative to /public or absolute URL). Example: "/intro.mp3" or "https://example.com/stream"
