@@ -71,6 +71,18 @@ html[data-accent="rose"] {
   --gallery: #0d7a5f;
 }
 
+/* Site mark + wordmark (Header / Footer): the 版心 block and the { · } braces both
+   track --accent so the whole lockup rotates with the five accent themes, while the
+   frame and letters stay on currentColor. */
+.logo-mark-block,
+.logo-sphere path {
+  fill: var(--accent);
+}
+
+.logo-mark-dot {
+  opacity: 0.6;
+}
+
 /* Shared nav menu controls (Header dropdown + MobileMenu) */
 .theme-segment {
   display: inline-flex;

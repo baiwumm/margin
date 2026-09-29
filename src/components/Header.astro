@@ -7,6 +7,7 @@ import IconTag from "@/assets/icons/IconTag.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
 import Logo from "@/assets/logo/margin.svg";
+import Mark from "@/assets/logo/mark.svg";
 import MobileMenu from "./MobileMenu.astro";
 import IntroAudioCompact from "./IntroAudioCompact.astro";
 import { SITE } from "@/config";
@@ -54,7 +55,8 @@ const isActive = (path: string) => {
           class="group relative z-20 flex shrink-0 items-center gap-2 text-xl font-bold tracking-tight sm:text-2xl"
         >
           <!-- <span class="nav-logo-text">{SITE.title}</span> -->
-          <Logo class="h-9 w-auto sm:h-10" />
+          <Mark class="h-7 w-7 shrink-0 sm:h-8 sm:w-8" />
+          <Logo class="h-5 w-auto sm:h-6" />
         </a>
 
         <!-- Center Audio Player -->

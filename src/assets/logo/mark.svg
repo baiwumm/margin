@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <rect class="logo-mark-frame" x="15" y="15" width="70" height="70" rx="12" fill="none" stroke="currentColor" stroke-width="3.5"/>
+  <rect class="logo-mark-block" x="27" y="27" width="34" height="32" rx="6" fill="currentColor"/>
+  <circle class="logo-mark-dot" cx="72" cy="72" r="4.5" fill="currentColor"/>
+</svg>

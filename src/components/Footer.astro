@@ -4,6 +4,7 @@ import { SOCIALS } from "@/constants";
 import LinkButton from "./LinkButton.astro";
 import { SITE } from "@/config";
 import Logo from "@/assets/logo/margin.svg";
+import Mark from "@/assets/logo/mark.svg";
 import IconCertificate from "@/assets/icons/IconCertificate.svg";
 import IconShieldCheck from "@/assets/icons/IconShieldCheck.svg";
 
@@ -47,8 +48,11 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
           aria-label={`Go to home of ${SITE.title}`}
           class="group footer-home-link relative flex items-center gap-2 rounded-md text-lg font-bold tracking-tight"
         >
+          <Mark
+            class="footer-logo h-7 w-7 shrink-0 opacity-80 transition-all duration-300 group-hover:scale-105 group-hover:opacity-100"
+          />
           <Logo
-            class="footer-logo h-9 w-auto opacity-80 transition-all duration-300 group-hover:scale-105 group-hover:opacity-100"
+            class="footer-logo h-5 w-auto opacity-80 transition-all duration-300 group-hover:scale-105 group-hover:opacity-100"
           />
           <span class="sr-only">{SITE.title}</span>
         </a>
