@@ -223,7 +223,7 @@ async function runBuild(): Promise<BuildOutput> {
       photos.push({ asset: ref, alt: photoName(filename), name: photoName(filename) });
     }
     const coverKey = coverKeyOf(gallery);
-    const cover = await toAssetRef(coverKey ?? gallery.photoKeys[0]);
+    const cover = await toAssetRef(coverKey ?? gallery.photoKeys[0], "galleryCover");
     galleryDetails.set(gallery.slug, {
       slug: gallery.slug,
       path: gallery.path,
