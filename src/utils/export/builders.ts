@@ -65,27 +65,26 @@ const rawGlobalCss = import.meta.glob<string>("/src/styles/global.css", {
 });
 
 function accentFromCss(): { accent: string; accentDark: string } {
+  // 确定性解析：取「浅色块」与「深色块」各自的 --accent-blue（默认 accent 的实际色值）。
+  // 不能用「第一个/最后一个 --accent」启发式——站点已引入五档随机 accent
+  // （data-accent 块各有一份 --accent 定义，89025ce），启发式会取错。
   const css = Object.values(rawGlobalCss)[0] ?? "";
-  const read = (marker: string, fallback: string) => {
-    const re = new RegExp(`${marker}:\\s*(#[0-9a-fA-F]{3,8})`);
-    const m = re.exec(css.slice(0, Math.max(0, css.indexOf("--accent") + 4000)));
-    return m?.[1] ?? fallback;
-  };
-  // 亮色 --accent 定义在前（默认蓝），暗色区块里的 --accent 在后
-  const accents = [...css.matchAll(/--accent:\s*(#[0-9a-fA-F]{3,8}|\bvar\([^)]+\))/g)].map(
-    m => m[1]
+  const blues = [...css.matchAll(/--accent-blue:\s*(#[0-9a-fA-F]{3,8})/g)].map(
+    m => m[1].toLowerCase()
   );
-  const lightVar = accents[0] ?? "#1158d1";
-  const light = lightVar.startsWith("#") ? lightVar : read("--accent-blue", "#1158d1");
-  const darkVar = accents[accents.length - 1] ?? "#008fec";
-  const dark = darkVar.startsWith("#") ? darkVar : read("--accent-blue", "#008fec");
-  return { accent: light, accentDark: dark };
+  // 约定：第一份 = 浅色主题块，第二份 = 深色主题块（global.css 既有顺序）
+  return {
+    accent: blues[0] ?? "#1158d1",
+    accentDark: blues[1] ?? "#008fec",
+  };
 }
 
 function buildSite(): SitePayload {
   const socials: { name: string; url: string }[] = [];
-  if (PUBLIC_SOCIAL_GITHUB) socials.push({ name: "GitHub", url: PUBLIC_SOCIAL_GITHUB });
-  if (PUBLIC_SOCIAL_EMAIL) socials.push({ name: "Mail", url: `mailto:${PUBLIC_SOCIAL_EMAIL}` });
+  if (PUBLIC_SOCIAL_GITHUB)
+    socials.push({ name: "GitHub", url: PUBLIC_SOCIAL_GITHUB });
+  if (PUBLIC_SOCIAL_EMAIL)
+    socials.push({ name: "Mail", url: `mailto:${PUBLIC_SOCIAL_EMAIL}` });
   const nav: { label: string; path: string }[] = [{ label: "首页", path: "/" }];
   if (SITE.showArchives) nav.push({ label: "归档", path: "/archives" });
   nav.push({ label: "标签", path: "/tags" });
@@ -195,11 +194,12 @@ async function runBuild(): Promise<BuildOutput> {
       return index;
     };
     const source = rawBlogSource(post.filePath);
-    const { blocks, toc, assets: n, unknownCount } = await toBlocks(
-      source,
-      post.filePath,
-      resolveImage
-    );
+    const {
+      blocks,
+      toc,
+      assets: n,
+      unknownCount,
+    } = await toBlocks(source, post.filePath, resolveImage);
     unknownTotal += unknownCount;
     imageRefCount += n;
     postDetails.set(post.slug, {
@@ -220,10 +220,17 @@ async function runBuild(): Promise<BuildOutput> {
     for (const key of gallery.photoKeys) {
       const ref = await toAssetRef(key);
       const filename = key.split("/").pop() ?? "";
-      photos.push({ asset: ref, alt: photoName(filename), name: photoName(filename) });
+      photos.push({
+        asset: ref,
+        alt: photoName(filename),
+        name: photoName(filename),
+      });
     }
     const coverKey = coverKeyOf(gallery);
-    const cover = await toAssetRef(coverKey ?? gallery.photoKeys[0], "galleryCover");
+    const cover = await toAssetRef(
+      coverKey ?? gallery.photoKeys[0],
+      "galleryCover"
+    );
     galleryDetails.set(gallery.slug, {
       slug: gallery.slug,
       path: gallery.path,
@@ -238,7 +245,9 @@ async function runBuild(): Promise<BuildOutput> {
 
   /* 瞬间图片 */
   for (const item of momentItems) {
-    item.moment.images = await Promise.all(item.imageKeys.map(k => toAssetRef(k)));
+    item.moment.images = await Promise.all(
+      item.imageKeys.map(k => toAssetRef(k))
+    );
   }
 
   /* 数据组装（固定顺序，保证内容 hash 稳定） */
@@ -276,7 +285,12 @@ async function runBuild(): Promise<BuildOutput> {
     forks: p.forks ?? 0,
     topics: p.tags,
   }));
-  const stats = buildStats(posts, galleries.length, moments.length, tags.length);
+  const stats = buildStats(
+    posts,
+    galleries.length,
+    moments.length,
+    tags.length
+  );
   const titlesDocs = posts.map(p => {
     const detail = postDetails.get(p.slug)!;
     return {
@@ -324,8 +338,16 @@ async function runBuild(): Promise<BuildOutput> {
     ["friends.json", "/api/v1/friends.json", friends],
     ["projects.json", "/api/v1/projects.json", projectPayloads],
     ["stats.json", "/api/v1/stats.json", stats],
-    ["search/titles.json", "/api/v1/search/titles.json", { ...titles, buildId: "" }],
-    ["search/terms.json", "/api/v1/search/terms.json", { ...terms, buildId: "" }],
+    [
+      "search/titles.json",
+      "/api/v1/search/titles.json",
+      { ...titles, buildId: "" },
+    ],
+    [
+      "search/terms.json",
+      "/api/v1/search/terms.json",
+      { ...terms, buildId: "" },
+    ],
   ];
 
   const dataHash = contentHash(orderedData.map(([, , data]) => data));
@@ -335,7 +357,9 @@ async function runBuild(): Promise<BuildOutput> {
 
   const files = new Map<string, BuiltFile>();
   for (const [name, path, data] of orderedData) {
-    const json = JSON.stringify(envelope(finalizeData(data), buildId, generatedAt));
+    const json = JSON.stringify(
+      envelope(finalizeData(data), buildId, generatedAt)
+    );
     assertBudget(name, json);
     assertUrls(name, json);
     files.set(name, {
@@ -350,7 +374,9 @@ async function runBuild(): Promise<BuildOutput> {
   /* 文章详情（per-slug 文件，键 posts/<slug>.json） */
   for (const [slug, detail] of postDetails) {
     const name = `posts/${slug}.json`;
-    const json = JSON.stringify(envelope(finalizeData(detail), buildId, generatedAt));
+    const json = JSON.stringify(
+      envelope(finalizeData(detail), buildId, generatedAt)
+    );
     assertBudget("posts/[slug].json", json);
     assertUrls(name, json);
     files.set(name, {
@@ -364,7 +390,9 @@ async function runBuild(): Promise<BuildOutput> {
   /* 画廊详情 */
   for (const [slug, detail] of galleryDetails) {
     const name = `galleries/${slug}.json`;
-    const json = JSON.stringify(envelope(finalizeData(detail), buildId, generatedAt));
+    const json = JSON.stringify(
+      envelope(finalizeData(detail), buildId, generatedAt)
+    );
     assertBudget("galleries/[slug].json", json);
     assertUrls(name, json);
     files.set(name, {
@@ -425,11 +453,14 @@ async function runBuild(): Promise<BuildOutput> {
 
 /* ── 内部工具 ─────────────────────────────────────────────────────── */
 
-const rawBlogFiles = import.meta.glob<string>("/src/data/blog/**/[^_]*.{md,mdx}", {
-  query: "?raw",
-  import: "default",
-  eager: true,
-});
+const rawBlogFiles = import.meta.glob<string>(
+  "/src/data/blog/**/[^_]*.{md,mdx}",
+  {
+    query: "?raw",
+    import: "default",
+    eager: true,
+  }
+);
 
 function rawBlogSource(filePath: string): string {
   const raw = rawBlogFiles[`/${filePath}`];
