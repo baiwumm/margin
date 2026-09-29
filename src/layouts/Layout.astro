@@ -249,10 +249,21 @@ const showGrain = SITE.backdropEffects.grain;
           );
 
         // Restore accent color immediately to prevent flash
-        document.firstElementChild?.setAttribute(
-          "data-accent",
-          localStorage.getItem("accent") || "blue"
-        );
+        // 没手动选过色时，在本标签页会话内随机一个 accent：会话中保持稳定，
+        // 新开会话再换。用户手动选过（localStorage）永远优先。
+        const ACCENTS = ["blue", "green", "purple", "orange", "rose"];
+        const savedAccent = localStorage.getItem("accent");
+        const sessionAccent = sessionStorage.getItem("accent");
+        const accentValue =
+          savedAccent ||
+          sessionAccent ||
+          ACCENTS[Math.floor(Math.random() * ACCENTS.length)];
+
+        if (!savedAccent && !sessionAccent) {
+          sessionStorage.setItem("accent", accentValue);
+        }
+
+        document.firstElementChild?.setAttribute("data-accent", accentValue);
 
         // Export minimal API for external script
         window.theme = {
