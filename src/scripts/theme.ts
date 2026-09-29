@@ -80,6 +80,39 @@ function reflectPreference(): void {
       .querySelector("meta[name='theme-color']")
       ?.setAttribute("content", bgColor);
   }
+
+  // accent 的明暗两套色值不同，主题切换时 favicon 也要重算
+  reflectFavicon();
+}
+
+// Favicon 与页头 logo 同源。外框深浅跟随「浏览器」而不是站点的 data-theme，
+// 因为标签页底色由浏览器决定；版心块烤入当前 accent。色值镜像 src/styles/global.css。
+const FAVICON_FG_LIGHT = "#353538";
+const FAVICON_FG_DARK = "#f6f7f8";
+const FAVICON_FALLBACK_ACCENT = "#008fec";
+
+function reflectFavicon(): void {
+  const link = document.querySelector<HTMLLinkElement>("link[rel='icon']");
+  if (!link) return;
+
+  const accent =
+    getComputedStyle(document.documentElement)
+      .getPropertyValue("--accent")
+      .trim() || FAVICON_FALLBACK_ACCENT;
+
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">` +
+    `<style>` +
+    `.f{stroke:${FAVICON_FG_LIGHT}}.b{fill:${accent}}.d{fill:${FAVICON_FG_LIGHT}}` +
+    `@media (prefers-color-scheme: dark){` +
+    `.f{stroke:${FAVICON_FG_DARK}}.b{fill:${accent}}.d{fill:${FAVICON_FG_DARK}}` +
+    `}</style>` +
+    `<rect class="f" x="15" y="15" width="70" height="70" rx="12" fill="none" stroke-width="5"/>` +
+    `<rect class="b" x="27" y="27" width="34" height="32" rx="6"/>` +
+    `<circle class="d" cx="72" cy="72" r="4.5" opacity=".6"/>` +
+    `</svg>`;
+
+  link.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
 function reflectAccent(): void {
@@ -90,6 +123,8 @@ function reflectAccent(): void {
     const isActive = btn.getAttribute("data-accent-option") === accentValue;
     btn.setAttribute("aria-pressed", String(isActive));
   });
+
+  reflectFavicon();
 }
 
 // Update the global theme API
