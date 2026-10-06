@@ -19,7 +19,7 @@ import {
   type PostItem,
 } from "./collections";
 import { toAssetRef } from "./images";
-import { toBlocks } from "./markdown";
+import { codeColors, toBlocks } from "./markdown";
 import { buildTitles, buildTerms, blocksPlainText, pinyinKey } from "./search";
 import { assertPaletteWCAG } from "./tags";
 import { buildStats } from "./stats";
@@ -433,6 +433,9 @@ async function runBuild(): Promise<BuildOutput> {
       termsMinChars: 2 as const,
       strategy: "bigram" as const,
     },
+    // 正文 CodeToken.c 是索引，指向本次构建累积的 globalColors（顺序随文章渲染序变化），
+    // 故配色表必须与同一次 buildId 的正文一起下发，端上无法自行重建。
+    codeColors: codeColors(),
   };
   const manifestJson = JSON.stringify(
     envelope(manifestData, buildId, generatedAt),
