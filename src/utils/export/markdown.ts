@@ -162,28 +162,30 @@ function parsePreBlocks(html: string): PreBlock[] {
     const langFromAttr = /data-language="([^"]*)"/.exec(preMatch[1])?.[1] ?? "";
     const inner = preMatch[2];
     const lines: CodeToken[][] = [];
-    const lineRe = /<span class="line">([\s\S]*?)<\/span>/g;
-    let lineMatch: RegExpExecArray | null;
-    let anyLine = false;
-    while ((lineMatch = lineRe.exec(inner))) {
-      anyLine = true;
+    /* 行切分不能用 /<span class="line">([\s\S]*?)<\/span>/：非贪婪会在行内第一个 token 的
+     * </span> 就收口，于是 token 正则永远匹配不到完整 span（实测 178 行 → 0 token），
+     * 整行文本被截成第一个 token —— 一篇 17 块的文档只留下约 30% 字符，颜色索引也一起丢光。
+     * 行内只有一层 token span，所以按「行开标签」切段、每段末尾那个 </span> 正是行自身的闭合。
+     * 开标签要容许附加 class：notationHighlight/diff 转换器会写 class="line highlight"。 */
+    for (const chunk of inner.split(/<span class="line[^"]*">/).slice(1)) {
+      const lineHtml = chunk.replace(/<\/span>\s*$/, "");
       const tokens: CodeToken[] = [];
       const tokenRe = /<span style="([^"]*)">([\s\S]*?)<\/span>/g;
       let tokenMatch: RegExpExecArray | null;
       let anySpan = false;
-      while ((tokenMatch = tokenRe.exec(lineMatch[1]))) {
+      while ((tokenMatch = tokenRe.exec(lineHtml))) {
         anySpan = true;
         const v = decodeEntities(tokenMatch[2]);
         if (v === "") continue;
         tokens.push({ v, c: colorIndex(tokenMatch[1]) });
       }
-      if (!anySpan && lineMatch[1]) {
-        const raw = decodeEntities(lineMatch[1].replace(/<[^>]+>/g, ""));
+      if (!anySpan) {
+        const raw = decodeEntities(lineHtml.replace(/<[^>]+>/g, ""));
         if (raw) tokens.push({ v: raw });
       }
       lines.push(tokens);
     }
-    if (!anyLine && inner.trim()) {
+    if (lines.length === 0 && inner.trim()) {
       const raw = decodeEntities(inner.replace(/<[^>]+>/g, ""));
       if (raw) lines.push([{ v: raw }]);
     }
