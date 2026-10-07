@@ -120,6 +120,21 @@ function probeLocalAudio(id: string): string {
   return "";
 }
 
+/**
+ * 封面按档收口。网易云接口给的 album.picUrl 是**原图**，实测 212233 那张
+ * = 6255410 B（6.25 MB），而黑胶盘心只有 ~68px CSS —— 站点和小程序端都在白拿
+ * 一张几 MB 的图。网易 CDN 支持 `?param=NNNyNNN` 出缩放档（实测 300y300 = 194 KB、
+ * 200y200 = 93 KB、120y120 = 37 KB），QQ 侧的 T002R300x300 本来就是 300 档（33 KB），
+ * 所以统一取 300 档对齐两平台。
+ * 只在**读出时**归一，`music-cache.json` 里继续存平台给的原 URL —— 换档不必回写缓存，
+ * 也留着想拿原图的空间。已带 param= 或不是网易的一律原样返回。
+ */
+function sizedCover(platform: MusicPlatform, cover: string): string {
+  if (!cover || platform !== "netease") return cover;
+  if (/[?&]param=/.test(cover)) return cover;
+  return `${cover}${cover.includes("?") ? "&" : "?"}param=300y300`;
+}
+
 /* ── 缓存文件读写 ─────────────────────────────────────────────────── */
 const CACHE_PATH = join(
   dirname(fileURLToPath(import.meta.url)),
@@ -301,7 +316,7 @@ export async function resolveTrack(
       platform,
       name: cached.name || `${meta.label} #${id}`,
       artist: cached.artist || "未知歌手",
-      cover: cached.cover || "",
+      cover: sizedCover(platform, cached.cover || ""),
       url: cached.url || fallbackUrl,
       audioUrl,
     };
@@ -322,7 +337,7 @@ export async function resolveTrack(
     platform,
     name: rec?.name || `${meta.label} #${id}`,
     artist: rec?.artist || "未知歌手",
-    cover: rec?.cover || "",
+    cover: sizedCover(platform, rec?.cover || ""),
     url: rec?.url || fallbackUrl,
     audioUrl,
   };
@@ -346,7 +361,7 @@ export function cachedTrack(
     platform,
     name: cached.name || `${meta.label} #${id}`,
     artist: cached.artist || "未知歌手",
-    cover: cached.cover || "",
+    cover: sizedCover(platform, cached.cover || ""),
     url: cached.url || meta.url(id),
     audioUrl: cached.audioUrl || "",
   };
