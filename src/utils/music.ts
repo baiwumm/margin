@@ -328,6 +328,30 @@ export async function resolveTrack(
   };
 }
 
+/**
+ * 纯离线的缓存查表版 resolveTrack —— 给小程序导出层用。
+ * resolveTrack 未命中缓存会回源抓平台接口，而导出层的口径是「构建期禁联网」
+ * （同 remarkLinkCard fetchTdk 那条），所以这里只读 music-cache.json：
+ * 命中就给出与站点同源的歌名/歌手/封面，未命中返回 null 由调用方降级。
+ */
+export function cachedTrack(
+  id: string,
+  platform: MusicPlatform = "netease"
+): MusicTrack | null {
+  const cached = readCached(platform, id);
+  if (!cached || (!cached.cover && !cached.name)) return null;
+  const meta = PLATFORM_META[platform];
+  return {
+    id,
+    platform,
+    name: cached.name || `${meta.label} #${id}`,
+    artist: cached.artist || "未知歌手",
+    cover: cached.cover || "",
+    url: cached.url || meta.url(id),
+    audioUrl: cached.audioUrl || "",
+  };
+}
+
 /** 平台展示名（用于卡片徽标） */
 export function platformLabel(platform: MusicPlatform): string {
   return PLATFORM_META[platform].label;

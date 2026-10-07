@@ -80,7 +80,15 @@ export type Block =
   | { t: "table"; head: Inline[][]; rows: Inline[][][] }
   | { t: "hr" }
   | { t: "linkcard"; href: string; title: string; desc?: string; icon?: string }
-  | { t: "music"; platform: "netease" | "qq"; id: string; audio?: string }
+  | {
+      t: "music";
+      platform: "netease" | "qq";
+      id: string;
+      audio?: string;
+      name?: string;
+      artist?: string;
+      cover?: string;
+    }
   | {
       t: "video";
       id?: string;

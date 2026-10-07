@@ -27,6 +27,7 @@ import {
 import { transformerFileName } from "../transformers/fileName";
 import { remarkRemoveTocMarker } from "../remarkRemoveTocMarker";
 import { rehypeExternalLinks } from "../rehypeExternalLinks";
+import { cachedTrack } from "../music";
 import { parseLinkCard, remarkLinkCard } from "../remarkLinkCard";
 import { parseMusicCard, remarkMusic } from "../remarkMusic";
 import { parseVideoCard, remarkVideo } from "../remarkVideo";
@@ -423,11 +424,18 @@ export async function toBlocks(
     if (card) return card;
     const music = parseMusicCard(before);
     if (music) {
+      // 站点卡片的歌名/歌手/封面来自构建期 resolveTrack（remarkMusic），端上拿不到
+      // 那层，故由导出层同源下发；用纯离线的 cachedTrack 查 music-cache.json，
+      // 未命中就留空（导出层禁联网，同 fetchTdk 那条口径），端上降级为「曲库 ID」。
+      const track = cachedTrack(music.id, music.platform);
       return {
         t: "music",
         platform: music.platform,
         id: music.id,
         ...(music.audio ? { audio: music.audio } : {}),
+        ...(track?.name ? { name: track.name } : {}),
+        ...(track?.artist ? { artist: track.artist } : {}),
+        ...(track?.cover ? { cover: track.cover } : {}),
       };
     }
     const video = parseVideoCard(before);
