@@ -56,10 +56,9 @@ export const projects: Project[] = [
     featured: true,
   },
   {
-    name: "next-daily-hot",
-    description:
-      "基于 Next.js 构建的热点聚合平台，实时汇聚微博、知乎、B 站、抖音、GitHub 等 30+ 平台的热门内容。",
-    repoUrl: "https://github.com/baiwumm/next-daily-hot",
+    name: "daily-trending",
+    description: "看看全网都在聊什么",
+    repoUrl: "https://github.com/baiwumm/daily-trending",
     homepageUrl: "https://hot.baiwumm.com",
     language: "TypeScript",
     languageColor: "#3178c6",
