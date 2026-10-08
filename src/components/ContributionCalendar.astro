@@ -23,6 +23,10 @@ const MIN_W = 740; // 日历最小宽度，低于此宽度时容器横向滚动
 const monthAtColumn = new Map<number, string>(
   (calendar?.monthLabels ?? []).map(({ label, column }) => [column, label])
 );
+// 末尾标签右侧只剩 1～2 列时贴右边界收口，否则 nowrap 文字会越过网格右边界撑出横向滚动条
+const lastLabelColumn = calendar?.monthLabels.length
+  ? calendar.monthLabels[calendar.monthLabels.length - 1].column
+  : -1;
 ---
 
 {
@@ -89,17 +93,30 @@ const monthAtColumn = new Map<number, string>(
         <div class="mt-4 overflow-x-auto pb-1">
           <div class="w-full pr-1.5 pb-1" style={`min-width: ${MIN_W}px`}>
             {/* 月份标签：与下方网格同构（同宽星期列 + 53 个等宽列），标签溢出到后续空列 */}
-            <div class="flex" style={`gap: ${GAP}px`}>
+            <div class="relative flex" style={`gap: ${GAP}px`}>
               <div class="shrink-0" style={`width: ${DAY_COL}px`} />
-              {calendar.weeks.map((_, column) => (
-                <div class="min-w-0 flex-1">
-                  {monthAtColumn.get(column) && (
-                    <span class="block font-firacode text-[10px] leading-none whitespace-nowrap text-foreground/45">
-                      {monthAtColumn.get(column)}
-                    </span>
-                  )}
-                </div>
-              ))}
+              {calendar.weeks.map((_, column) => {
+                const label = monthAtColumn.get(column);
+                // 末尾标签右侧只剩 1～2 列，nowrap 文字必然越过网格右边界（溢出行 Chrome 不认
+                // text-align: right），故绝对定位贴右边界收口，让文字向左溢出到前面的空列
+                const flushRight =
+                  column === lastLabelColumn &&
+                  column >= calendar.weeks.length - 2;
+                return (
+                  <div class="min-w-0 flex-1">
+                    {label && (
+                      <span
+                        class:list={[
+                          "block font-firacode text-[10px] leading-none whitespace-nowrap text-foreground/45",
+                          flushRight && "absolute top-0 right-0",
+                        ]}
+                      >
+                        {label}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             <div class="mt-1 flex" style={`gap: ${GAP}px`}>
