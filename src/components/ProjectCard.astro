@@ -8,7 +8,7 @@
  * 有 `npmUrl` 时标题旁追加 npm 图标链接；
  * 有 `homepageUrl` 时卡片底部显示「在线体验」胶囊按钮。
  */
-import type { Project } from "@/data/projects";
+import { LANGUAGE_COLORS, type Project } from "@/data/projects";
 import IconGitHub from "@/assets/icons/IconGitHub.svg";
 import IconNpm from "@/assets/icons/IconNpm.svg";
 
@@ -21,12 +21,14 @@ const {
   npmUrl,
   homepageUrl,
   language,
-  languageColor,
   stars,
   forks,
   tags,
   featured = false,
 } = Astro.props as Props;
+
+// Astro props 不做运行时校验，查不到颜色时由模板回退到 accent
+const languageColor = language ? LANGUAGE_COLORS[language] : undefined;
 ---
 
 <li
