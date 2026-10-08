@@ -19,13 +19,22 @@ const GAP = 5; // 格子间距
 const DAY_COL = 22; // 左侧星期标签列宽
 const MIN_W = 740; // 日历最小宽度，低于此宽度时容器横向滚动
 
+// 月份标签（按列升序）。滚动一年窗口首尾常落在同一月份（如去年 10 月 → 今年 10 月），
+// 末尾标签与开头标签重复时不渲染，避免同一月份出现两次
+const rawMonthLabels = calendar?.monthLabels ?? [];
+const monthLabels =
+  rawMonthLabels.length > 1 &&
+  rawMonthLabels[rawMonthLabels.length - 1].label === rawMonthLabels[0].label
+    ? rawMonthLabels.slice(0, -1)
+    : rawMonthLabels;
+
 // 月份 → 起始列映射，供月份标签行定位（标签允许溢出到后续空列）
 const monthAtColumn = new Map<number, string>(
-  (calendar?.monthLabels ?? []).map(({ label, column }) => [column, label])
+  monthLabels.map(({ label, column }) => [column, label])
 );
 // 末尾标签右侧只剩 1～2 列时贴右边界收口，否则 nowrap 文字会越过网格右边界撑出横向滚动条
-const lastLabelColumn = calendar?.monthLabels.length
-  ? calendar.monthLabels[calendar.monthLabels.length - 1].column
+const lastLabelColumn = monthLabels.length
+  ? monthLabels[monthLabels.length - 1].column
   : -1;
 ---
 
