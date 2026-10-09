@@ -42,7 +42,6 @@ pnpm run format     # Prettier 格式化
 ```
 
 > 搜索索引只在 `pnpm run build` 后生成（会复制到 `public/pagefind`），全新克隆后先 build 一次，dev 下搜索才可用。
-> Docker 部署参考 `Dockerfile` / `docker-compose.yml`。
 > 仓库内 `AGENTS.md` 记录了完整的开发规范与注意事项。
 
 ## 📁 目录结构
