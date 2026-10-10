@@ -42,7 +42,7 @@ pnpm run format     # Prettier 格式化
 ```
 
 > 搜索索引只在 `pnpm run build` 后生成（会复制到 `public/pagefind`），全新克隆后先 build 一次，dev 下搜索才可用。
-> 仓库内 `AGENTS.md` 记录了完整的开发规范与注意事项。
+> 仓库内 `AGENTS.md`（总纲）与 `docs/`（专题文档）记录了完整的开发规范与注意事项。
 
 ## 📁 目录结构
 
@@ -96,7 +96,7 @@ timezone: "Asia/Shanghai" # 可选，覆盖 SITE.timezone
 
 ### 🖼️ 画廊
 
-在 `src/data/galleries/<slug>/` 放 `index.md` + 图片，slug 即 `/galleries/<slug>` 路由；图片按文件名排序（数字前缀控制顺序），构建期自动优化。详见 [GALLERIES.md](GALLERIES.md)。
+在 `src/data/galleries/<slug>/` 放 `index.md` + 图片，slug 即 `/galleries/<slug>` 路由；图片按文件名排序（数字前缀控制顺序），构建期自动优化。详见 [docs/galleries.md](docs/galleries.md)。
 
 MDX 内嵌画廊（无需 import）：
 
