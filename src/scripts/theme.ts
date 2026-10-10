@@ -101,7 +101,7 @@ function reflectFavicon(): void {
       .trim() || FAVICON_FALLBACK_ACCENT;
 
   const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">` +
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="12.5 12.5 75 75" width="100" height="100">` +
     `<style>` +
     `.f{stroke:${FAVICON_FG_LIGHT}}.b{fill:${accent}}.d{fill:${FAVICON_FG_LIGHT}}` +
     `@media (prefers-color-scheme: dark){` +
