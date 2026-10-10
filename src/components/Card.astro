@@ -206,7 +206,7 @@ if (SITE.showCoverImages) {
           >{title}</span
         >
       </Heading>
-      <!-- Expand clickable area to whole card on top of everything, minus the description -->
+      <!-- Expand clickable area to whole card on top of everything, minus the tag links -->
       <span class="absolute -inset-4 z-10 sm:-inset-5" aria-hidden="true"
       ></span>
     </a>
@@ -232,7 +232,7 @@ if (SITE.showCoverImages) {
 
     <p
       id={descriptionId}
-      class="pointer-events-auto relative z-20 mt-2 line-clamp-2 text-sm leading-relaxed text-foreground/75 select-text"
+      class="pointer-events-none relative z-20 mt-2 line-clamp-2 text-sm leading-relaxed text-foreground/75"
     >
       {description}
     </p>
