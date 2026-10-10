@@ -4,7 +4,7 @@
 
 在线地址：[https://baiwumm.com](https://baiwumm.com)
 
-![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fbaiwumm.com%2Fversion.json&query=%24.version&prefix=v&label=version&color=1158d1)
+![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fwww.baiwumm.com%2Fversion.json&query=%24.version&prefix=v&label=version&color=1158d1)
 ![License](https://img.shields.io/badge/license-MIT-1f9d63)
 ![Astro](https://img.shields.io/badge/Astro-7-ff5d01)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
