@@ -5,8 +5,6 @@ import LinkButton from "./LinkButton.astro";
 import { SITE } from "@/config";
 import Logo from "@/assets/logo/margin.svg";
 import Mark from "@/assets/logo/mark.svg";
-import IconCertificate from "@/assets/icons/IconCertificate.svg";
-import IconShieldCheck from "@/assets/icons/IconShieldCheck.svg";
 
 const currentYear = new Date().getFullYear();
 const socialHeadingId = "footer-social-heading";
@@ -147,7 +145,15 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
                 rel="noopener noreferrer"
                 class="inline-flex items-center gap-1 font-app text-[11px] tracking-wide text-foreground/45 transition-colors duration-200 hover:text-accent"
               >
-                <IconCertificate class="size-3.5 shrink-0" />
+                <img
+                  src="/icp.png"
+                  alt=""
+                  width={14}
+                  height={14}
+                  loading="lazy"
+                  class="size-3.5 shrink-0"
+                  aria-hidden="true"
+                />
                 {SITE.beian.icp}
               </a>
             )}
@@ -158,7 +164,15 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
                 rel="noopener noreferrer"
                 class="inline-flex items-center gap-1 font-app text-[11px] tracking-wide text-foreground/45 transition-colors duration-200 hover:text-accent"
               >
-                <IconShieldCheck class="size-3.5 shrink-0" />
+                <img
+                  src="/gongan.png"
+                  alt=""
+                  width={14}
+                  height={14}
+                  loading="lazy"
+                  class="size-3.5 shrink-0"
+                  aria-hidden="true"
+                />
                 {SITE.beian.police}
               </a>
             )}
