@@ -29,7 +29,7 @@ const siteInfoRows: { label: string; value: string }[] = [
   { label: "作者", value: SITE.author },
   { label: "描述", value: SITE.desc },
   { label: "地址", value: SITE.website },
-  { label: "头像", value: new URL("avatar.png", SITE.website).toString() },
+  { label: "头像", value: new URL("logo.png", SITE.website).toString() },
 ];
 const emailValue = PUBLIC_SOCIAL_EMAIL ?? "";
 const rssUrl = new URL("rss.xml", SITE.website).toString();
@@ -39,7 +39,7 @@ const applicationText = [
   `name: ${SITE.title}`,
   `description: ${SITE.desc}`,
   `url: ${SITE.website}`,
-  `avatar: ${new URL("avatar.png", SITE.website).toString()}`,
+  `avatar: ${new URL("logo.png", SITE.website).toString()}`,
   "",
   "您好博主，本站已添加贵站友链，想申请与贵站互链。以上是本站信息，麻烦审核一下，感谢！",
 ].join("\n");
@@ -182,7 +182,7 @@ const applicationText = [
         <!-- 个人名片 Header -->
         <div class="info-profile">
           <img
-            src="/avatar.png"
+            src="/logo.png"
             alt={`${SITE.title} 头像`}
             width={52}
             height={52}
