@@ -4,6 +4,7 @@ import IconGitHub from "@/assets/icons/IconGitHub.svg";
 import IconBrandX from "@/assets/icons/IconBrandX.svg";
 import IconLinkedin from "@/assets/icons/IconLinkedin.svg";
 import IconWeibo from "@/assets/icons/IconWeibo.svg";
+import IconRss from "@/assets/icons/IconRss.svg";
 import {
   PUBLIC_SOCIAL_GITHUB,
   PUBLIC_SOCIAL_X,
@@ -19,6 +20,8 @@ interface Social {
   icon: (_props: Props) => Element;
   /** 覆盖默认的描边图标渲染类（实心图标需改为 fill-current） */
   iconClass?: string;
+  /** 内部链接但需要新窗口打开（如 RSS） */
+  newTab?: boolean;
 }
 
 // ── Profile socials ────────────────────────────────────────────────────────
@@ -50,6 +53,14 @@ export const SOCIALS: Social[] = (
       href: PUBLIC_SOCIAL_EMAIL ? `mailto:${PUBLIC_SOCIAL_EMAIL}` : "",
       linkTitle: `Send an email to ${SITE.title}`,
       icon: IconMail,
+    },
+    {
+      // 站内订阅源，非个人数据，固定保留（不参与下方 env 空值过滤）
+      name: "RSS",
+      href: "/rss.xml",
+      linkTitle: `订阅 ${SITE.title} 的 RSS Feed`,
+      icon: IconRss,
+      newTab: true,
     },
   ] satisfies Social[]
 ).filter(s => s.href !== "");

@@ -12,7 +12,7 @@ const policeCode = SITE.beian.police.match(/\d+/)?.[0] ?? "";
 
 const socialLinks = SOCIALS.map(social => ({
   ...social,
-  isExternal: /^https?:\/\//.test(social.href),
+  opensNewTab: /^https?:\/\//.test(social.href) || social.newTab === true,
 }));
 const githubHref = SOCIALS.find(social => social.name === "GitHub")?.href ?? "";
 
@@ -79,8 +79,8 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
                 <li>
                   <LinkButton
                     href={social.href}
-                    target={social.isExternal ? "_blank" : undefined}
-                    rel={social.isExternal ? "noopener noreferrer" : undefined}
+                    target={social.opensNewTab ? "_blank" : undefined}
+                    rel={social.opensNewTab ? "noopener noreferrer" : undefined}
                     aria-label={social.linkTitle}
                     class="footer-social-btn group relative flex size-8 items-center justify-center rounded-lg border border-border/20 bg-muted/20 transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:bg-accent/10 focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:outline-none"
                     title={social.linkTitle}
