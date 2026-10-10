@@ -1,0 +1,75 @@
+name: Release
+
+# ── 发版流程（tag 触发）───────────────────────────────────────────────────────
+# 推送 v* tag 后自动执行：lint / build 预检，任一失败即中止、不产生任何副作用；
+# 通过后创建「草稿」GitHub Release，发布说明由人工按 AGENTS.md「发布说明」规范
+# 编辑草稿正文后正式发布（GitHub 会自动生成 tag 区间的提交列表作为正文底稿）。
+#
+# 发版步骤：
+#   1. 更新根 package.json 的 version；
+#   2. 提交后打 tag 并推送：git tag vX.Y.Z && git push origin main vX.Y.Z；
+#   3. 到 GitHub Releases 编辑草稿正文并发布。
+#
+# 设计取舍：
+#   · 版本真源是根 package.json，预检校验 tag 与其一致，避免漏改版本号；
+#   · Release 建为 draft 而非直接发布：保留中文精选发布说明风格，机器只做预检与建壳；
+#   · 本 workflow 不回写任何提交、也不负责部署：站点由 Cloudflare Workers Builds
+#     盯 main 自动部署，tag 推送不会触发它；
+#   · 权限仅 contents: write，最小化授权。
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Lint & Build & Draft Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4 # 版本取自 package.json 的 packageManager 字段
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify tag matches package.json version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          PKG_VERSION="v$(node -p "require('./package.json').version")"
+          if [ "${PKG_VERSION}" != "${TAG}" ]; then
+            echo "::error::tag ${TAG} 与 package.json 版本 ${PKG_VERSION} 不一致，请先更新版本号再打 tag"
+            exit 1
+          fi
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "${TAG}" \
+            --draft \
+            --verify-tag \
+            --title "${TAG}" \
+            --generate-notes
