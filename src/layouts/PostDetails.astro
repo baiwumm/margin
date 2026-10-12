@@ -43,6 +43,12 @@ const {
 } = post.data;
 
 const { Content } = await render(post);
+
+// 复制正文时追加的版权声明：服务端拼好文案挂到 article[data-copy-notice]，
+// 客户端脚本（bindCopyNotice）读取追加；关掉开关则不渲染该属性
+const copyNotice = SITE.copyNotice
+  ? `本文来自 ${SITE.author} 的博客「${SITE.title}」，转载请注明出处`
+  : undefined;
 const readingTime = post.body ? getReadingTime(post.body) : null;
 const wordCount = post.body ? getWordCount(post.body) : null;
 const tocItems = post.body ? getTocFromMarkdown(post.body) : [];
@@ -267,6 +273,7 @@ const nextPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
     >
       <article
         id="article"
+        data-copy-notice={copyNotice}
         class="app-prose w-full max-w-app min-w-0 prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
       >
         <Content components={{ GalleryEmbed, Music, Video }} />
@@ -515,6 +522,42 @@ const nextPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
     });
   }
 
+  /** 在剪贴板末尾追加版权声明：读者选中正文复制（≥30 字）时生效，
+   *  文案来自 article[data-copy-notice]（服务端注入，开关见 SITE.copyNotice） */
+  function bindCopyNotice(signal: AbortSignal) {
+    const article = document.querySelector<HTMLElement>(
+      "main article[data-copy-notice]"
+    );
+    const notice = article?.dataset.copyNotice;
+    if (!article || !notice) return;
+
+    document.addEventListener(
+      "copy",
+      e => {
+        if (!e.clipboardData) return;
+        const selection = window.getSelection();
+        if (
+          !selection ||
+          selection.isCollapsed ||
+          !selection.containsNode(article, true)
+        )
+          return;
+
+        const text = selection.toString();
+        // 过短的选择（变量名、单词）不打扰
+        if (text.trim().length < 30) return;
+
+        const url = `${location.origin}${location.pathname}`;
+        e.preventDefault();
+        e.clipboardData.setData(
+          "text/plain",
+          `${text}\n\n——${notice}。\n原文链接：${url}`
+        );
+      },
+      { signal }
+    );
+  }
+
   function initPostScripts() {
     // Cleanup previous listeners (View Transitions navigation)
     if (postScriptCleanup) postScriptCleanup.abort();
@@ -525,6 +568,7 @@ const nextPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
     bindScrollProgress(signal);
     addHeadingLinks();
     attachCopyButtons();
+    bindCopyNotice(signal);
   }
 
   document.addEventListener("astro:page-load", initPostScripts);

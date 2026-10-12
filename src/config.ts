@@ -32,6 +32,7 @@ export const SITE = {
   showFriends: true, // show friends (友链) page in navigation
   showGalleriesInIndex: true, // Show galleries in the general paginated list (only if showGalleries is true)
   showBackButton: true, // show back button in post detail
+  copyNotice: true, // 复制正文（不少于 30 字）时，剪贴板自动追加版权声明与原文链接
   showRelatedPosts: true, // 在文章页底部按标签重合度展示「相关阅读」（构建期计算）
   readMode: true, // immersive reading mode on post pages (toggle with the `r` key)
   textToSpeech: true, // full-text read-aloud (Web Speech API) on post pages (toggle with the `l` key)
