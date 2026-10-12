@@ -15,6 +15,7 @@ import Video from "@/components/Video.astro";
 import PostLightbox from "@/components/PostLightbox.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
 import Comments from "@/components/Comments.astro";
+import RelatedPosts from "@/components/RelatedPosts.astro";
 import { getPath } from "@/utils/getPath";
 import { slugifyStr } from "@/utils/slugify";
 import { getReadingTime, getWordCount } from "@/utils/readingTime";
@@ -386,6 +387,8 @@ const nextPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
         )
       }
     </div>
+
+    {SITE.showRelatedPosts && <RelatedPosts current={post} posts={posts} />}
   </main>
   <Footer />
 </Layout>
@@ -437,8 +440,11 @@ const nextPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
   /** Attaches links to headings in the document,
    *  allowing sharing of sections easily */
   function addHeadingLinks() {
+    // 仅正文标题加锚点；页面其它区块（如「相关阅读」）的标题不掺和
     const headings = Array.from(
-      document.querySelectorAll("h2, h3, h4, h5, h6")
+      document.querySelectorAll(
+        "article h2, article h3, article h4, article h5, article h6"
+      )
     );
     for (const heading of headings) {
       // Guard: 避免同一标题重复插入锚点

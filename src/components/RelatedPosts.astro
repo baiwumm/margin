@@ -1,0 +1,134 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Datetime from "./Datetime.astro";
+import { getPath } from "@/utils/getPath";
+import { getEntryPublishedMs } from "@/utils/contentEntry";
+
+type Props = {
+  current: CollectionEntry<"blog">;
+  posts: CollectionEntry<"blog">[];
+  count?: number;
+};
+
+const { current, posts, count = 3 } = Astro.props;
+
+// 构建期按标签重合度推荐：至少共享 1 个标签，重合多者优先，同分新文优先
+const currentTags = new Set(current.data.tags ?? []);
+const related = posts
+  .filter(post => post.id !== current.id)
+  .map(post => {
+    const tags = post.data.tags ?? [];
+    return {
+      post,
+      overlap: tags.filter(tag => currentTags.has(tag)).length,
+    };
+  })
+  .filter(({ overlap }) => overlap > 0)
+  .sort(
+    (a, b) =>
+      b.overlap - a.overlap ||
+      getEntryPublishedMs(b.post) - getEntryPublishedMs(a.post)
+  )
+  .slice(0, count);
+---
+
+{
+  related.length > 0 && (
+    <section data-pagefind-ignore class="mt-10" aria-label="相关阅读">
+      <h2 class="mb-4 font-firacode text-[10px] tracking-widest text-foreground/35 uppercase">
+        相关阅读
+      </h2>
+      <ul class="grid gap-3 sm:grid-cols-3">
+        {related.map(({ post }) => {
+          const { title, pubDatetime, modDatetime, timezone, tags } = post.data;
+          return (
+            <li>
+              <a
+                href={getPath(post.id, post.filePath)}
+                class="post-nav-link group relative flex h-full flex-col gap-2 rounded-2xl border border-border/20 px-5 py-4 transition-all duration-300 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5"
+              >
+                <div class="post-nav-bg" aria-hidden="true" />
+                <span class="line-clamp-2 text-sm leading-snug font-medium text-foreground/70 transition-colors duration-200 group-hover:text-accent">
+                  {title}
+                </span>
+                <span class="mt-auto flex items-center gap-3 text-xs text-foreground/50">
+                  <Datetime
+                    size="xs"
+                    pubDatetime={pubDatetime}
+                    modDatetime={modDatetime}
+                    timezone={timezone}
+                  />
+                  {tags.length > 0 && <span class="truncate">#{tags[0]}</span>}
+                </span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  /* 与 PostDetails.astro 的上下篇卡片（.post-nav-link / .post-nav-bg）保持同一
+     hover 视觉：悬浮上移 + accent 光圈。Astro 样式按组件隔离，无法直接复用，
+     两处需同步修改，PostDetails 为源头。 */
+  .post-nav-link {
+    /* No backdrop-filter here — .post-nav-bg already provides the
+       blur effect via filter:blur(16px), avoiding a second compositing layer */
+    background: color-mix(in srgb, var(--muted) 5%, transparent);
+    position: relative;
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.3s ease,
+      border-color 0.3s ease,
+      background-color 0.3s ease;
+  }
+
+  .post-nav-link:hover {
+    background: color-mix(in srgb, var(--accent) 4%, transparent);
+    transform: translateY(-2px);
+  }
+
+  .post-nav-link:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Aurora glow layer — opacity-only transition, single blur value */
+  .post-nav-bg {
+    position: absolute;
+    inset: -1px;
+    opacity: 0.4;
+    transition: opacity 0.35s ease;
+    background:
+      radial-gradient(
+        ellipse 80% 60% at 20% 80%,
+        color-mix(in oklab, var(--accent) 12%, transparent) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 60% 70% at 80% 20%,
+        color-mix(in oklab, var(--accent) 8%, transparent) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 90% 40% at 50% 100%,
+        color-mix(in oklab, var(--accent) 6%, transparent) 0%,
+        transparent 50%
+      );
+    filter: blur(16px); /* single value — no change on hover → no repaint */
+    pointer-events: none;
+    z-index: -1;
+    border-radius: inherit;
+  }
+
+  .post-nav-link:hover .post-nav-bg {
+    opacity: 1; /* only opacity transitions — compositor-friendly */
+  }
+
+  @media (pointer: fine) {
+    .post-nav-bg {
+      will-change: opacity;
+    }
+  }
+</style>
