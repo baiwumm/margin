@@ -1,7 +1,7 @@
 {
   "name": "margin",
   "type": "module",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "packageManager": "pnpm@12.6.0",
   "description": "Margin（原 Devosfera）：基于 AstroPaper 深度二次开发的个人技术博客 + 图片画廊（纯静态站点）。",
   "homepage": "https://baiwumm.com/",
