@@ -4,13 +4,13 @@
  * 策略（与 projectStats.ts 的 stars / forks 完全一致）：
  * - 复用私有环境变量 `GITHUB_TOKEN`，构建时向 GraphQL 端点请求一次
  *   `contributionsCollection.contributionCalendar`（REST API 不提供贡献日历）；
- * - 账号从 `PUBLIC_SOCIAL_GITHUB` 解析，缺失时回退到项目仓库 owner；
+ * - 账号从 `PUBLIC_SOCIAL_GITHUB` 解析，缺失时返回 null（调用方隐藏整个区块）；
  * - 日期范围对齐 GitHub 官方日历：从 52 周前的周日到今天（53 列 × 7 行），
  *   未来日期以 null 占位；
  * - 无 Token / 请求失败 / 响应异常时返回 null，调用方隐藏整个区块，构建不中断；
  * - Token 为私有变量，绝不能带 `PUBLIC_` 前缀（否则会打进客户端产物）。
  */
-import { projects } from "@/data/projects";
+import { getEnv, parseLogin } from "@/utils/github";
 
 export type ContributionDay = {
   /** YYYY-MM-DD（UTC，与 GitHub 一致） */
@@ -59,22 +59,6 @@ type GraphQLResponse = {
   };
 };
 
-/**
- * Env helper: prefer real process.env (platform env vars), fall back to
- * import.meta.env so values from the project's .env file also work.
- * Astro dev 模式只把 .env 注入 import.meta.env，构建时两者都可能存在。
- */
-const getEnv = (key: string): string => {
-  const procValue = process.env[key];
-  if (procValue) return procValue;
-  try {
-    const metaValue = (import.meta.env as Record<string, unknown>)[key];
-    return typeof metaValue === "string" ? metaValue : "";
-  } catch {
-    return "";
-  }
-};
-
 const addDays = (date: Date, days: number): Date => {
   const next = new Date(date);
   next.setUTCDate(next.getUTCDate() + days);
@@ -88,27 +72,9 @@ const toISODate = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
-/** 解析 GitHub 链接（个人主页或仓库 URL）中的账号。 */
-const parseLogin = (url: string): string | null => {
-  try {
-    const parsed = new URL(url);
-    if (parsed.hostname !== "github.com") return null;
-    const parts = parsed.pathname.split("/").filter(Boolean);
-    return parts[0] ? parts[0] : null;
-  } catch {
-    return null;
-  }
-};
-
-/** 账号解析：PUBLIC_SOCIAL_GITHUB 优先，回退到项目仓库 owner。 */
-const resolveLogin = (): string | null => {
-  const profile = parseLogin(getEnv("PUBLIC_SOCIAL_GITHUB"));
-  if (profile) return profile;
-  const repoUrl = projects
-    .map(({ repoUrl }) => repoUrl)
-    .find((url): url is string => Boolean(url));
-  return repoUrl ? parseLogin(repoUrl) : null;
-};
+/** 账号解析：从 `PUBLIC_SOCIAL_GITHUB` 提取，缺失或非法时返回 null。 */
+const resolveLogin = (): string | null =>
+  parseLogin(getEnv("PUBLIC_SOCIAL_GITHUB"));
 
 /**
  * 构建 53 周对齐的日期范围：结束为今天，起始为 52 周前所在周的周日（UTC），

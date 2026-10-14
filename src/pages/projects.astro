@@ -10,7 +10,7 @@ import { projects } from "@/data/projects";
 import { getProjectStats } from "@/utils/projectStats";
 import { SITE } from "@/config";
 
-const { projects: effectiveProjects, accountStars, joinedAt } =
+const { projects: effectiveProjects, unmatched, accountStars, joinedAt } =
   await getProjectStats(projects);
 const featuredProjects = effectiveProjects.filter(({ featured }) => featured);
 const regularProjects = effectiveProjects.filter(({ featured }) => !featured);
@@ -31,12 +31,20 @@ if (joinedAt) {
 
 <Layout
   title={`Projects | ${SITE.title}`}
-  description="我的开源项目与作品，涵盖全栈后台、设计工具与热点聚合平台。"
+  description="我的开源项目与作品，描述与技术栈实时同步自 GitHub。"
 >
   <Header />
   <Breadcrumb />
 
   <main id="main-content" class="app-layout pb-8">
+    {
+      import.meta.env.DEV && unmatched && (
+        <div class="mb-4 rounded-lg border border-featured/40 bg-featured/10 px-4 py-3 text-sm text-featured">
+          以下配置的仓库未在 GitHub 上找到（已跳过，请检查拼写）：
+          {unmatched.join("、")}
+        </div>
+      )
+    }
     <!-- Hero -->
     <div class="projects-hero" data-projects-hero>
       <div class="aurora-orb aurora-orb-1"></div>

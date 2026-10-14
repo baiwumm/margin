@@ -4,9 +4,11 @@
  *
  * 视觉沿用现有 `Card` 的设计语言：card-glow 鼠标辉光、rounded-2xl、
  * 玻璃拟态半透明背景、hover 上升 + accent 边框辉光。
- * 有 `repoUrl` 时标题左侧显示 GitHub 图标，点击标题跳转仓库；
+ * 标题左侧显示 GitHub 图标，点击标题跳转仓库；
  * 有 `npmUrl` 时标题旁追加 npm 图标链接；
- * 有 `homepageUrl` 时卡片底部显示「在线体验」胶囊按钮。
+ * 有 `homepageUrl` 时卡片底部显示「在线体验」胶囊按钮；
+ * 描述与标签跟随仓库端（构建期从 GitHub API 拉取），
+ * 标签最多展示 3 个，超出时显示 +N。
  */
 import { LANGUAGE_COLORS, type Project } from "@/data/projects";
 import IconGitHub from "@/assets/icons/IconGitHub.svg";
@@ -146,28 +148,22 @@ const languageColor = language ? LANGUAGE_COLORS[language] : undefined;
     <h3
       class="mt-3 flex items-center gap-2 text-base font-semibold text-foreground"
     >
-      {
-        repoUrl ? (
-          <a
-            href={repoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class:list={[
-              "group/name relative flex min-w-0 items-center gap-2 rounded-sm text-foreground transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none",
-              featured
-                ? "group-hover/card:text-featured focus-visible:ring-featured"
-                : "group-hover/card:text-accent focus-visible:ring-accent",
-            ]}
-            aria-label={`${name}（GitHub 仓库）`}
-            title="GitHub 仓库"
-          >
-            <IconGitHub class="size-4.5 shrink-0 text-foreground/55" />
-            <span class="min-w-0 truncate font-firacode">{name}</span>
-          </a>
-        ) : (
-          <span class="min-w-0 truncate font-firacode">{name}</span>
-        )
-      }
+      <a
+        href={repoUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class:list={[
+          "group/name relative flex min-w-0 items-center gap-2 rounded-sm text-foreground transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none",
+          featured
+            ? "group-hover/card:text-featured focus-visible:ring-featured"
+            : "group-hover/card:text-accent focus-visible:ring-accent",
+        ]}
+        aria-label={`${name}（GitHub 仓库）`}
+        title="GitHub 仓库"
+      >
+        <IconGitHub class="size-4.5 shrink-0 text-foreground/55" />
+        <span class="min-w-0 truncate font-firacode">{name}</span>
+      </a>
 
       {
         npmUrl && (
@@ -185,23 +181,34 @@ const languageColor = language ? LANGUAGE_COLORS[language] : undefined;
       }
     </h3>
 
-    <!-- Description -->
-    <p
-      class="pointer-events-auto relative z-20 mt-2 line-clamp-2 text-sm leading-relaxed text-foreground/75 select-text"
-    >
-      {description}
-    </p>
+    <!-- Description（仓库端 description，可能为空） -->
+    {
+      description && (
+        <p class="pointer-events-auto relative z-20 mt-2 line-clamp-2 text-sm leading-relaxed text-foreground/75 select-text">
+          {description}
+        </p>
+      )
+    }
 
     <!-- Footer: tech tags + demo button -->
     <div class="relative z-20 mt-auto flex flex-col items-end gap-3 pt-4">
       {
         tags.length > 0 && (
           <ul class="pointer-events-auto flex w-full flex-wrap gap-1.5">
-            {tags.map(tag => (
+            {tags.slice(0, 3).map(tag => (
               <li class="inline-flex items-center rounded-full border border-border/30 bg-background/40 px-2.5 py-0.5 text-xs font-medium text-foreground/70">
                 {tag}
               </li>
             ))}
+            {tags.length > 3 && (
+              <li
+                class="inline-flex items-center rounded-full border border-border/30 bg-background/40 px-2.5 py-0.5 text-xs font-medium text-foreground/50"
+                title={tags.slice(3).join("、")}
+                aria-label={`另有 ${tags.length - 3} 个标签：${tags.slice(3).join("、")}`}
+              >
+                +{tags.length - 3}
+              </li>
+            )}
           </ul>
         )
       }

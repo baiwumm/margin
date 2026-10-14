@@ -1,148 +1,168 @@
 /**
- * 构建期从 GitHub API 拉取项目 stars / forks（Projects 页面使用）。
+ * 构建期从 GitHub API 组装项目数据（Projects 页面使用）。
  *
  * 策略：
- * - 配置私有环境变量 `GITHUB_TOKEN` 后，构建时请求一次
- *   `/users/{owner}/repos` 批量获取全部仓库统计（带 Token 限流 5000 次/小时）；
- * - 网络值优先，无 Token / 请求失败 / 非 GitHub 链接时回退到 `projects.ts`
- *   中手动维护的静态数字，构建不中断；
+ * - 项目列表只配置仓库名（`projects.ts`），描述、主页、语言、标签、
+ *   stars / forks 均构建期从 `/users/{owner}/repos` 批量拉取（带 Token
+ *   限流 5000 次/小时；接口也允许匿名访问，无 Token 时构建照常）；
+ * - 账号从 `PUBLIC_SOCIAL_GITHUB` 解析（与 githubContributions.ts 一致）；
+ * - 拉取结果做模块级缓存：一次构建中页面与导出管线各调用一次
+ *   `getProjectStats`，实际只请求一轮 GitHub 接口；
+ * - 仓库不存在（改名 / 删除）或拉取失败时跳过该条目，构建不中断，
+ *   页面展示空状态；拉取成功时未匹配的配置名随结果返回（`unmatched`，
+ *   dev 模式用于拼写错误提醒）；
+ * - 标签按 `TOPIC_PRIORITY` 把语言 / 主流框架类 topics 排前（API 返回
+ *   纯字母序，直接展示会淹没核心技术栈），其余保持原字母序；
  * - 同时汇总名下全部仓库的 stars 总数与账号加入 GitHub 的时间
  *   （Projects 页面 Hero 徽章使用），拉取失败时这两个字段省略、徽章隐藏；
  * - Token 为私有变量，绝不能带 `PUBLIC_` 前缀（否则会打进客户端产物）。
  */
-import type { Project } from "@/data/projects";
+import type { Project, ProjectConfig } from "@/data/projects";
+import { getEnv, parseLogin } from "@/utils/github";
 
-type RepoStats = { stars?: number; forks?: number };
-
-const parseRepo = (url: string): { owner: string; repo: string } | null => {
-  try {
-    const parsed = new URL(url);
-    const parts = parsed.pathname.split("/").filter(Boolean);
-    if (parsed.hostname === "github.com" && parts.length >= 2) {
-      return { owner: parts[0], repo: parts[1].replace(/\.git$/, "") };
-    }
-  } catch {
-    // 非法 URL 直接忽略
-  }
-  return null;
+type RepoFields = {
+  name: string;
+  description: string | null;
+  homepage: string | null;
+  language: string | null;
+  topics?: string[];
+  stargazers_count: number;
+  forks_count: number;
 };
 
-/**
- * Env helper: prefer real process.env (platform env vars), fall back to
- * import.meta.env so values from the project's .env file also work.
- * Astro dev 模式只把 .env 注入 import.meta.env，构建时两者都可能存在。
- */
-const getEnv = (key: string): string => {
-  const procValue = process.env[key];
-  if (procValue) return procValue;
-  try {
-    const metaValue = (import.meta.env as Record<string, unknown>)[key];
-    return typeof metaValue === "string" ? metaValue : "";
-  } catch {
-    return "";
-  }
-};
+/** 排前的核心标签关键字（语言 / 主流框架），按需补充。 */
+const TOPIC_PRIORITY = [
+  "typescript",
+  "javascript",
+  "python",
+  "rust",
+  "java",
+  "go",
+  "react",
+  "vue",
+  "angular",
+  "svelte",
+  "nextjs",
+  "nuxt",
+  "astro",
+  "nestjs",
+  "nodejs",
+];
 
-const fetchOwnerRepos = async (
-  owner: string
-): Promise<Map<string, RepoStats>> => {
-  const map = new Map<string, RepoStats>();
-  const token = getEnv("GITHUB_TOKEN");
-  if (!token) return map;
-
-  const response = await fetch(
-    `https://api.github.com/users/${owner}/repos?per_page=100`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "User-Agent": "margin-blog",
-      },
-    }
+/** 命中关键字的标签排前，其余排后并保持 GitHub 的字母序。 */
+const topicRank = (topic: string): number => {
+  const index = TOPIC_PRIORITY.findIndex(keyword =>
+    topic.startsWith(keyword)
   );
-  if (!response.ok) return map;
-
-  const repos = (await response.json()) as Array<{
-    name: string;
-    stargazers_count: number;
-    forks_count: number;
-  }>;
-  for (const repo of repos) {
-    map.set(repo.name, {
-      stars: repo.stargazers_count,
-      forks: repo.forks_count,
-    });
-  }
-  return map;
+  return index === -1 ? TOPIC_PRIORITY.length : index;
 };
 
-const fetchUserCreatedAt = async (owner: string): Promise<string | undefined> => {
-  const token = getEnv("GITHUB_TOKEN");
-  if (!token) return undefined;
-
-  const response = await fetch(`https://api.github.com/users/${owner}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "User-Agent": "margin-blog",
-    },
-  });
-  if (!response.ok) return undefined;
-
-  const user = (await response.json()) as { created_at?: string };
-  return user.created_at;
-};
-
-/** Projects 页面 Hero 使用的账号级汇总数据。 */
-export type ProjectStats = {
-  /** 合并了 GitHub 实时统计的项目数组（失败时原样返回，构建不中断） */
-  projects: Project[];
-  /** 名下全部仓库 stars 总数（无 Token / 拉取失败时省略） */
+type OwnerSnapshot = {
+  repos: Map<string, RepoFields>;
   accountStars?: number;
-  /** GitHub 账号创建时间，ISO 8601（无 Token / 拉取失败时省略） */
   joinedAt?: string;
 };
 
-/** 返回合并了 GitHub 实时统计的项目数组与账号级汇总（失败时字段省略，构建不中断）。 */
-export const getProjectStats = async (
-  projects: Project[]
-): Promise<ProjectStats> => {
-  const firstRepoUrl = projects
-    .map(({ repoUrl }) => repoUrl)
-    .find((url): url is string => Boolean(url));
-  const owner = firstRepoUrl ? parseRepo(firstRepoUrl)?.owner : undefined;
-  if (!owner) return { projects };
+const fetchSnapshot = async (owner: string): Promise<OwnerSnapshot> => {
+  const token = getEnv("GITHUB_TOKEN");
+  const headers: Record<string, string> = { "User-Agent": "margin-blog" };
+  if (token) headers.Authorization = `Bearer ${token}`;
 
-  let stats = new Map<string, RepoStats>();
+  const snapshot: OwnerSnapshot = { repos: new Map() };
+
+  let response: Response;
   try {
-    stats = await fetchOwnerRepos(owner);
+    response = await fetch(
+      `https://api.github.com/users/${owner}/repos?per_page=100`,
+      { headers }
+    );
+    if (response.ok) {
+      const repos = (await response.json()) as RepoFields[];
+      for (const repo of repos) {
+        snapshot.repos.set(repo.name, repo);
+      }
+    }
   } catch {
-    // 网络异常时回退静态值，构建不中断
+    // 网络异常时跳过全部项目，构建不中断
+    return snapshot;
   }
-  if (stats.size === 0) return { projects };
 
-  const accountStars = [...stats.values()].reduce(
-    (sum, { stars }) => sum + (stars ?? 0),
+  if (snapshot.repos.size === 0) return snapshot;
+
+  snapshot.accountStars = [...snapshot.repos.values()].reduce(
+    (sum, { stargazers_count }) => sum + stargazers_count,
     0
   );
-  let joinedAt: string | undefined;
+
   try {
-    joinedAt = await fetchUserCreatedAt(owner);
+    const userResponse = await fetch(`https://api.github.com/users/${owner}`, {
+      headers,
+    });
+    if (userResponse.ok) {
+      const user = (await userResponse.json()) as { created_at?: string };
+      snapshot.joinedAt = user.created_at;
+    }
   } catch {
     // 拉取失败仅省略 Hero 徽章，构建不中断
   }
 
+  return snapshot;
+};
+
+/** 模块级缓存：一次构建（或 dev 进程存活期）只请求一轮 GitHub 接口。 */
+let snapshotPromise: Promise<OwnerSnapshot> | null = null;
+const getSnapshot = (owner: string): Promise<OwnerSnapshot> => {
+  snapshotPromise ??= fetchSnapshot(owner);
+  return snapshotPromise;
+};
+
+/** Projects 页面使用的组装结果。 */
+export type ProjectStats = {
+  /** 配置顺序的项目数组（仓库不存在或拉取失败时跳过对应条目） */
+  projects: Project[];
+  /** 配置了但 GitHub 上不存在的仓库名（仅拉取成功时返回，dev 拼写提醒用） */
+  unmatched?: string[];
+  /** 名下全部仓库 stars 总数（拉取失败时省略） */
+  accountStars?: number;
+  /** GitHub 账号创建时间，ISO 8601（拉取失败时省略） */
+  joinedAt?: string;
+};
+
+/** 按配置顺序组装 GitHub 实时项目数据（失败时跳过条目，构建不中断）。 */
+export const getProjectStats = async (
+  configs: ProjectConfig[]
+): Promise<ProjectStats> => {
+  const owner = parseLogin(getEnv("PUBLIC_SOCIAL_GITHUB"));
+  if (!owner) return { projects: [] };
+
+  const { repos, accountStars, joinedAt } = await getSnapshot(owner);
+
+  const resolved: Project[] = [];
+  const unmatched: string[] = [];
+  for (const config of configs) {
+    const repo = repos.get(config.name);
+    if (!repo) {
+      // 拉取成功但仓库不存在（多为拼写错误），记录供 dev 提醒；整体失败时不报
+      if (repos.size > 0) unmatched.push(config.name);
+      continue;
+    }
+    resolved.push({
+      name: repo.name,
+      description: repo.description,
+      repoUrl: `https://github.com/${owner}/${repo.name}`,
+      npmUrl: config.npmUrl,
+      homepageUrl: repo.homepage || undefined,
+      language: repo.language || undefined,
+      stars: repo.stargazers_count,
+      forks: repo.forks_count,
+      tags: [...(repo.topics ?? [])].sort((a, b) => topicRank(a) - topicRank(b)),
+      featured: config.featured,
+    });
+  }
+
   return {
-    projects: projects.map(project => {
-      if (!project.repoUrl) return project;
-      const repo = parseRepo(project.repoUrl)?.repo;
-      if (!repo) return project;
-      const remote = stats.get(repo);
-      if (!remote) return project;
-      return {
-        ...project,
-        stars: remote.stars ?? project.stars,
-        forks: remote.forks ?? project.forks,
-      };
-    }),
+    projects: resolved,
+    unmatched: unmatched.length > 0 ? unmatched : undefined,
     accountStars,
     joinedAt,
   };

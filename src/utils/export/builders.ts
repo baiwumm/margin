@@ -278,7 +278,7 @@ async function runBuild(): Promise<BuildOutput> {
   const { projects: effectiveProjects } = await getProjectStats(projectData);
   const projectPayloads = effectiveProjects.map(p => ({
     name: p.name,
-    url: p.repoUrl ?? p.homepageUrl ?? "",
+    url: p.repoUrl,
     desc: p.description,
     lang: p.language ?? null,
     stars: p.stars ?? 0,
