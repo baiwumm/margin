@@ -10,18 +10,23 @@ import { projects } from "@/data/projects";
 import { getProjectStats } from "@/utils/projectStats";
 import { SITE } from "@/config";
 
-const effectiveProjects = await getProjectStats(projects);
+const { projects: effectiveProjects, accountStars, joinedAt } =
+  await getProjectStats(projects);
 const featuredProjects = effectiveProjects.filter(({ featured }) => featured);
 const regularProjects = effectiveProjects.filter(({ featured }) => !featured);
 const totalProjects = effectiveProjects.length;
-const totalStars = effectiveProjects.reduce(
-  (sum, { stars }) => sum + (stars ?? 0),
-  0
-);
-const totalForks = effectiveProjects.reduce(
-  (sum, { forks }) => sum + (forks ?? 0),
-  0
-);
+
+// 加入 GitHub 的相对时长（构建期计算，不足一年按月展示）
+let joinedLabel: string | undefined;
+if (joinedAt) {
+  const ms = Date.now() - new Date(joinedAt).getTime();
+  const years = Math.floor(ms / (365.25 * 24 * 60 * 60 * 1000));
+  if (years >= 1) {
+    joinedLabel = `${years} 年`;
+  } else {
+    joinedLabel = `${Math.max(1, Math.floor(ms / (30 * 24 * 60 * 60 * 1000)))} 个月`;
+  }
+}
 ---
 
 <Layout
@@ -57,9 +62,13 @@ const totalForks = effectiveProjects.reduce(
           我的开源项目与作品。
         </p>
         <div class="mt-4 flex flex-wrap items-center gap-2">
+          {accountStars ? (
+            <span class="hero-badge">{accountStars} Stars</span>
+          ) : null}
           <span class="hero-badge">{totalProjects} 个开源项目</span>
-          {totalStars > 0 && <span class="hero-badge">{totalStars} Stars</span>}
-          {totalForks > 0 && <span class="hero-badge">{totalForks} Forks</span>}
+          {joinedLabel && (
+            <span class="hero-badge">加入 GitHub {joinedLabel}</span>
+          )}
         </div>
       </div>
     </div>

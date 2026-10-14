@@ -275,7 +275,7 @@ async function runBuild(): Promise<BuildOutput> {
       avatar: f.avatar ?? null,
     })),
   }));
-  const effectiveProjects = await getProjectStats(projectData);
+  const { projects: effectiveProjects } = await getProjectStats(projectData);
   const projectPayloads = effectiveProjects.map(p => ({
     name: p.name,
     url: p.repoUrl ?? p.homepageUrl ?? "",

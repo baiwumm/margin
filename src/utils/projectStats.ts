@@ -6,6 +6,8 @@
  *   `/users/{owner}/repos` 批量获取全部仓库统计（带 Token 限流 5000 次/小时）；
  * - 网络值优先，无 Token / 请求失败 / 非 GitHub 链接时回退到 `projects.ts`
  *   中手动维护的静态数字，构建不中断；
+ * - 同时汇总名下全部仓库的 stars 总数与账号加入 GitHub 的时间
+ *   （Projects 页面 Hero 徽章使用），拉取失败时这两个字段省略、徽章隐藏；
  * - Token 为私有变量，绝不能带 `PUBLIC_` 前缀（否则会打进客户端产物）。
  */
 import type { Project } from "@/data/projects";
@@ -73,15 +75,41 @@ const fetchOwnerRepos = async (
   return map;
 };
 
-/** 返回合并了 GitHub 实时统计的项目数组（失败时原样返回，构建不中断）。 */
+const fetchUserCreatedAt = async (owner: string): Promise<string | undefined> => {
+  const token = getEnv("GITHUB_TOKEN");
+  if (!token) return undefined;
+
+  const response = await fetch(`https://api.github.com/users/${owner}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "User-Agent": "margin-blog",
+    },
+  });
+  if (!response.ok) return undefined;
+
+  const user = (await response.json()) as { created_at?: string };
+  return user.created_at;
+};
+
+/** Projects 页面 Hero 使用的账号级汇总数据。 */
+export type ProjectStats = {
+  /** 合并了 GitHub 实时统计的项目数组（失败时原样返回，构建不中断） */
+  projects: Project[];
+  /** 名下全部仓库 stars 总数（无 Token / 拉取失败时省略） */
+  accountStars?: number;
+  /** GitHub 账号创建时间，ISO 8601（无 Token / 拉取失败时省略） */
+  joinedAt?: string;
+};
+
+/** 返回合并了 GitHub 实时统计的项目数组与账号级汇总（失败时字段省略，构建不中断）。 */
 export const getProjectStats = async (
   projects: Project[]
-): Promise<Project[]> => {
+): Promise<ProjectStats> => {
   const firstRepoUrl = projects
     .map(({ repoUrl }) => repoUrl)
     .find((url): url is string => Boolean(url));
   const owner = firstRepoUrl ? parseRepo(firstRepoUrl)?.owner : undefined;
-  if (!owner) return projects;
+  if (!owner) return { projects };
 
   let stats = new Map<string, RepoStats>();
   try {
@@ -89,18 +117,33 @@ export const getProjectStats = async (
   } catch {
     // 网络异常时回退静态值，构建不中断
   }
-  if (stats.size === 0) return projects;
+  if (stats.size === 0) return { projects };
 
-  return projects.map(project => {
-    if (!project.repoUrl) return project;
-    const repo = parseRepo(project.repoUrl)?.repo;
-    if (!repo) return project;
-    const remote = stats.get(repo);
-    if (!remote) return project;
-    return {
-      ...project,
-      stars: remote.stars ?? project.stars,
-      forks: remote.forks ?? project.forks,
-    };
-  });
+  const accountStars = [...stats.values()].reduce(
+    (sum, { stars }) => sum + (stars ?? 0),
+    0
+  );
+  let joinedAt: string | undefined;
+  try {
+    joinedAt = await fetchUserCreatedAt(owner);
+  } catch {
+    // 拉取失败仅省略 Hero 徽章，构建不中断
+  }
+
+  return {
+    projects: projects.map(project => {
+      if (!project.repoUrl) return project;
+      const repo = parseRepo(project.repoUrl)?.repo;
+      if (!repo) return project;
+      const remote = stats.get(repo);
+      if (!remote) return project;
+      return {
+        ...project,
+        stars: remote.stars ?? project.stars,
+        forks: remote.forks ?? project.forks,
+      };
+    }),
+    accountStars,
+    joinedAt,
+  };
 };
