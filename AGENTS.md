@@ -2,7 +2,7 @@
 
 Margin（原 Devosfera）：基于 AstroPaper 深度二次开发的个人博客（纯静态站点，作者：白雾茫茫丶，域名：https://baiwumm.com）。项目定位是「个人技术博客 + 图片画廊」，当前主要目标是在保持静态生成、页面性能与既有视觉体系（终端/赛博朋克风格、玻璃拟态、Aurora 光效）的前提下，持续扩展和维护博客内容、画廊、全局搜索、SEO 与 OG 图等既有能力，不做架构性重写。
 
-关键事实：仓库提交历史较短（当前约 70 个提交）、无自动化测试；唯一 CI 是 tag 触发的发版 workflow（`.github/workflows/release.yml`：lint / build 预检 + 创建草稿 Release，不部署）；改动仍依赖 `astro check` + 构建与人工验证。当前处于「先理解、后修改」的长期 AI 协作模式，任何修改前先阅读本文件、按需查阅 `docs/` 下的专题文档与相关代码。
+关键事实：仓库提交历史较短（当前约 70 个提交）、无自动化测试；唯一 CI 是手动触发的发版 workflow（`.github/workflows/release.yml`：lint / build 预检 + release-it 自动完成版本号、CHANGELOG、tag 与 GitHub Release 发布，不负责部署）；改动仍依赖 `astro check` + 构建与人工验证。当前处于「先理解、后修改」的长期 AI 协作模式，任何修改前先阅读本文件、按需查阅 `docs/` 下的专题文档与相关代码。
 
 # 修改原则
 
@@ -51,7 +51,7 @@ Margin（原 Devosfera）：基于 AstroPaper 深度二次开发的个人博客�
 | [docs/development.md](docs/development.md) | 技术栈、架构、目录结构、开发命令 | 改代码、动构建/依赖、排查构建问题前 |
 | [docs/content.md](docs/content.md) | 内容系统、创作规范、文章 Metadata 规则 | 创建或修改文章 / 画廊、生成 title / description / tags 前 |
 | [docs/ui-guidelines.md](docs/ui-guidelines.md) | 组件、样式、性能、代码规范 | 改 UI、写组件或客户端脚本前 |
-| [docs/release.md](docs/release.md) | 提交规则、发布说明规范 | 提交代码、打 tag 发版前 |
+| [docs/release.md](docs/release.md) | 提交规则、全自动发版流程 | 提交代码、执行发版前 |
 | [docs/pitfalls.md](docs/pitfalls.md) | 已知陷阱、隐式约定与历史决策 | **任何修改前扫一遍**，避免重复踩坑 |
 | [docs/galleries.md](docs/galleries.md) | 画廊功能完整技术文档 | 深入定制画廊功能时 |
 

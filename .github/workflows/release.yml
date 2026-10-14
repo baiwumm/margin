@@ -1,41 +1,61 @@
 name: Release
 
-# ── 发版流程（tag 触发）───────────────────────────────────────────────────────
-# 推送 v* tag 后自动执行：lint / build 预检，任一失败即中止、不产生任何副作用；
-# 通过后创建「草稿」GitHub Release，发布说明由人工按 docs/release.md「发布说明」规范
-# 编辑草稿正文后正式发布（GitHub 会自动生成 tag 区间的提交列表作为正文底稿）。
+# ── 发版流程（一键远程发版，workflow_dispatch，请在 main 上触发）──────────────
+# CI 先跑 lint / build 预检，任一失败即中止、不产生任何提交；通过后由 release-it
+# 一次性完成 版本号 → CHANGELOG.md → Release 提交 → tag → GitHub Release（直接
+# 发布，非草稿），发布说明由 conventional-changelog 按提交记录自动按类型分组生成。
 #
-# 发版步骤：
-#   1. 更新根 package.json 的 version；
-#   2. 提交后打 tag 并推送：git tag vX.Y.Z && git push origin main vX.Y.Z；
-#   3. 到 GitHub Releases 编辑草稿正文并发布。
+# 触发方式（二选一）：
+#   · GitHub Actions 页面 → Release → Run workflow：选 patch / minor / major，
+#     或直接填自定义版本号；
+#   · gh workflow run release.yml -f bump=minor（自定义版本号用 -f version=v1.7.0）。
 #
 # 设计取舍：
-#   · 版本真源是根 package.json，预检校验 tag 与其一致，避免漏改版本号；
-#   · Release 建为 draft 而非直接发布：保留中文精选发布说明风格，机器只做预检与建壳；
-#   · 本 workflow 不回写任何提交、也不负责部署：站点由 Cloudflare Workers Builds
-#     盯 main 自动部署，tag 推送不会触发它；
+#   · 版本真源是根 package.json（release-it bump），tag 由它生成，天然不存在
+#     「tag 与 package.json 版本不一致」问题，因此无需 tag 校验步骤；
+#   · tag 自 v1.6.0 起带 v 前缀（.release-it.json 的 git.tagName 显式锁定）；
+#   · 发布说明不再人工编辑：按 Conventional Commits 自动分组（见 .release-it.json），
+#     提交信息中文优先即可得到中文小节；
+#   · 发版提交推上 main 后，Cloudflare Workers Builds 自动跟随部署；
+#   · 由 GITHUB_TOKEN 推送的提交与 tag 不会连带触发其他 workflow；
 #   · 权限仅 contents: write，最小化授权。
+#
+# 本地仍可 `pnpm release`（需本地 GITHUB_TOKEN），与 CI 共用 .release-it.json，行为一致。
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 版本类型
+        type: choice
+        required: true
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+      version:
+        description: 自定义版本号（选填，填写后覆盖版本类型，如 v1.7.0）
+        type: string
+        required: false
 
 permissions:
-  contents: write
+  contents: write # release-it 需要推送 Release 提交与 tag，并创建 GitHub Release
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release # 同一时刻只允许一个发版流程排队
   cancel-in-progress: false
 
 jobs:
   release:
-    name: Lint & Build & Draft Release
+    name: Lint & Build & Release
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+        with:
+          # release-it 需要完整 tag 历史来计算上一版本与 CHANGELOG 区间
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v6 # 版本取自 package.json 的 packageManager 字段
 
@@ -47,29 +67,25 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Verify tag matches package.json version
-        env:
-          TAG: ${{ github.ref_name }}
-        run: |
-          PKG_VERSION="v$(node -p "require('./package.json').version")"
-          if [ "${PKG_VERSION}" != "${TAG}" ]; then
-            echo "::error::tag ${TAG} 与 package.json 版本 ${PKG_VERSION} 不一致，请先更新版本号再打 tag"
-            exit 1
-          fi
-
       - name: Lint
         run: pnpm lint
 
       - name: Build
         run: pnpm build
 
-      - name: Create draft release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
+      - name: Configure git author
         run: |
-          gh release create "${TAG}" \
-            --draft \
-            --verify-tag \
-            --title "${TAG}" \
-            --generate-notes
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          BUMP: ${{ inputs.bump }}
+          CUSTOM_VERSION: ${{ inputs.version }}
+        run: |
+          INCREMENT="${CUSTOM_VERSION:-$BUMP}"
+          INCREMENT="${INCREMENT#v}" # 容忍 v 前缀写法，release-it 接受纯版本号
+          echo "发版增量：${INCREMENT}"
+          # 不用 `pnpm release -- ...`：pnpm 会把 -- 原样透传给脚本，release-it 会误当成版本参数
+          pnpm exec release-it "$INCREMENT" --ci
