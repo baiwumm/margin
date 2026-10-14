@@ -75,6 +75,7 @@ export const projects: Project[] = [
   {
     name: "Easy Api",
     description: "一个把常用 API 收拾得干干净净的小站。",
+    repoUrl: "https://github.com/baiwumm/EasyAPI",
     homepageUrl: "https://api.baiwumm.com",
     language: ProjectLanguage.TypeScript,
     tags: ["Next.js", "Hero UI", "Supabase"],
