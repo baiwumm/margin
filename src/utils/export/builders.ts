@@ -275,7 +275,15 @@ async function runBuild(): Promise<BuildOutput> {
       avatar: f.avatar ?? null,
     })),
   }));
-  const { projects: effectiveProjects } = await getProjectStats(projectData);
+  const { projects: effectiveProjects, accountStars, joinedAt } =
+    await getProjectStats(projectData);
+  // D66：账号级字段（站点 hero 徽章口径：全账号 Stars + 加入 GitHub 时长）加性下发。
+  // 逐项冗余（7 项 × 2 字段 ≈200B）而非信封级/新端点——端上缓存层只透传 data，
+  // 逐项是既有加性先例（music 三字段同款）；拉取失败时两字段整组缺席，端上回退旧口径。
+  const accountExtras = {
+    ...(accountStars !== undefined ? { accountStars } : {}),
+    ...(joinedAt !== undefined ? { joinedAt } : {}),
+  };
   const projectPayloads = effectiveProjects.map(p => ({
     name: p.name,
     url: p.repoUrl,
@@ -284,6 +292,7 @@ async function runBuild(): Promise<BuildOutput> {
     stars: p.stars ?? 0,
     forks: p.forks ?? 0,
     topics: p.tags,
+    ...accountExtras,
   }));
   const stats = buildStats(
     posts,
