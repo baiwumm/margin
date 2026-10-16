@@ -1,0 +1,133 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import { SITE } from "@/config";
+
+/**
+ * 免责声明页（D64 站点侧配套：与小程序端 pagesB/disclaimer 同文案两端对齐）。
+ * 文案口径 = compliance.md §11（2026-10-14 用户审定终稿）：双读者、
+ * 全文不含「资讯/出版/博客/媒体」、不写「禁止转载」类反向强承诺。
+ * 端上版本共六节（原第六条「本站定位」按倾向 #3 迁关于页尾部）；本站版
+ * 仅把「本小程序」等端上自指改为「本站」，其余逐句一致。
+ */
+const sections: { title: string; paras: string[] }[] = [
+  {
+    title: "一、原创与转载",
+    paras: [
+      "默认情况下，本站内的文字与代码示例均为原创。",
+      "少数整理、摘录或转述他人的内容，会在该篇正文中注明来源与原文链接。",
+    ],
+  },
+  {
+    title: "二、图片与第三方素材",
+    paras: [
+      "文中图片包括站长自拍或截图、以及为说明技术概念而引用的公开素材。",
+      "第三方素材的版权仍归原权利人所有，仅用于说明与学习交流，不作商业用途。",
+      "若您认为某处内容侵犯了您的合法权益，请通过下方联系方式告知，核实后会第一时间署名、替换或下架。",
+    ],
+  },
+  {
+    title: "三、代码与操作步骤",
+    paras: [
+      "文章中的代码、配置与命令基于站长写作时的环境与版本整理，技术会随版本演进变化，不保证在所有环境下可直接运行。",
+      "生产环境使用前请自行验证。",
+    ],
+  },
+  {
+    title: "四、外部链接",
+    paras: [
+      "文中出现的第三方站点链接仅为方便读者查阅，站长对其内容的准确性与合法性不作担保，也不构成推荐。",
+    ],
+  },
+  {
+    title: "五、观点归属",
+    paras: [
+      "本站内的一切观点仅代表站长个人，与任何组织、雇主或提及的第三方产品无关。",
+    ],
+  },
+  {
+    title: "六、联系方式",
+    paras: ["如有关于内容授权、勘误或合作的询问，可通过「关于」页找到本人。"],
+  },
+];
+---
+
+<Layout
+  title={`Disclaimer | ${SITE.title}`}
+  description="本站内容声明：原创与转载、图片与第三方素材、代码与操作步骤、外部链接、观点归属与联系方式。"
+>
+  <Header />
+  <Breadcrumb />
+
+  <main id="main-content" class="app-layout pb-8">
+    <article class="disclaimer-card">
+      <h1 class="disclaimer-title">内容声明</h1>
+      <p class="disclaimer-intro">
+        本站是个人技术学习笔记的记录空间，内容由站长本人撰写、整理或摘录，不构成任何专业建议。
+      </p>
+      {
+        sections.map(section => (
+          <section class="disclaimer-section">
+            <h2 class="disclaimer-section-title">{section.title}</h2>
+            {section.paras.map(para => (
+              <p class="disclaimer-para">{para}</p>
+            ))}
+          </section>
+        ))
+      }
+    </article>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  .disclaimer-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    padding: 2rem 1.5rem;
+    margin-bottom: 2rem;
+    background: color-mix(
+      in srgb,
+      var(--color-foreground) 3%,
+      var(--color-background)
+    );
+    border: 1px solid color-mix(in srgb, var(--color-accent) 12%, transparent);
+  }
+
+  @media (min-width: 640px) {
+    .disclaimer-card {
+      padding: 3rem;
+    }
+  }
+
+  .disclaimer-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .disclaimer-intro {
+    margin-top: 0.75rem;
+    color: color-mix(in srgb, var(--color-foreground) 65%, transparent);
+    line-height: 1.75;
+  }
+
+  .disclaimer-section {
+    margin-top: 2rem;
+  }
+
+  .disclaimer-section-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .disclaimer-para {
+    margin-top: 0.5rem;
+    color: color-mix(in srgb, var(--color-foreground) 65%, transparent);
+    line-height: 1.75;
+  }
+</style>
