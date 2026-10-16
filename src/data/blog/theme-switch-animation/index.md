@@ -1,7 +1,8 @@
 ---
-title: "Vibecoding 一个主题切换动画库：13 种揭幕方式"
-description: "记录一个跨框架主题切换动画库的设计与实现：基于 View Transitions API 与纯 mask 动画，如何推导蒙版几何、让 13 种动画类型共用一套代码、把「圆形收起」重写成静止蒙版盒子，以及怎样在不抢状态管理的前提下接入 next-themes 与 @nuxtjs/color-mode。"
+title: "Vibecoding 一个主题切换动画库：15 种揭幕方式"
+description: "这篇文章记录一个跨框架主题切换动画库的设计与实现：如何推导蒙版几何、让 15 种动画类型共用一套代码、把「圆形收起」重写成静止蒙版盒子并长成 reverse 选项，以及怎样在不抢状态管理的前提下接入 next-themes 与 @nuxtjs/color-mode。"
 pubDatetime: 2026-09-16T09:51:00+08:00
+modDatetime: 2026-10-17T01:21:00+08:00
 tags:
   - AI
   - AI 编程
@@ -14,25 +15,27 @@ draft: false
 
 有一天我在想：如果新主题不是「替换」旧主题，而是从你点击的位置「长」出来、扩散着把旧主题揭开，会不会好很多？
 
-于是有了 [theme-switch-animation](https://www.npmjs.com/package/theme-switch-animation)：一个基于 View Transitions API 的主题切换动画库，支持 React 18+、Vue 3+、Next.js App Router 与 Nuxt 3+，内置 13 种动画类型，可受控也可非受控，浏览器不支持时自动降级。
+于是有了 [theme-switch-animation](https://www.npmjs.com/package/theme-switch-animation)：一个基于 View Transitions API 的主题切换动画库，支持 React 18+、Vue 3+、Next.js App Router 与 Nuxt 3+，内置 15 种动画类型与 `direction` / `waveWidth` / `bladeCount` / `reverse` 等参数化选项，可受控也可非受控，浏览器不支持时自动降级。
 
 这个项目是我用 vibecoding 的方式做出来的：需求、技术选型、行为契约和验收标准由我定，代码主要由 AI 写。但下面这几个坑——半像素抖动、受控模式的 DOM 同步、Nuxt 的自动导入——都是靠真机实测和逐像素对比才收敛的，AI 的第一版同样会翻车。
 
-这篇文章把它拆开讲讲：**为什么只能用 mask、蒙版要算多大、13 种类型怎么共用一套代码、以及两个真正花了时间的坑**。
+这篇文章把它拆开讲讲：**为什么只能用 mask、蒙版要算多大、15 种类型怎么共用一套代码、以及两个真正花了时间的坑**。
 
-## 13 种类型都是什么效果
+## 15 种类型都是什么效果
 
-先看结果。下面每一格都是同一次切换进行到约 60% 时的画面：亮色是已经揭开的新主题，暗色是尚未被覆盖的旧主题，紫色标记处就是触发按钮的中心。
+先看结果。下面每一格都是同一次切换进行到约 60% 时的画面：亮色是已经揭开的新主题，暗色是尚未被覆盖的旧主题，蓝色标记处就是触发元素的中心。
 
-![13 种动画类型的动画中段对比：圆形扩散、圆形收起、圆形模糊、四向擦除与六种中心扩散形状](./02-animation-types-overview.png)
+![15 种动画类型的动画中段对比：中心扩散形状族、条带与格子族、波形与角度族，右下角信息卡标注了三条实现公约](./02-animation-types-overview.png)
 
 按实现归类其实只有三族：
 
 | 族 | 类型 | 蒙版形制 |
 | --- | --- | --- |
-| 中心扩散形状族 | `CIRCLE` `SQUARE` `DIAMOND` `RECTANGLE` `HEXAGON` `TRIANGLE` `STAR` | SVG data-URI 形状，从触发点 0 尺寸长到覆盖视口 |
-| 四向擦除 | `LTR` `RTL` `TTB` `BTT` | `linear-gradient` 实心细条，尺寸从 4px 长到 100% |
-| 特殊 | `CIRCLE_REVERT`（方向感知的圆）、`CIRCLE_BLUR`（边缘高斯模糊的圆） | 反向蒙版「洞」/ 模糊烘焙进 SVG |
+| 中心扩散形状族 | `CIRCLE` `CIRCLE_BLUR` `SQUARE` `DIAMOND` `RECTANGLE` `HEXAGON` `TRIANGLE` `STAR` | SVG data-URI 形状，从触发点 0 尺寸长到覆盖视口 |
+| 条带与格子族 | `BLINDS`（百叶窗）`SCAN`（扫描）`QR_GRID`（方块格子）`CURTAIN`（双开门） | `@property` 注册属性 + 静止蒙版盒子，无触发点，`direction` 控制方向 |
+| 波形与角度族 | `RIPPLE`（水滴涟漪）`CLOCK_SWEEP`（时钟扇形）`FAN`（扇叶旋开） | 同一机制，把触发点写进渐变串作波源 / 轴心 |
+
+其中 9 个类型还支持 `reverse` 选项把「揭开」整个反过来：新主题从四周显出、向触发点收拢。各类型逐个的动态观感与参数档位，文档站上有完整画廊。
 
 ```bash
 pnpm add theme-switch-animation
@@ -58,8 +61,11 @@ export function runThemeTransition(params: RunThemeTransitionParams): RunThemeTr
 
   const viewport = getViewportSize(doc)
   const center = getTriggerCenter(trigger, viewport)
+  const toDark = nextIsDark ?? !hasThemeClass(doc, resolved.darkClassName)  // reverse: 'auto' 判方向用
   const geometry = getMaskGeometry(resolved.animationType, center, viewport, resolved.blurAmount)
-  const css = buildAnimationCSS({ animationType: resolved.animationType, geometry, ...resolved })
+  //  ^ 形状族走 mask-size / mask-position 路径；条带 / 格子 / 波形 / 角度族与各反向形态
+  //    走「静止蒙版盒子 + 注册属性」的 reveal 分支，最终都汇进同一次 buildAnimationCSS
+  const css = buildAnimationCSS({ animationType: resolved.animationType, geometry, ... })
   const node = injectAnimationStyle(doc, css)   // 向 <head> 注入一份临时样式
 
   const transition = doc.startViewTransition(wrapped)  // wrapped 内部调用 domUpdate()
@@ -137,9 +143,9 @@ export function getCircleMaskGeometry(center: Point, viewport: Size): MaskGeomet
 - **`mask-position` 必须跟着动。** CSS 的 mask 尺寸变化是以左上角为原点的，只改 `mask-size` 会让圆从左上角「长大」，而不是从按钮长出来。终态的 `mask-position` 取「圆心坐标减去一半边长」，圆心就钉住了。
 - **所有几何值一律取整到整数 px。** `Math.hypot` 的结果是无理数，而快照层逐帧动画 mask 时，分数像素偏移会在 GPU 栅格化（尤其在 Windows 分数缩放下）暴露 1px 级接缝，表现为边缘偶发的「线条抖动」。取整损失 ≤0.5px，而 2.1 倍的余量远大于它，安全性无虞。
 
-## 13 种类型怎么共用一套实现
+## 15 种类型怎么共用一套实现
 
-搞懂圆形之后，剩下 12 种基本都是同一个套路：**换蒙版图形，几何计算按形状的内切半径重新推**。中心扩散的形状族全部走同一个函数：
+搞懂圆形之后，形状族的其余 6 个几何形状基本都是同一个套路：**换蒙版图形，几何计算按形状的内切半径重新推**。中心扩散的形状族全部走同一个函数：
 
 ```ts
 function pinCenterGeometry(maskImage: string, center: Point, endSize: Size): MaskGeometry {
@@ -165,24 +171,13 @@ function pinCenterGeometry(maskImage: string, center: Point, endSize: Size): Mas
 
 这里有一个**故意偏离参考实现**的决定：五角星的外接圆我取了 `2.5 × maxRadius`，而常见实现只取约 `1.45 ×`。原因是它们的蒙版走 `clip-path`，会随转场组一起销毁，末帧角落透出旧主题无所谓；而 mask 在样式移除前是**持续生效**的（`animation-fill-mode: both`），一旦盖不满，用户就会看到四个角残留旧主题。形状好不好看是次要的，盖得住是硬要求。
 
-四向擦除则完全不用改几何，靠 CSS 的百分比 `mask-position`「钉边」：
-
-```ts
-const DIRECTIONAL_START = {
-  [ThemeAnimationType.LTR]: { size: `${BAR_START_PX}px 100%`, position: '0% 0%' },   // 钉左
-  [ThemeAnimationType.RTL]: { size: `${BAR_START_PX}px 100%`, position: '100% 0%' },  // 钉右
-  [ThemeAnimationType.TTB]: { size: `100% ${BAR_START_PX}px`, position: '0% 0%' },    // 钉上
-  [ThemeAnimationType.BTT]: { size: `100% ${BAR_START_PX}px`, position: '0% 100%' },  // 钉下
-}
-```
-
-起始是一条 4px 的细条，被钉住的那条边不动，尺寸长到 `100% 100%`，就得到了从该边向对侧擦除的效果——`mask-image` 甚至是零成本的一句话：`linear-gradient(#fff, #fff)`。
-
 至于 `CIRCLE_BLUR`，模糊是用 `feGaussianBlur` **烘焙进 SVG 蒙版本身**的（不是 CSS `filter`，那样 Safari 会有兼容问题），并且**只挂新层**：旧层完整垫底，蒙版外是旧主题，直到模糊圆扫过。如果两层同蒙版，模糊区外露出的会是已翻转的实时页面——主题瞬间全变，糊的只是边缘。
 
-## CIRCLE_REVERT：方向感知，与一次「静止盒子」重写
+剩下的条带与格子族、波形与角度族走的是另一条路线，而那条路线恰好来自下文那次「静止盒子」重写——先按下不表。
 
-`CIRCLE_REVERT` 想表达的语义是：切到暗色时，暗色圆从点击处扩散；切回亮色时，暗色圆**收回**点击处。同一个按钮，来回切换自然产生一次扩散、一次收起，没有额外的隐藏状态。
+## 「圆形收起」：方向感知，与一次「静止盒子」重写
+
+「圆形收起」（首发时叫 `CIRCLE_REVERT`，今天是 `CIRCLE + reverse: 'auto'`）想表达的语义是：切到暗色时，暗色圆从点击处扩散；切回亮色时，暗色圆**收回**点击处。同一个按钮，来回切换自然产生一次扩散、一次收起，没有额外的隐藏状态。
 
 方向怎么判断？在非受控模式下，转场前 `<html>` 的类名就是「当前旧主题」，toggle 之后必为取反；受控模式下外部系统可能写的是 `data-theme` 而不是 class，从类名反推会永远判成「扩散」，所以 `runThemeTransition` 提供了一个显式参数：
 
@@ -192,7 +187,7 @@ const toDark = nextIsDark ?? !hasThemeClass(doc, resolved.darkClassName)
 
 但在「收起」这个方向上，第一版实现翻了车。
 
-![CIRCLE_REVERT 收起方向的两版实现对比：旧层置顶 + 逐帧动画 mask 会抖动，改为新层反向蒙版 + 静止蒙版盒子后位移降到噪声级别](./04-circle-revert-hole-mask.png)
+![圆形收起方向的两版实现对比：旧层置顶 + 逐帧动画 mask 会抖动，改为新层反向蒙版 + 静止蒙版盒子后位移降到噪声级别](./04-circle-revert-hole-mask.png)
 
 第一版是把蒙版挂到**旧截图层**上并 `z-index: 1` 置顶，然后逐帧动画 `mask-size` / `mask-position`，让暗色圆收缩。功能上能跑，但合成器会按设备像素对齐蒙版盒子，逐帧推着圆心走——实测圆心位移的标准差 `σ = 0.329px`，视觉上就是边缘抖动、偶尔闪过一条横带。
 
@@ -213,9 +208,11 @@ const toDark = nextIsDark ?? !hasThemeClass(doc, resolved.darkClassName)
     #000      calc(var(--theme-switch-radius) + 0.5px));
   mask-size: 100% 100%;
   mask-position: 0 0;
-  animation: theme-switch-circle-revert var(--theme-switch-duration, 750ms) both;
+  mask-repeat: no-repeat;
+  animation: theme-switch-circle var(--theme-switch-duration, 750ms)
+    var(--theme-switch-easing, ease-in-out) both;
 }
-@keyframes theme-switch-circle-revert {
+@keyframes theme-switch-circle {
   from { --theme-switch-radius: 490px; }
   to   { --theme-switch-radius: 0px; }
 }
@@ -223,7 +220,33 @@ const toDark = nextIsDark ?? !hasThemeClass(doc, resolved.darkClassName)
 
 改动之后：圆心位移降到 `σ = 0.011px`（噪声级别），而新旧两种实现的渲染结果逐像素比对，最大差值 `≤ 0.068/255`，只出现在圆弧那 1px 抗锯齿边上——**视觉等价，但不再抖**。
 
-顺带一个冷知识：`@property` 注册的自定义属性是全局的、无法注销，所以变量名加了 `--theme-switch-` 前缀避免撞名。
+顺带一个冷知识：`@property` 注册的自定义属性是全局的、无法注销，所以变量名加了 `--theme-switch-` 前缀避免撞名。这个冷知识后来还二次生效——角度族想复用同一个变量注册 `<angle>` 时被规范拦下（syntax 一经注册不可改），只好另开了一个 `--theme-switch-sweep`。
+
+## 一次重写，长成了半个库
+
+「`@property` 注册属性 + 静止蒙版盒子」这个修法没有停留在圆形收起上，它后来成了半个库的地基：
+
+- **0.2.0**：新增 `BLINDS` / `SCAN` / `QR_GRID` 三种类型，全部走这套机制，同时把「四个方向」从动画类型降级成普通选项 `direction`——`LTR` / `RTL` / `TTB` / `BTT` 四个类型删除，由 `SCAN + direction` 承接，观感差异只有前缘多一条 12px 半透明光束带；
+- **0.3.0**：`RIPPLE` 把渐变换成 `radial-gradient`、把波源中心写进串里，`CLOCK_SWEEP` / `FAN` 用 `conic-gradient` 从角度维度揭开——角度覆盖的是方向而非面积，所以它们连「终半径要够到视口最远角」的系数都省了；
+- **0.4.0**：`CIRCLE_REVERT` 作为类型被删除，「切暗扩散、切亮收起」的语义并入三态选项 `reverse: 'auto'`，还想无论切哪个方向都收拢可以写 `reverse: true`（这是当年没有的形态）。`reverse` 目前已接入 9 个类型；`HEXAGON` / `TRIANGLE` / `STAR` 维持不接入——它们的反向必须动 `mask-size`，会重新引入刚修完的像素对齐抖动，做不到无副作用。
+
+```tsx
+// 0.3.x
+useThemeAnimation({ animationType: ThemeAnimationType.CIRCLE_REVERT })
+
+// 0.4.0
+useThemeAnimation({ animationType: ThemeAnimationType.CIRCLE, reverse: 'auto' })
+```
+
+```tsx
+// 0.1.x
+useThemeAnimation({ animationType: ThemeAnimationType.RTL })
+
+// 0.2.0
+useThemeAnimation({ animationType: ThemeAnimationType.SCAN, direction: 'rtl' })
+```
+
+回头看相当有意思：为了消灭半像素抖动发明的一个小机制，最后反过来收纳了新增类型的全部复杂度——`CURTAIN`（双开门）落进现成 dispatcher 时，编排层一行都没改。
 
 ## 受控模式：不抢状态管理，只是「等」
 
@@ -332,6 +355,8 @@ export default defineConfig({
 | 浏览器不支持 View Transitions（Safari < 18、Firefox < 144 等） | 直接切换，无动画，状态正确 |
 | `prefers-reduced-motion: reduce` | 直接切换，无动画 |
 | SSR 渲染阶段 | 不触碰 `window` / `document` / `localStorage`，无 hydration 报错 |
+| `@property` 不可用（极旧引擎） | 属性驱动类型退化为直切，状态正确 |
+| 引擎不支持 `mask-composite: intersect` | `QR_GRID` 方块格自动降级为推进轴单层条带（观感同百叶窗），状态正确 |
 | 受控模式外部系统 300ms 未同步 | 跳过转场直切，不播放「旧 → 旧」空转 |
 | 快速连点 | 浏览器中止前一轮转场，状态不受影响，无 `unhandledrejection` |
 | `localStorage` 不可用（隐私模式 / 跨域 iframe） | 静默跳过持久化，状态仍以 `<html>` 类名为准 |
@@ -370,6 +395,8 @@ function ThemeButton() {
 }
 ```
 
+除了类型与时长，还有一组按类型消费的参数化选项：`direction`（`BLINDS` / `SCAN` / `QR_GRID` 控扫开方向与锚定，`CURTAIN` 控开合轴）、`slatWidth`（百叶窗叶宽）、`cellSize` / `cellShape`（格子格距与方块 / 圆点形状）、`waveWidth`（涟漪波长）、`bladeCount`（扇叶数）、`reverse`（反向揭开，9 个类型已接入）——越界或非法值一律静默回落默认，不抛错。
+
 Vue 3：
 
 ```vue
@@ -401,7 +428,8 @@ const { resolvedTheme, setTheme } = useNextThemes()
 const { ref, toggleTheme } = useThemeAnimation({
   isDark: resolvedTheme === 'dark',
   onChange: (next) => setTheme(next ? 'dark' : 'light'),
-  animationType: ThemeAnimationType.CIRCLE_REVERT,
+  animationType: ThemeAnimationType.CIRCLE,
+  reverse: 'auto',   // 切暗向外扩散、切亮向触发点收起
 })
 ```
 
@@ -410,7 +438,7 @@ const { ref, toggleTheme } = useThemeAnimation({
 回头看，这个库真正的难点其实不在动画本身，而在几件容易被当成「边角料」的事：
 
 - **蒙版几何**：从触发点算到视口最远角，圆心靠 `mask-position` 钉住，所有值取整到整数 px；
-- **层序**：蒙版只挂新层、旧层完整垫底；收起方向用「新层上的洞」替代「旧层置顶」，顺手消掉了半像素抖动；
+- **层序**：蒙版只挂新层、旧层完整垫底；收起方向用「新层上的洞」替代「旧层置顶」，顺手消掉了半像素抖动——这次重写后来还长成了属性驱动族与 `reverse` 选项；
 - **等，而不是替**：受控模式下让外部主题系统自己写 DOM，库只观察、只兜底；
 - **状态优先于动画**：任何环境、任何超时、任何连点，`isDark` 与类名都必须是对的。
 
