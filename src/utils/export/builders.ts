@@ -43,7 +43,9 @@ import type {
 
 /* ── AssetRef 组装 ───────────────────────────────────────────────── */
 
-const BODY_TERM_BLOCK_CAP = 28; // terms 超 400KB 时先收缩正文段数（api-contract §6）
+// 正文只索引前 16 块：2026-10-16 从 28 收缩，terms.json 回到 400KB 预算内并降单篇增速；
+// 口径记录在 api-contract §6（小程序仓库），改动必须两侧同步
+const BODY_TERM_BLOCK_CAP = 16;
 
 function photoName(filename: string): string {
   return (

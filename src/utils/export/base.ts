@@ -69,7 +69,8 @@ export function envelope<T>(
 /* ── 体积预算（gzip 前，单位字节）与断言 ──────────────────────────── */
 /* manifest / titles 两项为 M0 实测修订（原估算 4KB / 40KB 在 74 篇全量 +
  * resources 清单 + 拼音键的现实下不成立，实测 19.1KB / 46.3KB，留余量定档；
- * 端上真实流量以 gzip 后为准：manifest ≈ 4KB、titles ≈ 12KB） */
+ * titles 又于 2026-10-16 提至 64KB——48KB 只剩 261 字节，~750B/篇的实测增速
+ * 下篇必超。端上真实流量以 gzip 后为准：manifest ≈ 4KB、titles ≈ 12KB） */
 export const BUDGETS: Record<string, number> = {
   "manifest.json": 24 * 1024,
   "site.json": 6 * 1024,
@@ -82,16 +83,25 @@ export const BUDGETS: Record<string, number> = {
   "friends.json": 8 * 1024,
   "projects.json": 8 * 1024,
   "stats.json": 16 * 1024,
-  "search/titles.json": 48 * 1024,
+  "search/titles.json": 64 * 1024,
   "search/terms.json": 400 * 1024,
 };
+
+/** 预算用量超 80% 时构建警告（红线不变，只是提前暴露增长趋势） */
+const BUDGET_WARN_RATIO = 0.8;
 
 export function assertBudget(name: string, json: string): void {
   const budget = BUDGETS[name];
   if (budget === undefined) return;
-  if (Buffer.byteLength(json, "utf8") > budget) {
+  const bytes = Buffer.byteLength(json, "utf8");
+  if (bytes > budget) {
     throw new Error(
-      `[mp-export] ${name} 超出体积预算：${Buffer.byteLength(json, "utf8")} > ${budget} 字节（gzip 前）`
+      `[mp-export] ${name} 超出体积预算：${bytes} > ${budget} 字节（gzip 前）`
+    );
+  }
+  if (bytes > budget * BUDGET_WARN_RATIO) {
+    warnBuild(
+      `${name} 已用预算 ${((bytes / budget) * 100).toFixed(1)}%（${bytes}/${budget} 字节）——接近红线，新增内容前先评估口径或提档`
     );
   }
 }
