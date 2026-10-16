@@ -13,6 +13,7 @@
 /** GitHub 语言 → 官方语言色；未收录的语言由卡片回退到主题色。 */
 export const LANGUAGE_COLORS: Record<string, string> = {
   TypeScript: "#3178c6",
+  JavaScript: "#f1e05a",
 };
 
 /** Projects 页面卡片数据（构建期由 `projectStats.ts` 从 GitHub API 组装）。 */
@@ -67,4 +68,5 @@ export const projects: ProjectConfig[] = [
     name: "react-okr-tree",
     npmUrl: "https://www.npmjs.com/package/react-okr-tree",
   },
+  { name: "free-for-dev-zh" },
 ];
