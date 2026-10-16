@@ -7,7 +7,7 @@
 
 - **优先复用**：`Card`、`GalleryCard`、`GalleryEmbed`、`Header`、`Footer`、`Breadcrumb`、`LinkButton`、`Tag`、`Datetime`、`Pagination`、`Socials`、`ShareLinks`、`EditPost`、`BackToTopButton`。改 UI 前先查这些组件是否已满足需求。
 - **什么时候新建组件**：同一 UI 在 2 个以上页面复用，或组件内逻辑较复杂时；单页一次性的小片段直接写在页面里。
-- **组件形式**：全部使用 Astro Component（`.astro`）；不引入 React / Vue 等框架组件。客户端逻辑写在组件 `<script>` 内，遵循「`astro:page-load` 初始化 + `AbortController` 清理 + 幂等防重复（dataset 标记或 childElementCount 判断）」。
+- **组件形式**：全部使用 Astro Component（`.astro`）；不引入 React / Vue 等框架组件。客户端逻辑写在组件 `<script>` 内，遵循「`astro:page-load` 初始化 + `AbortController` 清理 + 幂等防重复（dataset 标记或 childElementCount 判断）」；已知例外：画廊 Lightbox 与 `GalleryEmbed` 走 `astro:after-swap`（见 `docs/pitfalls.md`）。
 - **放置位置**：可复用组件放 `src/components/`；图标用 `src/assets/icons/` 下的 SVG（Astro 内直接 import 使用）；页面独有样式写页面 `<style>`，跨页面共享样式进 `src/styles/`。
 - **Breadcrumb 返回键**：`Breadcrumb withBackButton` 的返回链接读取 `sessionStorage("backUrl")`，该值由 `Main.astro` / `index.astro` 写入（搜索页还追加 `?q=` 参数）；改动导航/返回相关逻辑前先了解这条数据流。
 

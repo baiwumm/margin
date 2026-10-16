@@ -13,7 +13,7 @@
 - **Markdown / MDX**：两者都支持；MDX 可直接写 JSX。文章目录（TOC）由标题自动生成并渲染在正文右侧吸顶栏（`src/components/TableOfContents.astro`），无需在正文添加标记；旧文章中的 `## Table of contents` 标记会被自动移除。
 - **代码块扩展语法**（已有约定）：`// [!code highlight]`、`// [!code ++]` / `// [!code --]`、`// [!code word]`；在代码围栏语言标识后追加 `file=文件名`（如 `ts file=example.ts`）可显示文件名徽章。
 - **图片**：本地图走 `astro:assets`（`Image` 组件，自动优化 / srcset / 格式转换）；远程图用普通 `<img>` 并带 alt；画廊图片通过 `import.meta.glob` 在构建期收集。文章卡片封面由 `SITE.showCoverImages` 控制（默认关闭），开启后按 `coverImage → ogImage → 动态 OG index.png` 的优先级取图。
-- **Gallery**：在 `src/data/galleries/<slug>/` 放 `index.md` + 图片；frontmatter 为 `title / description / pubDatetime / draft / coverImage / tags`；图片按文件名排序（数字前缀控制顺序），alt 由文件名自动生成。MDX 中用 `<GalleryEmbed slug="..." cols limit showLink />` 内嵌（无需 import，PostDetails 已全局注册），**slug 必须与画廊文件夹名完全一致**。画廊的完整技术文档见 [docs/galleries.md](./galleries.md)。
+- **Gallery**：在 `src/data/galleries/<slug>/` 放 `index.md` + 图片；frontmatter 为 `title / description / pubDatetime / draft / coverImage / tags`；图片按文件名排序（数字前缀控制顺序），alt 由文件名自动生成。MDX 中用 `<GalleryEmbed slug="..." cols limit showLink />` 内嵌（`PostDetails` 渲染 MDX 时经 `components` 注入，无需再 import），**slug 必须与画廊文件夹名完全一致**。画廊的完整技术文档见 [docs/galleries.md](./galleries.md)。
 - **Tags / Categories**：只有 Tags，无 Categories；标签页自动生成，新标签无需额外配置。
 - **Draft**：`draft: true` 在构建产物中隐藏（列表 / 详情 / RSS / sitemap），dev 下可见；定时发布按 `SITE.timezone` + `scheduledPostMargin`（15 分钟）计算。
 

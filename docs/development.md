@@ -22,12 +22,26 @@
 # Architecture
 
 - 布局三层：`Layout.astro`（唯一根布局：head / SEO / 主题初始化 / 全局 backdrop / 全局 SearchModal）→ `Main` / `PostDetails` / `AboutLayout` → 各页面。新页面必须经过 `Layout`。
-- 页面全部在 `src/pages` 静态生成：文章 `/posts/<slug>/`、画廊 `/galleries/<slug>/`、标签 `/tags/<tag>/`、分页 `/posts/2/` 等；另有 `rss.xml`、`robots.txt`、`og.png` 等端点。
+- 页面全部在 `src/pages` 静态生成：文章 `/posts/<slug>/`、画廊 `/galleries/<slug>/`、标签 `/tags/<tag>/`、分页 `/posts/2/`、友链 `/friends`、朋友圈 `/moments` 等；端点另有 `rss.xml`、`robots.txt`、`og.png`、`version.json`、`comment-titles.json` 与 `api/`。
 - 内容与代码分离：文章/画廊在 `src/data`，schema 在 `src/content.config.ts`，路由不感知具体内容文件。
 - 工具函数集中在 `src/utils`（排序 / 过滤 / slug / 路径 / OG / 阅读时间 / 音频 store）。
-- 客户端脚本全部写在 Astro 组件 `<script>` 内，统一模式：`astro:page-load` 初始化 + `AbortController` 清理 + 防重复绑定（View Transitions 兼容）。
+- 客户端脚本默认写在 Astro 组件 `<script>` 内，统一模式：`astro:page-load` 初始化 + `AbortController` 清理 + 防重复绑定（View Transitions 兼容）。**已知例外**：画廊 Lightbox（`src/pages/galleries/[gallery].astro`）与 `src/components/GalleryEmbed.astro` 挂在 `astro:after-swap` 上，见 `docs/pitfalls.md`。
 - 全局配置在 `src/config.ts` 的 `SITE`（含所有功能开关）；社交链接与「编辑本文」URL 来自环境变量 `PUBLIC_*`，禁止硬编码。
 - 搜索链路：`pnpm build` 时 `pagefind --site dist` → 拷贝到 `public/pagefind` → 浏览器端 PagefindUI 消费。
+
+# 关联项目（Ecosystem）
+
+margin 不是孤立仓库：内容被 **margin-app**（微信小程序）消费，评论通知依赖 **margin-comments**。两者均为同一作者的独立仓库：[github.com/baiwumm/margin-comments](https://github.com/baiwumm/margin-comments)（公开）；margin-app 为**私有仓库**（GitHub 上无法匿名访问，需本地克隆权限），契约文件为其仓内的 `docs/api-contract.md`（本仓代码注释中的 api-contract §N 均指向它）。
+
+| 触点 | margin 侧 | 对方 |
+| --- | --- | --- |
+| 导出管线（构建期） | `src/utils/export/`（10 个模块；类型定义 `export/types.ts` 与 api-contract 一一对应） | margin-app 拉取导出产物展示全量内容 |
+| 站点配置端点 | `src/pages/api/v1/site.json.ts`（api-contract §2，构建期落盘静态 JSON） | margin-app |
+| 评论标题映射 | `src/pages/comment-titles.json.ts` → 部署后 `https://baiwumm.com/comment-titles.json`（仅博客、与列表/详情同口径过滤草稿与定时文） | margin-comments 的 giscus 评论通知脚本查真实标题（discussion.title 只有 path） |
+| Markdown 插件 | `remarkVideo.ts` / `remarkMusic.ts` / `remarkLinkCard.ts` / `music.ts` | 插件本体与小程序导出层共用同一解析实现 |
+| 免责声明文案 | `src/pages/disclaimer.astro` | 与小程序端 pagesB/disclaimer 同文案逐句对齐（端上自指词除外） |
+
+**同步规则**：凡改动上述触点的数据形态（schema、字段、排序口径、图片格式清单、URL 形态），必须先评估 margin-app / margin-comments 是否需要同步改动，评估结论写进交付说明；对齐锚点是 api-contract 的分节号（§2 / §6 等）与 `export/builders.ts` 顶部注释。
 
 # Directory Structure
 
@@ -42,10 +56,10 @@ src/
   data/blog/           # 文章 .md / .mdx（扁平存放）
   data/galleries/      # 每个画廊一个文件夹：index.md + 图片
   layouts/             # Layout / Main / PostDetails / AboutLayout
-  pages/               # 路由页面与端点（og / rss / robots）
+  pages/               # 路由页面与端点（含 moments/、friends、api/）
   components/          # 可复用 Astro 组件
-  styles/              # global.css（tokens / 搜索样式）、typography.css（app-prose）
-  utils/               # 内容处理、OG 生成、音频 store、工具
+  styles/              # global.css（tokens / 搜索样式）、typography.css（app-prose）、hero-aurora.css（Aurora hero）
+  utils/               # 内容处理、OG 生成、音频 store、小程序导出管线（export/）、工具
   scripts/theme.ts     # 主题切换逻辑
 public/                # 静态资源（favicon / og / audio）；pagefind 生成物不入库
 astro.config.ts        # 站点 / 集成 / Markdown / Shiki / 字体 / env schema

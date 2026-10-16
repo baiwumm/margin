@@ -1,5 +1,6 @@
 # Feature: Image Galleries
 
+> 中文导读：本篇是画廊功能的完整技术文档（英文）。使用层面——创建画廊、`GalleryEmbed` 嵌入、图片命名——见 [AGENTS.md](../AGENTS.md) 与 [docs/content.md](./content.md)；本文聚焦实现细节与数据流。  
 > Technical documentation for the **Galleries** feature, implemented on 17/02/2026.  
 > Reference: [astro-paper issue #553](https://github.com/satnaing/astro-paper/issues/553)
 
@@ -118,6 +119,8 @@ const allImages = import.meta.glob<{ default: ImageMetadata }>(
 );
 ```
 
+> The extension list above is illustrative; the **authoritative** copy lives in `docs/pitfalls.md` (the list is duplicated in 4 rendering files plus 2 export-pipeline globs).
+
 ### Why `eager: true`
 
 Astro/Vite requires that globs for images processed by `<Image />` be static and resolved at compile time. With `eager: true`, all modules are imported immediately and Vite generates the metadata (`width`, `height`, optimized `src`) for each image. Without `eager`, `ImageMetadata` would not be available to pass to the `<Image />` component.
@@ -167,6 +170,8 @@ When there is no explicit alt metadata, the alt text is derived from the **filen
 002_fuji_mountain.png   →  "Fuji Mountain"
 IMG_4532.JPG            →  "IMG 4532"  (falls back to gallery title if empty)
 ```
+
+> The `IMG_4532` row only demonstrates the fallback behaviour. Per `docs/content.md`, never keep original camera filenames in real galleries — rename to semantic names first.
 
 Responsible function (`filenameToAlt` in `[gallery].astro`):
 
@@ -403,7 +408,7 @@ Grid and lightbox styles are **scoped** inside `<style>` in `[gallery].astro`. G
 
 1. **Static glob**: `import.meta.glob` requires a literal string at compile time. It is not possible to make the glob dynamic per gallery — that is why a global glob over all galleries is used and then filtered at build runtime.
 
-2. **Uppercase extensions**: the glob includes variants `.JPG`, `.JPEG`, `.PNG`, `.WEBP` to cover photos exported from cameras/phones. If a new format is added (e.g. converted `.HEIC`), it must be manually added to the glob in **both** pages (`index.astro` and `[gallery].astro`).
+2. **Uppercase extensions**: the glob includes variants `.JPG`, `.JPEG`, `.PNG`, `.WEBP` to cover photos exported from cameras/phones. Adding or changing the format list means editing the gallery image glob in **four places**: `src/pages/galleries/index.astro`, `src/pages/galleries/[gallery].astro`, `src/components/Card.astro` and `src/components/GalleryEmbed.astro` — the authoritative list lives in `docs/pitfalls.md`. (`src/pages/moments/index.astro` keeps its own separate glob for moment photos under `/src/data/moments/`.)
 
 3. **No pagination on detail page**: if a gallery has many images (>100), all of them are rendered in the HTML. For very large galleries, pagination or infinite scroll would need to be implemented.
 
@@ -414,6 +419,8 @@ Grid and lightbox styles are **scoped** inside `<style>` in `[gallery].astro`. G
 ---
 
 ## Future extensions
+
+> Everything in this section is a **proposal — not implemented** unless it carries a ✅ marker. Verify against the current code before relying on any entry.
 
 ### A. `images` field in frontmatter for explicit alt text
 

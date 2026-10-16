@@ -11,8 +11,6 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-38bdf8)
 ![pnpm](https://img.shields.io/badge/pnpm-12-f69220)
 
-![首页预览](screenshots/home.webp)
-
 ## ✨ 特性
 
 - 终端 / 赛博朋克视觉：Aurora 光效、玻璃拟态、网格 + 噪点背景、鼠标辉光
@@ -26,7 +24,7 @@
 
 ## 🛠️ 技术栈
 
-Astro 6（SSG）· TypeScript（strict）· Tailwind CSS 4 · MDX · Shiki 代码高亮 · Pagefind · Satori · dayjs · pnpm
+Astro 7（SSG）· TypeScript（strict）· Tailwind CSS 4 · MDX · Shiki 代码高亮 · Pagefind · Satori · dayjs · pnpm
 
 ## 🚀 开发
 
@@ -54,9 +52,9 @@ src/
   data/blog/        # 文章（.md / .mdx）
   data/galleries/   # 画廊（每目录一个，含 index.md + 图片）
   layouts/          # Layout / Main / PostDetails / AboutLayout
-  pages/            # 路由与端点（og / rss / robots）
+  pages/            # 路由与端点（og / rss / robots / version.json 等，含 moments、friends）
   styles/           # global.css / typography.css / hero-aurora.css
-  utils/            # 内容处理、OG 生成、工具函数
+  utils/            # 内容处理、OG 生成、小程序导出管线（export/）、工具函数
 astro.config.ts     # 站点配置、字体、Shiki、集成
 ```
 
@@ -69,7 +67,7 @@ astro.config.ts     # 站点配置、字体、Shiki、集成
 | 斜体 / 装饰          | Sriracha                                  |
 | OG 图（构建期）      | Wotfard + Maple Mono CN（TTF）            |
 
-字体统一存放在 `public/giscus/fonts/`，主站与 Giscus 评论共用一份，避免重复。
+主站与 Giscus 评论共用 `public/giscus/fonts/` 下的字体（由 Layout 内联加载，避免重复请求）；Wotfard 与 OG 构建期 TTF 位于 `src/assets/fonts/`，由 `astro.config.ts` 注册。
 
 ## 📝 写内容
 

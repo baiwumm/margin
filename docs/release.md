@@ -5,7 +5,7 @@
 
 # 提交规则
 
-- 提交信息使用 Conventional Commits 格式（与 `cz.yaml` 的 commitizen 约定一致）：`类型: 描述`，类型如 `feat` / `fix` / `docs` / `refactor` / `style` / `chore` 等。
+- 提交信息使用 Conventional Commits 格式（与根 `cz.yaml` 的 commitizen 约定一致）：`类型: 描述`，类型如 `feat` / `fix` / `docs` / `refactor` / `style` / `chore` 等。
 - **提交描述以中文优先**：用简洁中文一句话说明改动，例如 `fix: 修复搜索弹窗在移动端无法关闭的问题`。
 - 有明确作用域时写 `类型(scope): 描述`（如 `docs(agents): ...`），无作用域时省略。
 - 一次提交只包含一个逻辑改动，不把无关改动混入同一提交。
