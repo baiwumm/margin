@@ -112,4 +112,4 @@ MDX 内嵌画廊（无需 import）：
 
 ## 📄 License
 
-基于 [AstroPaper](https://github.com/satnaing/astro-paper)（MIT）二次开发。
+[MIT](LICENSE) © baiwumm · 基于 [AstroPaper](https://github.com/satnaing/astro-paper)（MIT）二次开发。
