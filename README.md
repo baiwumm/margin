@@ -110,6 +110,19 @@ MDX 内嵌画廊（无需 import）：
 - 社交链接与 Giscus 评论参数来自环境变量（不硬编码个人数据）：复制 `.env.example` 为 `.env` 并填写；未设置的项自动隐藏对应入口
 - Giscus 需配置 `PUBLIC_GISCUS_REPO` / `PUBLIC_GISCUS_REPO_ID` / `PUBLIC_GISCUS_CATEGORY` / `PUBLIC_GISCUS_CATEGORY_ID`，并在 `SITE.comments.enabled` 开启
 
+## 📱 扫码体验
+
+Margin 的微信小程序阅读端（[margin-app](https://github.com/baiwumm/margin-app)），内容与本站同源（构建期导出管线），微信扫码即用：
+
+| 微信小程序 | 微信公众号 |
+| --- | --- |
+| ![微信小程序码](docs/images/miniprogram-qr.jpg) | ![微信公众号二维码](docs/images/official-account-qr.jpg) |
+
+## 🧩 相关项目
+
+- [margin-app](https://github.com/baiwumm/margin-app) —— 微信小程序阅读端（Taro + React），内容与本站同源，见上方扫码体验
+- [margin-comments](https://github.com/baiwumm/margin-comments) —— Giscus 评论配置与通知（嵌入域名白名单、评论邮件通知 Action）
+
 ## 📄 License
 
 [MIT](LICENSE) © baiwumm · 基于 [AstroPaper](https://github.com/satnaing/astro-paper)（MIT）二次开发。
