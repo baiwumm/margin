@@ -1,0 +1,37 @@
+name: Image Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: 校验变更图片已压缩
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="origin/${{ github.base_ref }}"
+          else
+            base="${{ github.event.before }}"
+          fi
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            base="HEAD~1"
+          fi
+          files=$(git diff --name-only "$base..HEAD" 2>/dev/null | grep -iE '\.(jpe?g|png|webp)$' | grep '^src/data/' || true)
+          if [ -z "$files" ]; then
+            echo "本次无变更图片，跳过校验"
+            exit 0
+          fi
+          # shellcheck disable=SC2086
+          node scripts/compress-images.mjs --check $files
