@@ -23,6 +23,8 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "lint": "eslint .",
+    "images": "node scripts/compress-images.mjs",
+    "hooks": "git config core.hooksPath scripts/githooks",
     "release": "release-it"
   },
   "dependencies": {
