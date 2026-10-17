@@ -112,7 +112,7 @@ MDX 内嵌画廊（无需 import）：
 
 ## 📱 扫码体验
 
-Margin 的微信小程序阅读端（[margin-app](https://github.com/baiwumm/margin-app)），内容与本站同源（构建期导出管线），微信扫码即用：
+Margin 的微信小程序阅读端（[margin-app](https://github.com/baiwumm/margin-app)），内容与本站同源（构建期导出管线），微信扫码即用。版本两轴独立（小程序 2.x / 站点 v1.x），接口兼容以本站 API v1 契约（`schemaVersion: 1`）为准：
 
 | 微信小程序 | 微信公众号 |
 | --- | --- |
