@@ -1,0 +1,15 @@
+#!/bin/sh
+# pre-commit：暂存图片先压缩再提交（启用：pnpm hooks，即 git config core.hooksPath scripts/githooks）
+# 只处理 src/data 下的 jpg/jpeg/png/webp；脚本幂等，超限拦截策略见 scripts/compress-images.mjs 头注释。
+staged=$(git diff --cached --name-only --diff-filter=ACMR | grep -iE '\.(jpe?g|png|webp)$' | grep '^src/data/')
+if [ -z "$staged" ]; then
+  exit 0
+fi
+
+echo "images: 检测到暂存图片，先压缩…"
+# 文件名由图片命名规范约束（数字前缀 + 语义化短名，无空格），按词拆分安全
+# shellcheck disable=SC2086
+node scripts/compress-images.mjs $staged || exit 1
+
+git add -- $staged
+echo "images: 压缩完成，已重新暂存"
