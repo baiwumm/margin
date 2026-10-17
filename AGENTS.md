@@ -2,7 +2,7 @@
 
 Margin（原 Devosfera）：基于 AstroPaper 深度二次开发的个人博客（纯静态站点，作者：白雾茫茫丶，域名：https://baiwumm.com）。项目定位是「个人技术博客 + 图片画廊」，当前主要目标是在保持静态生成、页面性能与既有视觉体系（终端/赛博朋克风格、玻璃拟态、Aurora 光效）的前提下，持续扩展和维护博客内容、画廊、全局搜索、SEO 与 OG 图等既有能力，不做架构性重写。
 
-关键事实：提交历史较短（版本 tag 自 `v1.1.0` 起，可回退）、无自动化测试；唯一 CI 是手动触发的发版 workflow（`.github/workflows/release.yml`：lint / build 预检 + release-it 自动完成版本号、CHANGELOG、tag 与 GitHub Release 发布，不负责部署）；改动质量依赖 `astro check` + 构建与人工验证。本项目处于「先理解、后修改」的长期 AI 协作模式。
+关键事实：提交历史较短（版本 tag 自 `v1.1.0` 起，可回退）、无自动化测试；CI 有两个——手动触发的发版 workflow（`.github/workflows/release.yml`：lint / build 预检 + release-it 自动完成版本号、CHANGELOG、tag 与 GitHub Release 发布，不负责部署）与 push/PR 触发的图片压缩校验 workflow（`.github/workflows/image-check.yml`，兜底 pre-commit 钩子）；改动质量依赖 `astro check` + 构建与人工验证。本项目处于「先理解、后修改」的长期 AI 协作模式。
 
 # 修改原则
 
@@ -45,6 +45,6 @@ Margin（原 Devosfera）：基于 AstroPaper 深度二次开发的个人博客�
 - 新增依赖前先按修改原则 6 征得同意；不引入 React / Vue 等框架组件、不引入新 UI / 图标库，全部组件保持 Astro Component（→ docs/development.md、docs/ui-guidelines.md）。
 - 调试用的 `console.log` 交付前删除干净（ESLint `no-console` 为 error）（→ docs/ui-guidelines.md）。
 - 新页面必须经过 `Layout.astro`；客户端脚本默认遵循「`astro:page-load` 初始化 + `AbortController` 清理 + 幂等防重复」，已知例外见 `docs/pitfalls.md`（→ docs/development.md）。
-- 创作内容时 AI 负责生成 title / description / tags、按规范命名文章与图片文件（→ docs/content.md）。
+- 创作内容时 AI 负责生成 title / description / tags、按规范命名文章与图片文件，且新增 / 替换图片必须先压缩（`pnpm images`；pre-commit 自动执行、CI 兜底）（→ docs/content.md）。
 - 搜索索引只在 build 后存在：改动正文结构或 Pagefind 标记后必须跑 `pnpm run build` 验证（→ docs/pitfalls.md）。
 - 涉及样式 / 交互的改动，人工验证 light / dark 双主题与移动端表现（→ docs/ui-guidelines.md）。

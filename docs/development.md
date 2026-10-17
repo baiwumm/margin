@@ -75,6 +75,8 @@ astro.config.ts        # 站点 / 集成 / Markdown / Shiki / 字体 / env schem
 - Lint：`pnpm run lint`
 - Format 检查 / 格式化：`pnpm run format:check` / `pnpm run format`
 - 直接调用 Astro CLI：`pnpm run astro`
+- 图片压缩：`pnpm images`（全量幂等，有收益才回写；pre-commit 对暂存图片自动执行，`--check` 干跑用于 CI）
+- 启用 git 钩子：`pnpm hooks`（`core.hooksPath` → `scripts/githooks`，克隆后执行一次）
 
 注意：`format` 会格式化整个项目，日常改动不要整仓执行，只格式化改动的文件。
 
