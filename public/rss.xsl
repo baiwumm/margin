@@ -20,23 +20,27 @@
         <link rel="stylesheet" href="/giscus/fonts/maple-mono-cn/maple-mono-cn.css" />
         <style>
           :root {
-            --background: #f2f5ec;
-            --foreground: #353538;
-            --muted: #bbc789;
+            --background: #f5f5f3;
+            --foreground: #303036;
+            --muted: #e4e4e1;
             --border: #7cadff;
             --accent: #1158d1;
-            --glow-1: rgba(124, 58, 237, 0.14);
-            --glow-2: rgba(17, 88, 209, 0.12);
           }
           @media (prefers-color-scheme: dark) {
             :root {
-              --background: #10131a;
+              --background: #0b0b0b;
               --foreground: #f6f7f8;
-              --muted: #212f3f;
+              --muted: #1a1d22;
               --border: #2264e3;
               --accent: #008fec;
-              --glow-1: rgba(167, 139, 250, 0.22);
-              --glow-2: rgba(0, 143, 236, 0.18);
+            }
+          }
+          /* 浅色 = 纸上的终端：与站点一致的工程方格纸纹理 */
+          @media (prefers-color-scheme: light) {
+            body {
+              background-image: linear-gradient(rgba(11, 11, 11, 0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(11, 11, 11, 0.018) 1px, transparent 1px);
+              background-size: 24px 24px;
             }
           }
           * {
@@ -63,16 +67,24 @@
             height: 520px;
             top: -160px;
             right: -120px;
-            background: linear-gradient(140deg, #a78bfa, #ec4899);
-            opacity: var(--glow-1);
+            background: radial-gradient(
+              circle,
+              color-mix(in srgb, var(--accent) 20%, transparent),
+              transparent 70%
+            );
+            opacity: 1;
           }
           .a2 {
             width: 460px;
             height: 460px;
             bottom: -140px;
             left: -120px;
-            background: linear-gradient(140deg, #3b82f6, #6366f1);
-            opacity: var(--glow-2);
+            background: radial-gradient(
+              circle,
+              color-mix(in srgb, var(--border) 14%, transparent),
+              transparent 70%
+            );
+            opacity: 1;
           }
           .container {
             position: relative;
