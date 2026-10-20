@@ -1,201 +1,79 @@
 import satori from "satori";
 import { SITE } from "@/config";
 import loadGoogleFonts from "../loadGoogleFont";
+import {
+  COVER,
+  coverRoot,
+  coverTopBar,
+  coverKicker,
+  coverSatoriOptions,
+} from "./frame";
 
 export default async () => {
-  // Get the clean hostname (e.g. mydomain.com)
   const hostname = new URL(SITE.website).hostname;
 
   return satori(
     {
       type: "div",
       props: {
-        style: {
-          height: "100%",
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#0f172a", // Dark background (Slate 900)
-          backgroundImage:
-            "radial-gradient(circle at 25px 25px, #1e293b 2%, transparent 0%), radial-gradient(circle at 75px 75px, #1e293b 2%, transparent 0%)", // Subtle dot pattern (optional, delete if you don't like it)
-          backgroundSize: "100px 100px",
-          color: "white",
-          position: "relative",
-        },
+        style: coverRoot(),
         children: [
-          // 1. Top Right Decorative Gradient (Purple)
-          {
-            type: "div",
-            props: {
-              style: {
-                position: "absolute",
-                top: "-150px",
-                right: "-50px",
-                width: "600px",
-                height: "600px",
-                background: "linear-gradient(140deg, #a855f7, #ec4899)", // Purple to Pink
-                filter: "blur(120px)",
-                opacity: 0.3,
-                borderRadius: "100%",
-              },
-            },
-          },
-          // 2. Bottom Left Decorative Gradient (Indigo)
-          {
-            type: "div",
-            props: {
-              style: {
-                position: "absolute",
-                bottom: "-150px",
-                left: "-50px",
-                width: "500px",
-                height: "500px",
-                background: "linear-gradient(140deg, #3b82f6, #6366f1)", // Blue to Indigo
-                filter: "blur(120px)",
-                opacity: 0.3,
-                borderRadius: "100%",
-              },
-            },
-          },
-
-          // 3. Central Container
+          coverTopBar(hostname, new Date().getFullYear()),
           {
             type: "div",
             props: {
               style: {
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
-                padding: "40px",
-                width: "90%",
+                marginTop: 80,
               },
               children: [
-                // Site Title (HERO)
-                {
-                  type: "h1",
-                  props: {
-                    style: {
-                      fontSize: 100, // Very large
-                      fontWeight: 900,
-                      fontFamily: "Maple Mono CN",
-                      letterSpacing: "-2px",
-                      color: "white",
-                      margin: "0 0 20px 0",
-                      // wotfard 内容高度约 1.225em，行高 1 会裁掉 descender（如 g 的下伸部分）
-                      lineHeight: 1.3,
-                      textShadow: "0 4px 20px rgba(0,0,0,0.5)",
-                    },
-                    children: SITE.title.split("·")[0].trim(),
-                  },
-                },
-
-                // Small separator line
+                coverKicker("cd ~"),
                 {
                   type: "div",
                   props: {
                     style: {
-                      width: "80px",
-                      height: "6px",
-                      backgroundColor: "#818cf8", // Indigo Accent
-                      borderRadius: "4px",
-                      marginBottom: "30px",
+                      fontFamily: COVER.font,
+                      fontSize: 176,
+                      lineHeight: 1.15,
+                      color: COVER.fg,
+                      marginTop: 40,
                     },
+                    children: SITE.title.split("·")[0].trim(),
                   },
                 },
-
-                // Site description
                 {
-                  type: "p",
+                  type: "div",
                   props: {
                     style: {
+                      fontFamily: COVER.font,
                       fontSize: 36,
-                      fontFamily: "Maple Mono CN",
-                      color: "#cbd5e1", // Slate 300 (light gray)
-                      maxWidth: "80%", // So it doesn't stretch too much to the sides
-                      margin: 0,
-                      lineHeight: 1.4,
-                      fontWeight: 400,
+                      lineHeight: 1.55,
+                      color: COVER.desc,
+                      marginTop: 32,
+                      width: "94%",
                     },
                     children: SITE.desc,
-                  },
-                },
-
-                // Author
-                {
-                  type: "p",
-                  props: {
-                    style: {
-                      display: "flex",
-                      alignItems: "center",
-                      fontSize: 26,
-                      fontFamily: "Maple Mono CN",
-                      color: "#94a3b8",
-                      margin: "28px 0 0 0",
-                      lineHeight: 1.4,
-                      fontWeight: 400,
-                    },
-                    children: [
-                      "Written by ",
-                      {
-                        type: "span",
-                        props: {
-                          style: {
-                            fontWeight: "bold",
-                            color: "white",
-                            marginLeft: "6px",
-                          },
-                          children: SITE.author,
-                        },
-                      },
-                    ],
                   },
                 },
               ],
             },
           },
-
-          // 4. Footer: Site URL (Pill design)
           {
             type: "div",
             props: {
               style: {
-                position: "absolute",
-                bottom: "50px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-                padding: "12px 30px",
-                borderRadius: "100px",
+                fontFamily: COVER.font,
+                fontSize: 26,
+                letterSpacing: 4,
+                color: COVER.muted,
               },
-              children: {
-                type: "span",
-                props: {
-                  style: {
-                    fontSize: 24,
-                    fontFamily: "Maple Mono CN",
-                    color: "#94a3b8", // Subtle text
-                    fontWeight: 600,
-                    letterSpacing: "1px",
-                  },
-                  children: hostname,
-                },
-              },
+              children: SITE.author,
             },
           },
         ],
       },
     },
-    {
-      width: 1200,
-      height: 630,
-      embedFont: true,
-      fonts: await loadGoogleFonts(SITE.title + SITE.desc + hostname),
-    }
+    coverSatoriOptions(await loadGoogleFonts())
   );
 };

@@ -20,7 +20,7 @@ export const SITE = {
   profile: getEnv("PUBLIC_SOCIAL_GITHUB"), // set in .env
   desc: "边白 · 记录代码、思考与灵感",
   title: "Margin",
-  ogImage: "default-og.webp", // located in the public folder
+  ogImage: "og.png", // 非文章页分享卡：构建期动态生成的站点 OG（src/pages/og.png.ts）；文章页默认用每篇的动态 OG，frontmatter ogImage 优先
   lightAndDarkMode: true,
   postPerIndex: 6,
   postPerPage: 12,
