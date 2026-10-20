@@ -17,5 +17,5 @@
 - **提交历史较短**：版本 tag 自 `v1.1.0` 起，重大改动前建议先提交或备份当前状态。
 - **pnpm 原生依赖构建白名单**：`pnpm-workspace.yaml` 的 `allowBuilds` / `onlyBuiltDependencies` 已放行 esbuild 与 sharp；新增带原生构建脚本的依赖时必须同步该白名单（且按 AGENTS.md「修改原则」先征得用户同意）。
 - **tsconfig 中的 `jsx: "react-jsx"` 是上游遗留**（项目无 React 依赖），不要据此引入 React 组件。
-- 不要删除 `public/` 下被页面引用的资源（favicon、`default-og.webp`、`audio/` 等）。
+- 不要删除 `public/` 下被页面引用的资源（favicon、`audio/` 等）。`default-og.webp` 已随 OG 动态化退役删除（2026-10-20，`SITE.ogImage` 改指 `/og.png`），勿再恢复。
 - **画廊 Lightbox / GalleryEmbed 走的是 `astro:after-swap`，不是统一模式**：`src/pages/galleries/[gallery].astro` 与 `src/components/GalleryEmbed.astro` 的脚本挂在 `astro:after-swap` 上（画廊列表页 `galleries/index.astro` 用的是 `astro:page-load`）；不要按「统一模式」把它们改写掉，否则 View Transitions 切换后可能不初始化。
