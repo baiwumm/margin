@@ -40,7 +40,7 @@ Margin（原 Devosfera）：基于 AstroPaper 深度二次开发的个人博客�
 
 以下规则违反代价最高，始终生效（细节见对应专题文档）：
 
-- 全站只用中文：界面文案、内容、元信息、日期一律中文；提交信息也是中文优先（→ docs/content.md、docs/release.md）。
+- 全站只用中文：内容、元信息、日期一律中文；提交信息也是中文优先。**例外（2026-10-20 拍板，特意设计）**：导航等界面术语保留英文（Posts / About / Projects / Friends / Archives / Galleries / Moments / Search），属双语视觉语言，勿将其「中文化」；新增界面文案仍优先中文（→ docs/content.md、docs/release.md）。
 - 不硬编码个人数据：社交链接、编辑 URL 一律走 `PUBLIC_*` 环境变量（→ docs/content.md）。
 - 新增依赖前先按修改原则 6 征得同意；不引入 React / Vue 等框架组件、不引入新 UI / 图标库，全部组件保持 Astro Component（→ docs/development.md、docs/ui-guidelines.md）。
 - 调试用的 `console.log` 交付前删除干净（ESLint `no-console` 为 error）（→ docs/ui-guidelines.md）。

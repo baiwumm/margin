@@ -19,7 +19,7 @@
 
 # Content Guidelines
 
-- 本项目只用中文：界面文案、内容、元信息、日期一律使用中文（`SITE.lang` 为 `zh-CN`），不要新增英文界面文案；注意 `archives` 页月份名此前为硬编码西班牙语，现已改为中文，改动时保持中文；提交信息按「提交规则」以中文优先（见 [docs/release.md](./release.md)）。
+- 本项目只用中文：内容、元信息、日期一律使用中文（`SITE.lang` 为 `zh-CN`），提交信息按「提交规则」以中文优先（见 [docs/release.md](./release.md)）。**例外（2026-10-20 拍板，特意设计）**：导航等界面术语保留英文（Posts / About / Projects / Friends / Archives / Galleries / Moments / Search），属双语视觉语言，勿将其「中文化」；新增界面文案仍优先使用中文。注意 `archives` 页月份名此前为硬编码西班牙语，现已改为中文，改动时保持中文。
 - 不硬编码个人数据：社交链接、编辑 URL 一律走 `PUBLIC_*` 环境变量；作者名等默认值来自 `SITE`。
 - MDX 允许自定义 JSX（已有先例），类名使用 Tailwind 语义类或组件 `<style>`，不要引入内联样式库。
 - `GalleryEmbed` 的 slug 必须与 `src/data/galleries/` 下的文件夹名完全一致；引用不存在的 slug 会渲染错误提示块。
