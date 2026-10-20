@@ -87,7 +87,7 @@ function reflectPreference(): void {
 
 // Favicon 与页头 logo 同源。外框深浅跟随「浏览器」而不是站点的 data-theme，
 // 因为标签页底色由浏览器决定；版心块烤入当前 accent。色值镜像 src/styles/global.css。
-const FAVICON_FG_LIGHT = "#353538";
+const FAVICON_FG_LIGHT = "#303036";
 const FAVICON_FG_DARK = "#f6f7f8";
 const FAVICON_FALLBACK_ACCENT = "#008fec";
 

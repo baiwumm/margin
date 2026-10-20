@@ -120,6 +120,11 @@
   );
 }
 
+/* 浅色 = 打印稿：去掉 CRT 磷光光晕，标题保持锐利墨印 */
+html[data-theme="light"] .glow-text {
+  filter: none;
+}
+
 .hero-badge {
   display: inline-flex;
   align-items: center;
