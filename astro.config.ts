@@ -46,7 +46,8 @@ export default defineConfig({
     }),
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
-      themes: { light: "github-light", dark: "github-dark" },
+      // Atom One 系：终端编辑器血统，呼应全站终端风（底色由 typography.css 对齐站点中性色）
+      themes: { light: "one-light", dark: "one-dark-pro" },
       defaultColor: false,
       wrap: false,
       transformers: [
