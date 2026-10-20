@@ -233,11 +233,89 @@
   }
 
   .astro-code {
-    @apply flex border bg-(--shiki-light-bg) text-(--shiki-light) outline-border [&_span]:text-(--shiki-light);
+    /* 底色不用 shiki 主题自带背景（github 系与站内终端黑/石灰纸白不搭），改用站点对齐的中性底；
+       token 配色仍取 shiki 变量（--shiki-*-fg/span 色值按 github 主题渲染） */
+    @apply flex border bg-white text-(--shiki-light) outline-border [&_span]:text-(--shiki-light);
   }
 
   html[data-theme="dark"] .astro-code {
-    @apply bg-(--shiki-dark-bg) text-(--shiki-dark) [&_span]:text-(--shiki-dark);
+    @apply bg-[#121212] text-(--shiki-dark) [&_span]:text-(--shiki-dark);
+  }
+
+  /* Mac 窗口风格：包装层由 PostDetails 的 attachCopyButtons 注入（.code-window），
+     圆角与标题栏（红黄绿灯 / 语言标签 / 文件名徽章）挂在本层伪元素与徽章上，
+     不随代码横向滚动。无 JS 时优雅降级为普通卡片。 */
+  .code-window {
+    position: relative;
+    border-radius: 12px;
+  }
+
+  .code-window .astro-code {
+    border-radius: 12px;
+    padding-top: 48px;
+  }
+
+  .code-window::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 36px;
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--foreground) 8%, transparent);
+    background-color: color-mix(in srgb, var(--foreground) 3%, transparent);
+    border-radius: 12px 12px 0 0;
+    pointer-events: none;
+  }
+
+  /* 红黄绿灯：真实元素圆角绘制，避免渐变硬边锯齿 */
+  .code-window .traffic-lights {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 36px;
+    width: 76px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 18px;
+    pointer-events: none;
+  }
+
+  .code-window .traffic-lights i {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .code-window .traffic-lights i:nth-child(1) {
+    background: #ff5f57;
+  }
+
+  .code-window .traffic-lights i:nth-child(2) {
+    background: #febc2e;
+  }
+
+  .code-window .traffic-lights i:nth-child(3) {
+    background: #28c840;
+  }
+
+  .code-window::after {
+    content: attr(data-language);
+    position: absolute;
+    top: 0;
+    left: 76px;
+    height: 36px;
+    line-height: 36px;
+    font-size: 12px;
+    color: color-mix(in srgb, var(--foreground) 55%, transparent);
+    pointer-events: none;
+  }
+
+  /* 有文件名徽章时语言标签让位（同处标题栏左侧） */
+  .code-window:has(.file-name-label)::after {
+    content: none;
   }
 
   /* Styles for Shiki transformers */
@@ -250,7 +328,7 @@
       @apply relative inline-block w-full bg-red-500/20 before:absolute before:-left-3 before:text-red-500 before:content-['-'];
     }
     .line.highlighted {
-      @apply inline-block w-full bg-slate-400/20;
+      @apply inline-block w-full bg-accent/15;
     }
     .highlighted-word {
       @apply rounded-sm border border-border px-0.5 py-px;

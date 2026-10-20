@@ -274,7 +274,7 @@ const nextPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
       <article
         id="article"
         data-copy-notice={copyNotice}
-        class="app-prose w-full max-w-app min-w-0 prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
+        class="app-prose w-full max-w-app min-w-0"
       >
         <Content components={{ GalleryEmbed, Music, Video }} />
       </article>
@@ -472,7 +472,10 @@ const nextPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
   }
 
   /** Attaches copy buttons to code blocks in the document,
-   * allowing users to copy code easily. */
+   * allowing users to copy code easily.
+   * 同时给块套上 .code-window 包装层：Mac 窗口风格的圆角与标题栏
+   * （红黄绿灯 / 语言标签）由 typography.css 挂在该层伪元素上，
+   * 不随代码横向滚动。 */
   function attachCopyButtons() {
     const copyButtonLabel = "Copy";
     const codeBlocks = Array.from(document.querySelectorAll("pre")).filter(
@@ -480,21 +483,22 @@ const nextPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
     );
     if (codeBlocks.length === 0) return;
 
-    // Pass 1: read all computed styles before touching the DOM
-    // (avoids a forced reflow on every iteration of the loop)
-    const topClasses = codeBlocks.map(cb =>
-      getComputedStyle(cb).getPropertyValue("--file-name-offset").trim() !== ""
-        ? "top-(--file-name-offset)"
-        : "-top-3"
-    );
-
-    // Pass 2: mutate DOM
-    codeBlocks.forEach((codeBlock, i) => {
+    codeBlocks.forEach(codeBlock => {
       const wrapper = document.createElement("div");
-      wrapper.style.position = "relative";
+      wrapper.className = "code-window";
+      wrapper.dataset.language = codeBlock.dataset.language ?? "";
+
+      // 红黄绿灯用真实元素 + 圆角而非渐变绘制，边缘抗锯齿更干净
+      const lights = document.createElement("span");
+      lights.className = "traffic-lights";
+      for (let i = 0; i < 3; i++) {
+        lights.appendChild(document.createElement("i"));
+      }
+      wrapper.appendChild(lights);
 
       const copyButton = document.createElement("button");
-      copyButton.className = `copy-code absolute end-3 ${topClasses[i]} rounded bg-muted border border-muted px-2 py-1 text-xs leading-4 text-foreground font-medium`;
+      copyButton.className =
+        "copy-code absolute end-3 top-[5px] rounded bg-muted border border-muted px-2 py-1 text-xs leading-4 text-foreground font-medium";
       copyButton.innerText = copyButtonLabel;
       codeBlock.setAttribute("tabindex", "0");
       codeBlock.appendChild(copyButton);
