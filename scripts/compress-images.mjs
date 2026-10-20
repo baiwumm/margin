@@ -64,7 +64,7 @@ async function bestEncoding(input, file, meta, maxW) {
 }
 
 /**
- * @returns {{ file: string, status: 'written'|'kept'|'skipped'|'error', reason?: string, before?: number, after?: number, oversize?: boolean }}
+ * @returns {Promise<{ file: string, status: 'written'|'kept'|'skipped'|'error', reason?: string, before?: number, after?: number, oversize?: boolean }>}
  */
 async function processOne(file, checkOnly) {
   try {
