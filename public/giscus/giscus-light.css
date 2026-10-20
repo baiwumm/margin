@@ -13,7 +13,7 @@
 }
 
 :root {
-  --g-bg: #f2f5ec;
+  --g-bg: #f5f5f3;
   --g-fg: #353538;
   --g-muted-fg: rgba(53, 53, 56, 0.58);
   --g-faint-fg: rgba(53, 53, 56, 0.42);
@@ -21,8 +21,8 @@
   --g-accent-soft: rgba(17, 88, 209, 0.12);
   --g-border: color-mix(in srgb, #7cadff 24%, transparent);
   --g-border-soft: color-mix(in srgb, #7cadff 15%, transparent);
-  --g-card: color-mix(in srgb, #f2f5ec 70%, #ffffff 30%);
-  --g-card-hover: color-mix(in srgb, #f2f5ec 62%, #ffffff 38%);
+  --g-card: color-mix(in srgb, #f5f5f3 70%, #ffffff 30%);
+  --g-card-hover: color-mix(in srgb, #f5f5f3 62%, #ffffff 38%);
   --g-control: rgba(53, 53, 56, 0.06);
   --g-control-hover: rgba(17, 88, 209, 0.09);
   --g-shadow:
@@ -63,15 +63,15 @@
   --color-border-info: var(--g-border);
   --color-box-border-info: var(--g-border);
   --color-label-border: var(--g-border-soft);
-  --color-input-bg: color-mix(in srgb, #f2f5ec 78%, #ffffff 22%);
-  --color-input-contrast-bg: color-mix(in srgb, #f2f5ec 78%, #ffffff 22%);
+  --color-input-bg: color-mix(in srgb, #f5f5f3 78%, #ffffff 22%);
+  --color-input-contrast-bg: color-mix(in srgb, #f5f5f3 78%, #ffffff 22%);
   --color-input-border: var(--g-border-soft);
   --color-neutral-muted: rgba(53, 53, 56, 0.07);
   --color-btn-text: var(--g-fg);
-  --color-btn-bg: color-mix(in srgb, #f2f5ec 72%, #ffffff 28%);
-  --color-btn-hover-bg: color-mix(in srgb, #f2f5ec 64%, #ffffff 36%);
-  --color-btn-active-bg: color-mix(in srgb, #f2f5ec 58%, #ffffff 42%);
-  --color-btn-selected-bg: color-mix(in srgb, #f2f5ec 58%, #ffffff 42%);
+  --color-btn-bg: color-mix(in srgb, #f5f5f3 72%, #ffffff 28%);
+  --color-btn-hover-bg: color-mix(in srgb, #f5f5f3 64%, #ffffff 36%);
+  --color-btn-active-bg: color-mix(in srgb, #f5f5f3 58%, #ffffff 42%);
+  --color-btn-selected-bg: color-mix(in srgb, #f5f5f3 58%, #ffffff 42%);
   --color-btn-border: var(--g-border-soft);
   --color-btn-hover-border: var(--g-border);
   --color-btn-active-border: var(--g-border);
@@ -101,7 +101,7 @@
   --color-segmented-control-bg: var(--g-control);
   --color-segmented-control-button-bg: color-mix(
     in srgb,
-    #f2f5ec 78%,
+    #f5f5f3 78%,
     #ffffff 22%
   );
   --color-segmented-control-button-selected-border: var(--g-border);
@@ -229,7 +229,7 @@ a {
 .gsc-comment-box-textarea {
   width: 100%;
   margin: 0;
-  background: color-mix(in srgb, #f2f5ec 78%, #ffffff 22%);
+  background: color-mix(in srgb, #f5f5f3 78%, #ffffff 22%);
   border: 1px solid var(--g-border-soft);
   border-style: solid;
   border-radius: var(--g-radius-sm);
@@ -542,7 +542,7 @@ a {
   margin: 0.75rem 0.75rem 0.5rem;
   border: 1px solid var(--g-border);
   border-radius: var(--g-radius) !important;
-  background: color-mix(in srgb, #f2f5ec 78%, #ffffff 22%);
+  background: color-mix(in srgb, #f5f5f3 78%, #ffffff 22%);
   padding: 0.75rem 0.9rem;
   overflow: hidden;
 }

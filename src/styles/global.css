@@ -8,7 +8,7 @@
 
 :root,
 html[data-theme="light"] {
-  --background: #f2f5ec;
+  --background: #f5f5f3;
   --foreground: #353538;
   --muted-foreground: color-mix(in srgb, var(--foreground) 60%, transparent);
   --accent-blue: #1158d1;
@@ -17,7 +17,7 @@ html[data-theme="light"] {
   --accent-orange: #ea580c;
   --accent-rose: #dc2626;
   --accent: var(--accent-blue);
-  --muted: #bbc789;
+  --muted: #e4e4e1;
   --border: #7cadff;
   /* 语义色：精选（琥珀系）与画廊（紫罗兰系）卡片，浅色主题用更深的值保证对比度 */
   --featured: #b56007;
@@ -25,7 +25,7 @@ html[data-theme="light"] {
 }
 
 html[data-theme="dark"] {
-  --background: #10131a;
+  --background: #0b0b0b;
   --foreground: #f6f7f8;
   --accent-blue: #008fec;
   --accent-green: #34d399;
@@ -33,7 +33,7 @@ html[data-theme="dark"] {
   --accent-orange: #fb923c;
   --accent-rose: #f87171;
   --accent: var(--accent-blue);
-  --muted: #212f3f;
+  --muted: #1a1d22;
   --border: #2264e3;
   /* 语义色：精选（金色系）与画廊（紫色系）卡片，深色主题用更亮的值 */
   --featured: #f59e0b;
