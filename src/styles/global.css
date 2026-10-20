@@ -35,9 +35,18 @@ html[data-theme="dark"] {
   --accent: var(--accent-blue);
   --muted: #1a1d22;
   --border: #2264e3;
-  /* 语义色：精选（金色系）与画廊（紫色系）卡片，深色主题用更亮的值 */
+  /* 语义色：精选（金色系）与画廊（紫色系），深色主题用更亮的值 */
   --featured: #f59e0b;
   --gallery: #a855f7;
+}
+
+/* 终端浅色形态 = 纸上的终端：石墨纸白 + 极淡方格纹理（编辑器网格线母题）。
+   只做纹理一处个性，其余保持安静；暗色模式不叠加。 */
+html[data-theme="light"] body {
+  background-image:
+    linear-gradient(rgba(11, 11, 11, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 11, 11, 0.018) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 /* Accent color variants (light/dark values resolved via the palette vars above)
