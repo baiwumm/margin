@@ -31,6 +31,7 @@
 - **图片压缩规则**：新增或替换文章 / 画廊图片必须先压缩（`pnpm images`，pre-commit 钩子自动执行、CI 兜底校验）：JPEG mozjpeg 80、WebP 80、PNG 无损与调色板择优、最大宽 2400（画廊 3000）、剥离 EXIF；GIF 动图与 AVIF 跳过；压缩收益 <5% 自动跳过（幂等）；压缩后仍 >600KB 会拦截提交，「已是策略最优」的画廊大图仅提示。策略实现见 `scripts/compress-images.mjs`。
 - **OG 图规范**：文章默认**不写** `ogImage`，分享卡使用构建期自动生成的全站统一动态 OG（黑底终端风、站内同款 Maple Mono CN、按 1200×630 的 2 倍即 2400×1260 渲染；风格 tokens 与版式见 `src/utils/og-templates/frame.js`）。仅特色文章手作 `ogImage` 覆盖（如近期两篇 `00-cover-og.png`），建议同为 1200×630 比例的 2 倍尺寸。非文章页使用 `/og.png` 动态站点图，标签页使用标签动态 OG，三者同一风格。
 - 修改已有文章：保留 `pubDatetime`；实质性更新时补充/更新 `modDatetime`。
+- **成文后去 AI 味**：AI 生成或大段改写文章正文后，用 `humanizer-zh` skill 过一遍：删空泛铺垫、公式化节奏、套话与重复表达，中文正文引号统一用「」；事实、数字、限定、归因和作者声音一律保留，frontmatter、代码块、表格与链接不动。笔误级小修不必跑；它只理顺表达，不替代 `astro check` 与构建验证。
 
 # 文章 Metadata 规则
 

@@ -30,7 +30,7 @@ Margin（原 Devosfera）：基于 AstroPaper 深度二次开发的个人博客�
 | 文档 | 内容 | 什么时候读 |
 | --- | --- | --- |
 | [docs/development.md](docs/development.md) | 技术栈、架构、目录结构、开发命令 | 改代码、动构建/依赖、排查构建问题前 |
-| [docs/content.md](docs/content.md) | 内容系统、创作规范、文章 Metadata 规则 | 创建或修改文章 / 画廊、生成 title / description / tags 前 |
+| [docs/content.md](docs/content.md) | 内容系统、创作规范、文章 Metadata 规则、成文后去 AI 味 | 创建或修改文章 / 画廊、生成 title / description / tags、文章成文后 |
 | [docs/ui-guidelines.md](docs/ui-guidelines.md) | 组件、样式、性能、代码规范 | 改 UI、写组件或客户端脚本前 |
 | [docs/release.md](docs/release.md) | 提交规则、全自动发版流程 | 提交代码、执行发版前 |
 | [docs/pitfalls.md](docs/pitfalls.md) | 已知陷阱、隐式约定与历史决策 | **任何修改前扫一遍**，避免重复踩坑 |
