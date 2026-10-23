@@ -10,17 +10,17 @@ draft: false
 
 如果你让 Agent 写 Vue，大概率见过这样的代码：三百行的文件按行数拆成五个组件；composable 返回十几个内部 ref；模板里调用 `filterMembers()`；遇到 props 多层传递，第一反应是 provide/inject。单看每一处都不算错，合起来就是一个很难维护的页面。
 
-`vuejs-ai/skills` 想解决的就是这类“AI 的默认动作”：它不是 Vue 教程，也不是组件库，而是一套写给编码 Agent 的指令包。
+`vuejs-ai/skills` 想解决的就是这类「AI 的默认动作」：它不是 Vue 教程，也不是组件库，而是一套写给编码 Agent 的指令包。
 
 ## 它是什么：不是库，是给 Agent 的指令包
 
 在 OpenCode、Claude Code 这类 Agent 里，Skill 是一个带 `SKILL.md` 的目录：Agent 根据 `description` 判断是否加载，先读 `SKILL.md`，需要细节再读 `references/`。它不是被动文档，而是会被执行的指令。
 
-`vuejs-ai/skills` 把这套机制用在 Vue 上。仓库有 8 个 skill，`vue-best-practices` 是总入口：`SKILL.md` 只有 135 行，开篇让 Agent 读 4 篇核心 reference（reactivity、SFC、component data flow、composables），其余按需加载。这种“路由表 + 按需加载”很省上下文。
+`vuejs-ai/skills` 把这套机制用在 Vue 上。仓库有 8 个 skill，`vue-best-practices` 是总入口：`SKILL.md` 只有 135 行，开篇让 Agent 读 4 篇核心 reference（reactivity、SFC、component data flow、composables），其余按需加载。这种「路由表 + 按需加载」很省上下文。
 
 它约束的不是 Vue 语法，而是几个关键分叉：组件按什么边界拆、composable 返回什么、props / emits 怎么设计、什么时候用 provide/inject、派生状态怎么算、原始类型用 `ref` 还是 `shallowRef`。
 
-先说明定位：它不是 Vue 官方项目，组织简介写着 `(Unofficial) Building AI tools for Vue`；维护者 Vincent Ngai（SerKo）是 Vue 核心团队成员，但这是社区实验。当前 v19.0.1，MIT。把它当一套有取舍的默认规则，比当标准答案合适。
+它不是 Vue 官方项目，组织简介写着 `(Unofficial) Building AI tools for Vue`；维护者 Vincent Ngai（SerKo）是 Vue 核心团队成员，但这是社区实验。当前 v19.0.1，MIT。把它当一套有取舍的默认规则，比当标准答案合适。
 
 ## 它解决什么问题：AI 写 Vue 的四个默认动作
 
@@ -34,7 +34,7 @@ AI 写 Vue 的问题，往往不是不会 API，而是在分叉上选了最省�
 
 **第四，派生状态和模板方法。** 用 `watch` 维护 `filteredMembers`，模板里写 `:filtered-members="filterMembers()"`，每次渲染都重新过滤、排序。它明确推荐 `computed`，并把派生状态放回 composable。
 
-这些都不是语法错误，而是架构默认值。Skill 的价值，是把老手的“看情况”写成 Agent 能执行的判断顺序。
+这些都不是语法错误，而是架构默认值。Skill 的价值，是把老手的「看情况」写成 Agent 能执行的判断顺序。
 
 它也有边界：业务建模、项目约定、行为正确性、测试覆盖都管不了。它让代码更像懂 Vue 的人写的，但不保证代码一定对。
 
@@ -54,11 +54,11 @@ AI 写 Vue 的问题，往往不是不会 API，而是在分叉上选了最省�
 
 它没说返回的 key 越少越好，只说每个返回值都要有消费者。返回 20 个但都有人用，没问题；返回 5 个里有 3 个是内部泄漏，才是问题。数量不是判据，契约才是。
 
-**provide/inject 只解决“纯转发”的中间层。** 原文说：
+**provide/inject 只解决「纯转发」的中间层。** 原文说：
 
 > Use typed, scoped provide/inject for shared descendant dependencies when intermediate components only relay them; reassess component boundaries first.
 
-顺序是先看中间组件是不是只在转发；如果是，优先合并组件、上移 / 下移状态、用 slot，都不合适再上 provide/inject。它不是“props drilling 就 inject”的万能公式。
+顺序是先看中间组件是不是只在转发；如果是，优先合并组件、上移 / 下移状态、用 slot，都不合适再上 provide/inject。它不是「props drilling 就 inject」的万能公式。
 
 另外两条容易误读。
 
@@ -66,13 +66,13 @@ AI 写 Vue 的问题，往往不是不会 API，而是在分叉上选了最省�
 
 `defineModel` 是另一条。`component-data-flow.md` 明确推荐 Vue 3.4+ 用它，所以用它不违规。后面 with-skill 选择 readonly props + patch emit，是模型更严格的选择，不是规则要求。
 
-一句话：写给 AI 的规范，不必每条都适合人类代码；模型更严格的选择，也不都是规范要求。
+一句话：写给 AI 的规范，不必每条都适合人类代码。
 
 ## 和 vercel-react-best-practices 比：Vue 终于有了同类规范
 
 如果你在 Agent 里写过 React，大概率见过 `vercel-react-best-practices`：Vercel Engineering 维护的 React / Next.js 性能规范，直接告诉 Agent 哪些写法会让包变大、哪些数据获取方式会拖慢页面。
 
-Vue 这边一直缺一份同等知名度、能直接装给 Agent 的规范。Vue 教程不少，能在写代码时约束 Agent 的规则包不多。`vue-best-practices` 填的就是这个位置：同样是 Skill，同样按需加载，也把“组件怎么拆、状态放哪、composable 返回什么”写成了可执行的规则。
+Vue 这边一直缺一份同等知名度、能直接装给 Agent 的规范。Vue 教程不少，能在写代码时约束 Agent 的规则包不多。`vue-best-practices` 填的就是这个位置：同样是 Skill，同样按需加载，也把「组件怎么拆、状态放哪、composable 返回什么」写成了可执行的规则。
 
 但两者不是一一对应：
 
@@ -90,7 +90,7 @@ Vue 这边一直缺一份同等知名度、能直接装给 Agent 的规范。Vue
 
 为了看它改变什么，我做了一个小对照实验。项目是 Vite 8 + Vue 3.5 + TypeScript 6 的成员管理页：6 个成员，支持搜索、部门筛选、只看在职、新增 / 编辑 / 删除。
 
-我故意留了三处“AI 味”：
+我故意留了三处「AI 味」：
 
 1. **状态挂在 App，props / emits 层层转发。** `App.vue` 持有 `useMembers()`，9 个 props、9 个事件先交给 `MemberPage`，再一层层往下传。
 2. **composable 把内部状态全导出。** `useMembers` 返回 18 个东西，包括可写的 `members`，以及本可留在内部的 `departments`、`departmentLabels`；筛选结果用 `watch(..., { immediate: true, deep: true })` 维护，组件里又写了一个 `filterMembers()` 做同样的事。
@@ -124,7 +124,7 @@ return {
 
 这已经是能合并的重构，不是典型的 AI 烂代码。
 
-### with-skill：差别在“谁拥有”
+### with-skill：差别在「谁拥有」
 
 with-skill 也拆成 5 个组件，但从 `App.vue` 开始就不同了：
 
@@ -184,7 +184,7 @@ function patchDraft(patch: Partial<MemberDraft>) {
 
 这比 `defineModel` 更长，换来单向数据流：子组件不能悄悄改父级状态，代价是模板里多写事件转发。这是取舍，不是免费的胜利。
 
-### 结果：增量在“所有权”和“契约”
+### 结果：增量在「所有权」和「契约」
 
 关键指标：
 
@@ -200,7 +200,7 @@ function patchDraft(patch: Partial<MemberDraft>) {
 | `computed` | 2 处 | 3 处 |
 | 构建 / 初始渲染 | 通过 / 6 行 | 通过 / 6 行 |
 
-**增量在“所有权”和“契约”，不在“会不会写 Vue”。**
+**增量在「所有权」和「契约」，不在「会不会写 Vue」。**
 
 - 状态从 App 下沉到页面，App 只管布局，不再知道成员数据长什么样。这是这次 diff 最有价值的一处。
 - 状态变成 readonly，修改必须走显式 action。子组件不能再通过 `defineModel` 直接写父级状态，数据流更可控。
@@ -213,7 +213,7 @@ function patchDraft(patch: Partial<MemberDraft>) {
 - 它没有强制 provide/inject：两边都没用。with-skill 把状态移到页面，baseline 用 `defineModel` 收敛契约；skill 原文也支持先重评边界。
 - 它没有让代码变短。with-skill diff 更大（275 增 / 312 删，baseline 189 / 208），readonly、显式 action、类型都要占行；最终 `src` 只少 18 行。用代码量衡量 skill 容易得出错误结论。
 
-仓库自己也有评测，但很薄：截至 2026 年 10 月 21 日，只有 3 份 `results.json`，全部来自 `computed-vs-methods`。其中 sonnet 只跑了 with-skill，baseline 没有对照；haiku 的三个场景各有一份结果。这组数据能说明方向，但还不足以支撑“平均提升”。
+仓库自己也有评测，但很薄：截至 2026 年 10 月 21 日，只有 3 份 `results.json`，全部来自 `computed-vs-methods`。其中 sonnet 只跑了 with-skill，baseline 没有对照；haiku 的三个场景各有一份结果。这组数据能说明方向，但还不足以支撑「平均提升」。
 
 | 场景 | 模型 | baseline | with-skill |
 | --- | --- | --- | --- |
@@ -224,7 +224,7 @@ function patchDraft(patch: Partial<MemberDraft>) {
 
 README 自己的标准是 Fail / Pass 保留、Pass / Pass 考虑移除；这里 3 个场景有 2 个 Pass / Pass，只有场景 1 是 Fail / Pass。所以不是规则没用，而是评测和规则维护还没闭环。判据又是文件内容正则，不是跑交互：能看写法，看不到行为有没有坏。
 
-结论不是“skill 没用”或“很有用”，而是：**对强模型，增量在架构判断，不在语法常识；对弱模型，增量才可能落在 computed、拆组件这些基本功上。** 仓库唯一的 baseline 失败样本来自 haiku，方向对得上，但样本只有 1 个，不能当定律。
+结论不是「skill 没用」或「很有用」，而是：**对强模型，增量在架构判断，不在语法常识；对弱模型，增量才可能落在 computed、拆组件这些基本功上。** 仓库唯一的 baseline 失败样本来自 haiku，方向对得上，但样本只有 1 个，不能当定律。
 
 ## 安装：只装最需要的那一个
 
@@ -248,7 +248,7 @@ npx skills remove vue-best-practices -y
 2. 项目确实用了 Router / Pinia / 测试，再装对应的 skill。
 3. 调试阶段再考虑 `vue-debug-guides`；它的 reference 很多，装之前想清楚上下文预算。
 4. `vue-jsx-best-practices` 只在你写 JSX 时才有必要。
-5. `create-adaptable-composable` 更适合当“怎么写 composable”的短文看，不用急着装。
+5. `create-adaptable-composable` 更适合当「怎么写 composable」的短文看，不用急着装。
 
 如果你想让团队共享，可以把 `.agents/skills/` 随仓库提交；如果 CLI 默认用符号链接，跨平台团队可以加 `--copy`，用真实文件代替链接。升级时记录版本（当前 v19.0.1），不要静默更新。
 
@@ -260,7 +260,7 @@ npx skills remove vue-best-practices -y
 
 ### 1. 在 AGENTS.md 写触发条件
 
-只靠模型自己判断“该不该读 skill”，不稳定。把触发条件写进项目的 `AGENTS.md`，让每次 Vue 任务都先读：
+只靠模型自己判断「该不该读 skill」，不稳定。把触发条件写进项目的 `AGENTS.md`，让每次 Vue 任务都先读：
 
 ```md
 ## Vue
@@ -271,11 +271,11 @@ npx skills remove vue-best-practices -y
 - 完成后运行项目的 build / lint 命令；涉及交互的改动再补 light/dark 与移动端检查。
 ```
 
-这样就把“可选加载”变成 Vue 任务的前置步骤。冲突那一条很重要：skill 是默认值，不是法律；项目已有模式优先。
+这样就把「可选加载」变成 Vue 任务的前置步骤。冲突那一条很重要：skill 是默认值，不是法律；项目已有模式优先。
 
-### 2. 用“先计划、后实现、再自检”的 prompt
+### 2. 用「先计划、后实现、再自检」的 prompt
 
-不要只说“帮我重构这个页面”。给 Agent 一个固定的工作顺序：
+不要只说「帮我重构这个页面」。给 Agent 一个固定的工作顺序：
 
 ```text
 use vue skill, 先不要写代码。阅读 .agents/skills/vue-best-practices/SKILL.md，
@@ -284,7 +284,7 @@ use vue skill, 先不要写代码。阅读 .agents/skills/vue-best-practices/SKI
 实现后运行项目的 build / lint 命令，并按同一份清单自检。
 ```
 
-“先不要写代码”很关键。Agent 默认会直接改文件；先让它读规则、列计划，你才有机会纠正方向。四项审查覆盖 skill 的核心分叉，别让它跑偏到无关样式。
+「先不要写代码」很关键。Agent 默认会直接改文件；先让它读规则、列计划，你才有机会纠正方向。四项审查覆盖 skill 的核心分叉，别让它跑偏到无关样式。
 
 ### 3. 让 Agent 按四个问题自检
 
@@ -295,34 +295,34 @@ build 只能证明能编译。A/B 里两边 build 都通过，但状态归属和
 3. **数据流**：provide/inject 之前，是否试过合并、上移 / 下移状态、slot？
 4. **派生状态**：有没有 `watch` + `ref` 同步、模板调方法？能不能用 `computed`？
 
-把自检结果写进 PR 或提交说明，不要只写“已按规范修改”。如果某一项不满足，让 Agent 说明为什么，而不是强行改。
+把自检结果写进 PR 或提交说明，不要只写「已按规范修改」。如果某一项不满足，让 Agent 说明为什么，而不是强行改。
 
 ### 4. 冲突时项目优先
 
 这套 skill 有几个明确取舍，不能照搬：
 
-- 它推荐 `defineModel`。团队已经在用，就别为了“更严格”改成 readonly props + patch emit；with-skill 那么做是模型的额外判断，不是规则要求。
+- 它推荐 `defineModel`。团队已经在用，就别为了「更严格」改成 readonly props + patch emit；with-skill 那么做是模型的额外判断，不是规则要求。
 - 它对原始类型也建议 `shallowRef`。维护者自己说了，这只是 micro-optimization；人类项目里优先可读性，不要为了性能微优化牺牲一致性。
-- 它把“拆组件”当成默认方向，但前提是能减少理解成本。如果你的页面就是一个小而内聚的功能，保留一个 SFC 反而更清楚；文件长度不是拆分理由。
+- 它把「拆组件」当成默认方向，但前提是能减少理解成本。如果你的页面就是一个小而内聚的功能，保留一个 SFC 反而更清楚；文件长度不是拆分理由。
 
-把这些冲突写进 `AGENTS.md`，明确“项目约定 > skill 默认值”，比让 Agent 每次自由发挥更可靠。
+把这些冲突写进 `AGENTS.md`，明确「项目约定 > skill 默认值」，比让 Agent 每次自由发挥更可靠。
 
 ### 5. 团队协作：项目级 + 版本记录
 
-项目级 `.agents/skills/` 随仓库走，团队里每个人的 Agent 用同一份规则。把当前版本（v19.0.1）和安装命令写进 README 或 AGENTS.md；升级前用一个真实任务跑一次 plan / implement / self-check，不要只看版本号。
+项目级 `.agents/skills/` 随仓库走。把当前版本（v19.0.1）和安装命令写进 README 或 AGENTS.md；升级前用一个真实任务跑一次 plan / implement / self-check，不要只看版本号。
 
 如果团队跨平台，注意 CLI 默认可能用符号链接；需要提交到仓库时用 `--copy`，或者直接把 skill 目录作为普通文件提交，避免 Windows / macOS 的链接差异。
 
 ## 最后：5 条选包检查清单
 
-这套仓库最值得用的地方，是把“看情况”变成可检查的问题清单，而不是替你决定架构。它不是官方规范，也没经过大规模验证；它是一个核心团队成员的社区实验，当前 v19.0.1。可以用，但别当不可质疑的标准答案。
+这套仓库最值得用的地方，是把「看情况」变成可检查的问题清单，而不是替你决定架构。它不是官方规范，也没经过大规模验证；它是一个核心团队成员的社区实验，当前 v19.0.1。可以用，但别当不可质疑的标准答案。
 
-如果你只想做一件事：先装 `vue-best-practices`，在 `AGENTS.md` 里写一条触发规则，然后用一个真实页面跑一次“计划 → 实现 → 自检”。比读十篇介绍更有用。
+如果你只想做一件事：先装 `vue-best-practices`，在 `AGENTS.md` 里写一条触发规则，然后用一个真实页面跑一次「计划 → 实现 → 自检」。比读十篇介绍更有用。
 
-如果你还想判断别的“写给 AI 的规范包”，可以用这 5 条：
+如果你还想判断别的「写给 AI 的规范包」，可以用这 5 条：
 
 1. **来源**：谁维护、是否官方、最近一次提交是什么时候？核心团队成员是加分项，不是免检章；先看仓库怎么自我描述。
-2. **触发**：`description` 有没有写清“做什么、什么时候用”？在你的 Agent 里能不能稳定触发？拿一条真实任务试一次。
+2. **触发**：`description` 有没有写清「做什么、什么时候用」？在你的 Agent 里能不能稳定触发？拿一条真实任务试一次。
 3. **证据**：有没有评测？覆盖了多少条规则？baseline 和 with-skill 都跑了吗？只有 with-skill 通过的结果，不算对照。
 4. **维护**：reference 跟不跟得上框架版本？升级会不会改变行为？有没有版本记录？
 5. **可逆**：能不能项目级安装、干净卸载？是否要求全权限？先读再装，别把它当成不可回滚的依赖。
