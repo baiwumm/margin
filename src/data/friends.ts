@@ -313,6 +313,12 @@ const services: Friend[] = [
     url: "https://www.blogplanet.cn/",
     avatar: "https://www.blogplanet.cn/img/bkxq.png",
   },
+  {
+    name: "滔滔网",
+    description: "让声音被听见",
+    url: "https://teaoteao.com/",
+    avatar: "https://teaoteao.com/logo.png",
+  },
 ];
 
 export const friendsByGroup: Record<string, Friend[]> = {
