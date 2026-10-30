@@ -267,6 +267,12 @@ const kindred: Friend[] = [
     url: "https://www.alimeylab.com",
     avatar: "https://www.alimeylab.com/alimey.jpg",
   },
+  {
+    name: "墨堆",
+    description: "会呼吸的博客，请和我“对话”",
+    url: "https://www.inkheap.com",
+    avatar: "https://www.inkheap.com/logo.png",
+  },
 ];
 
 const services: Friend[] = [
