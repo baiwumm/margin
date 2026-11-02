@@ -37,7 +37,7 @@ margin 不是孤立仓库：内容被 **margin-app**（微信小程序）消费�
 | --- | --- | --- |
 | 导出管线（构建期） | `src/utils/export/`（10 个模块；类型定义 `export/types.ts` 与 api-contract 一一对应） | margin-app 拉取导出产物展示全量内容 |
 | 站点配置端点 | `src/pages/api/v1/site.json.ts`（api-contract §2，构建期落盘静态 JSON） | margin-app |
-| 评论标题映射 | `src/pages/comment-titles.json.ts` → 部署后 `https://baiwumm.com/comment-titles.json`（仅博客、与列表/详情同口径过滤草稿与定时文） | margin-comments 的 giscus 评论通知脚本查真实标题（discussion.title 只有 path） |
+| 评论标题映射 | `src/pages/comment-titles.json.ts` → 部署后 `https://www.baiwumm.com/comment-titles.json`（仅博客、与列表/详情同口径过滤草稿与定时文） | margin-comments 的 giscus 评论通知脚本查真实标题（discussion.title 只有 path） |
 | Markdown 插件 | `remarkVideo.ts` / `remarkMusic.ts` / `remarkLinkCard.ts` / `music.ts` | 插件本体与小程序导出层共用同一解析实现 |
 | 免责声明文案 | `src/pages/disclaimer.astro` | 与小程序端 pagesB/disclaimer 同文案逐句对齐（端上自指词除外） |
 
@@ -63,7 +63,18 @@ src/
   scripts/theme.ts     # 主题切换逻辑
 public/                # 静态资源（favicon / og / audio）；pagefind 生成物不入库
 astro.config.ts        # 站点 / 集成 / Markdown / Shiki / 字体 / env schema
+edgeone.json           # EdgeOne Makers 项目配置（输出目录、边缘规则）
 ```
+
+# 部署与边缘规则
+
+- 托管：EdgeOne Makers（Git 仓库集成，push 自动构建部署）；构建产物 `dist/`，纯静态无服务端渲染。
+- `edgeone.json` 放在**项目根目录**（不是 `public/`），JSON 不支持注释，规则动机在此记录：
+  - `/giscus/*` → `Access-Control-Allow-Origin: *`：giscus 自定义主题 CSS 需被 giscus.com 跨域加载。**这条必须显式配**——Makers 不读旧的 `public/_headers`，缺这个头评论主题会直接失效。
+  - `/_astro/*` 的长缓存**不用自己写**：Makers 对内容哈希资源默认给 `Cache-Control: public,max-age=31536000,immutable`（2026-11-02 线上核对）。HTML / JSON 则维持 `public,max-age=0,must-revalidate` + ETag，符合 api-contract §7，不要给它们加长缓存。
+- 规范域名是 **www**：`SITE.website = https://www.baiwumm.com/`，canonical / sitemap / RSS / 动态 OG 全部由它生成。裸域 `baiwumm.com` 只做 301 入口，不承载内容 URL。
+- 裸域重定向：`redirects` 用 `$host` → `$wwwhost`（301，仅对自定义域名生效）。生效前提是 Makers 域名管理里 `baiwumm.com` 与 `www.baiwumm.com` **都**已添加并配好证书。
+- 导出层的 D19「裸域改写为 www」（`export/builders.ts` 的 `finalizeData` + `base.ts` 的 `assertUrls` 断言）继续保留，作为历史正文里手写裸链的兜底。
 
 # Development Commands
 

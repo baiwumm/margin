@@ -15,7 +15,7 @@ const getEnv = (key: string): string => {
 };
 
 export const SITE = {
-  website: "https://baiwumm.com/",
+  website: "https://www.baiwumm.com/",
   author: "白雾茫茫丶",
   profile: getEnv("PUBLIC_SOCIAL_GITHUB"), // set in .env
   desc: "边白 · 记录代码、思考与灵感",

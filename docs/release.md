@@ -18,5 +18,5 @@
   - 命令行：`gh workflow run release.yml -f bump=minor`（自定义版本号用 `-f version=v1.7.0`）。
 - CI 自动执行 lint / build 预检，任一失败即中止、不产生任何副作用；通过后由 release-it 一次性完成：更新根 `package.json` 版本号 → 更新 `CHANGELOG.md` → 创建发版提交（`chore(release): 版本号升至 vX.Y.Z`）→ 打 tag `vX.Y.Z` → 发布 GitHub Release（直接发布，非草稿）。
 - 版本真源是根 `package.json`（release-it bump），tag 由它生成；README 版本徽章为动态徽章，均无需手动改。
-- 发版提交推上 main 后，Cloudflare Workers Builds 自动跟随部署。
+- 发版提交推上 main 后，EdgeOne Makers 跟随 Git 仓库自动构建部署。
 - 本地也可以 `pnpm release`（需本地 `GITHUB_TOKEN`），与 CI 共用 `.release-it.json`，行为一致。

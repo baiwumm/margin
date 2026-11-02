@@ -16,7 +16,7 @@ name: Release
 #   · tag 自 v1.6.0 起带 v 前缀（.release-it.json 的 git.tagName 显式锁定）；
 #   · 发布说明不再人工编辑：按 Conventional Commits 自动分组（见 .release-it.json），
 #     提交信息中文优先即可得到中文小节；
-#   · 发版提交推上 main 后，Cloudflare Workers Builds 自动跟随部署；
+#   · 发版提交推上 main 后，EdgeOne Makers 跟随 Git 仓库自动构建部署；
 #   · 由 GITHUB_TOKEN 推送的提交与 tag 不会连带触发其他 workflow；
 #   · 权限仅 contents: write，最小化授权。
 #

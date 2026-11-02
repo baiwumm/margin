@@ -32,10 +32,7 @@ pnpm-debug.log*
 
 public/pagefind
 
-# wrangler local state
-.wrangler/
-
-# vercel(迁移到 Cloudflare Workers 后遗留的本地关联)
+# vercel 本地关联（历史遗留）
 .vercel
 .env.*
 !.env.example

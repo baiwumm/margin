@@ -1,6 +1,6 @@
 /**
  * 导出层公共基座：Envelope 包装、buildId / 内容 hash、体积与 URL 断言（D44）。
- * 断言违规直接 throw，使 Cloudflare 构建失败 —— 不合规发不了版。
+ * 断言违规直接 throw，使部署平台的构建失败 —— 不合规发不了版。
  */
 import { createHash } from "node:crypto";
 import { execSync } from "node:child_process";
