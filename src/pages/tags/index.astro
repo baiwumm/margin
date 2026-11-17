@@ -27,7 +27,10 @@ const tagsWithCount = tags.map(({ tag, tagName }) => ({
 const maxCount = Math.max(...tagsWithCount.map(t => t.count));
 ---
 
-<Layout title={`Tags | ${SITE.title}`}>
+<Layout
+  title={`Tags | ${SITE.title}`}
+  description={`按话题浏览全部 ${tags.length} 个标签，从 Nest.js、Astro 到 AI 编程与生活随笔；每个标签都指向对应的文章与画廊。`}
+>
   <Header />
   <Breadcrumb />
   <main id="main-content" class="app-layout pb-8">

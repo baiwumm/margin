@@ -62,7 +62,7 @@ bootstrap();
 
 3.  启动服务，访问 [http://localhost:3000/docs](http://localhost:3000/docs)，你会看到 [Swagger](https://swagger.io/) 页面：
 
-![](./02-swagger-config.png)
+![配置完成后访问到的 Swagger 文档页面](./02-swagger-config.png)
 
 ## DocumentBuilder 属性
 
@@ -182,12 +182,12 @@ export class PostManageController {
 
 ## 效果图
 
-![](./01-swagger-ui.png)
+![自动生成的接口文档效果](./01-swagger-ui.png)
 
 ## 总结
 
 在 [Nest](https://nestjs.com/) 中集成 [Swagger](https://swagger.io/) 文档可以帮助开发者自动生成和维护 **API** 文档，[Swagger](https://swagger.io/) 的集成提供了在线生成、‌自动生成、‌可操作数据库等优点，规范了 **API** 的标准化和一致性，后期还可以把 [Swagger](https://swagger.io/) 文档导入到其他平台，例如 [ApiFox](https://apifox.com/)
 
-![](./03-swagger-decorators.png)
+![使用装饰器描述接口字段](./03-swagger-decorators.png)
 
 不足之处就是会增加开发者的工作量，每一个接口都需要保持注释和装饰器的准确性和完整性，仍然需要一定的维护工作。

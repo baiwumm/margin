@@ -24,7 +24,7 @@ draft: false
 
 [SSE](https://developer.mozilla.org/zh-CN/docs/Web/API/EventSource) 提供了一个简单的单向事件流，使得服务器能够在客户端请求保持打开的状态下推送更新。这样做的好处是减少了轮询请求所带来的网络开销，并且能够让客户端即时接收到新的数据更新。
 
-![](./03-sse-test.jpg)
+![SSE 接口联调测试页面](./03-sse-test.jpg)
 
 ## SSE 优点
 
@@ -111,11 +111,11 @@ onBeforeUnmount(() => {
 
 同时登陆两个用户，其中一个发布消息时，服务器会向所有客户端推送消息：
 
-![](./02-sse-event.gif)
+![两个客户端同时收到服务器推送的消息](./02-sse-event.gif)
 
 浏览器查看接口接收消息：
 
-![](./01-sse-demo.png)
+![浏览器控制台接收到的 SSE 消息](./01-sse-demo.png)
 
 ## 总结
 

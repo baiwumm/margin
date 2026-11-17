@@ -74,6 +74,9 @@ const ogImage = ogImageUrl
 
 const layoutProps = {
   title: `${title} | ${SITE.title}`,
+  // 结构化数据不带站点名后缀，<title> 保持现状
+  headline: title,
+  keywords: tags,
   author,
   description,
   pubDatetime,
@@ -81,6 +84,10 @@ const layoutProps = {
   canonicalURL,
   ogImage,
   scrollSmooth: true,
+  breadcrumbTrail: [
+    { name: "Posts", path: "/posts/" },
+    { name: title, path: `${getPath(post.id, post.filePath)}/` },
+  ],
 };
 
 /* ========== Prev/Next Posts ========== */

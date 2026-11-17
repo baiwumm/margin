@@ -170,7 +170,7 @@ getUserInfo(@Session() session: Api.Common.SessionInfo) {
 
 这样在未登录的情况下访问接口，**HttpException** 过滤器就会捕获并返回 **401** 状态码：
 
-![](./01-jwt-auth.png)
+![未登录访问接口时过滤器返回 401](./01-jwt-auth.png)
 
 客户端就能根据接口返回的信息处理相应的逻辑。
 

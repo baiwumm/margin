@@ -61,7 +61,10 @@ const totalImages = galleries.reduce(
 );
 ---
 
-<Layout title={`画廊 | ${SITE.title}`}>
+<Layout
+  title={`画廊 | ${SITE.title}`}
+  description={`收录 ${galleries.length} 个图片合集、共 ${totalImages} 张照片：旅行途中的风景、城市街景与日常碎片，按画廊整理。`}
+>
   <Header />
   <Breadcrumb />
   <main id="main-content" class="app-layout pb-8">

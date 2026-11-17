@@ -161,7 +161,7 @@ export class UserManageController {}
 
 ## 效果演示
 
-![](./01-operation-log.png)
+![操作日志列表的展示效果](./01-operation-log.png)
 
 ## 总结
 

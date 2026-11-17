@@ -227,11 +227,11 @@ export class FileUploadModule {}
 
 我们使用 [postman](https://www.postman.com/) 模拟上传：
 
-![](./02-multi-file-upload.gif)
+![Postman 模拟多文件上传](./02-multi-file-upload.gif)
 
 上传后的文件夹结构：
 
-![](./01-single-upload.png)
+![上传后的文件夹结构](./01-single-upload.png)
 
 ## 配置文件访问
 

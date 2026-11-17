@@ -83,4 +83,4 @@ export class AuthController {
 
 ## 效果演示
 
-![](./01-captcha-demo.png)
+![图形验证码效果](./01-captcha-demo.png)

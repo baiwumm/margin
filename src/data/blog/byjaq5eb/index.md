@@ -135,11 +135,11 @@ export async function POST(req: NextRequest) {
 
 我们通过 [postman](https://www.postman.com/) 模拟上传：
 
-![](./01-upload-demo.gif)
+![Postman 模拟调用上传接口](./01-upload-demo.gif)
 
 上传后的文件夹结构：
 
-![](./02-file-hash.png)
+![上传后按哈希生成的文件夹结构](./02-file-hash.png)
 
 ## 总结
 

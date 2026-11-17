@@ -17,7 +17,7 @@ draft: false
 
 有提供现成的方案：
 
-![](./02-i18n-config.png)
+![i18n 配置文件与语言包结构](./02-i18n-config.png)
 
 更多详细文档：[next-intl](https://next-intl-docs.vercel.app/)
 
@@ -200,7 +200,7 @@ import LangSwitch from '@/components/LangSwitch';
 
 ## 最终效果
 
-![](./01-language-switch.gif)
+![中英文切换效果](./01-language-switch.gif)
 
 ## 总结
 

@@ -168,7 +168,7 @@ export class SavePostDto {
 
 如果我们提交的请求体中缺少了参数，它就会提示：
 
-![](./01-validation-error.png)
+![缺少请求参数时的校验报错](./01-validation-error.png)
 
 2.  假如我们有一个查询岗位详情的接口如下：
 
@@ -198,7 +198,7 @@ export class PostManageController {
 
 我们要保证 **id** 是 **UUID**，我们就可以使用 **ParseUUIDPipe** 内置管道，如果参数不对，管道就会给出报错信息：
 
-![](./02-pipe-transform.png)
+![ParseUUIDPipe 对非法 UUID 的报错](./02-pipe-transform.png)
 
 > 这里我们演示了自定义管道和 **ParseUUIDPipe** 管道的用法，其它内置管道用法也一样，大家可以根据自己的实际情况选择合适的管道。
 

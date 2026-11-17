@@ -61,7 +61,10 @@ const yearGroups = Object.entries(
 ).sort(([a], [b]) => Number(b) - Number(a));
 ---
 
-<Layout title={`Archives | ${SITE.title}`}>
+<Layout
+  title={`Archives | ${SITE.title}`}
+  description={`按年月归档的 ${totalPosts} 篇内容，从最新的文章一路回溯到最早的那一篇。`}
+>
   <Header />
   <Breadcrumb />
   <main id="main-content" class="app-layout pb-8">

@@ -172,4 +172,4 @@ import ThemeModeButton from '@/components/ThemeModeButton';
 
 ## 最终效果
 
-![](./01-theme-toggle.gif)
+![暗黑主题切换动画](./01-theme-toggle.gif)

@@ -85,6 +85,14 @@ const coverImageSrc = coverImage
     ? new URL(images[0].src.src, Astro.url.origin).href
     : undefined;
 
+// 结构化数据里的图片清单：封面（如有）+ 画廊全部图片（封面已在文件夹内时不重复计入）
+const galleryImages = [
+  ...new Set([
+    ...(coverImageSrc ? [coverImageSrc] : []),
+    ...images.map(img => new URL(img.src.src, Astro.url.origin).href),
+  ]),
+];
+
 // Build Schema.org ImageGallery Structured Data
 const gallerySchema = {
   "@context": "https://schema.org",
@@ -92,7 +100,7 @@ const gallerySchema = {
   name: title,
   description: description,
   url: new URL(Astro.url.pathname, SITE.website).toString(),
-  ...(coverImageSrc && { image: coverImageSrc }),
+  ...(galleryImages.length > 0 && { image: galleryImages }),
   creator: {
     "@type": "Person",
     name: SITE.author,
@@ -106,6 +114,11 @@ const gallerySchema = {
   title={`${title} | 画廊 | ${SITE.title}`}
   description={description}
   structuredData={gallerySchema}
+  keywords={tags}
+  breadcrumbTrail={[
+    { name: "画廊", path: "/galleries/" },
+    { name: title, path: `/galleries/${slug}/` },
+  ]}
 >
   <Header />
   {SITE.showBackButton && <Breadcrumb withBackButton />}

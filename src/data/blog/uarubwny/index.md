@@ -33,7 +33,7 @@ draft: false
 
 我们先看一下 [Nest](https://nestjs.com/) 服务原生的控制台输出：
 
-![](./04-winston-daily-rotation.png)
+![Nest 原生的控制台日志输出](./04-winston-daily-rotation.png)
 
 在接口请求和执行 **SQL** 的时候，控制台并没有相应的输出信息，这不方便我们排查和调试。
 
@@ -77,7 +77,7 @@ export class PrismaService
 
 在执行 **SQL** 时，控制台就会输出信息：
 
-![](./01-winston-sql-log.png)
+![Winston 输出的 SQL 日志](./01-winston-sql-log.png)
 
 ## 接口请求日志
 
@@ -143,7 +143,7 @@ export class AppModule implements NestModule {
 
 在接口调用时，控制台就会输出信息：
 
-![](./02-winston-request-log.png)
+![Winston 输出的接口请求日志](./02-winston-request-log.png)
 
 ## Winston 生成日志
 
@@ -276,7 +276,7 @@ bootstrap();
 
 ## 最终效果
 
-![](./03-winston-log-file.png)
+![按日期切分生成的日志文件](./03-winston-log-file.png)
 
 ## 总结
 

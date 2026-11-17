@@ -32,7 +32,7 @@ TweakCN 不仅界面简洁直观，更深度集成了 shadcn/ui 的设计规范�
 
 1、在[主题编辑页面](https://tweakcn.com/editor/theme)，TweakCN 默认提供了 43 套精心设计的配色方案。你可以逐一浏览并实时预览每种方案在实际 UI 组件中的呈现效果。从中挑选几套符合项目风格或个人审美的配色，也可以基于现有方案进一步微调主色、辅助色或语义色，打造完全属于你自己的定制化主题。
 
-![TweakCN 提供的多套主题配色预览动图](./01-tweakcn-theme-previews.gif)
+::video{src=/videos/tweakcn-theme-previews.mp4 poster=/videos/tweakcn-theme-previews-poster.jpg title=TweakCN提供的多套主题配色预览}
 
 2、在确认主题配色后，点击右上角的 `{} Code` 按钮，点击 `Copy` 复制样式：
 
@@ -395,7 +395,7 @@ useEffect(() => {
 
 ## 效果预览
 
-![动态主题色切换效果预览动图](./03-theme-color-switch-preview.gif)
+::video{src=/videos/theme-color-switch-preview.mp4 poster=/videos/theme-color-switch-preview-poster.jpg title=动态主题色切换效果预览}
 
 ## 总结
 

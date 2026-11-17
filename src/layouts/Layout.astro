@@ -3,6 +3,7 @@ import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
 import { SITE } from "@/config";
+import { SOCIALS } from "@/constants";
 import SearchModal from "@/components/SearchModal.astro";
 import ShortcutsPanel from "@/components/ShortcutsPanel.astro";
 import BackToTopButton from "@/components/BackToTopButton.astro";
@@ -22,6 +23,14 @@ type Props = {
   next?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 历史遗留：JSON-LD 结构化数据结构未收敛
   structuredData?: any;
+  /** 输出 noindex, follow（站内搜索、404 等不应被索引的页面） */
+  noindex?: boolean;
+  /** 结构化数据的 headline（不带站点名后缀）；缺省回落 title */
+  headline?: string;
+  /** 文章关键词（写入 BlogPosting.keywords） */
+  keywords?: string[];
+  /** 面包屑结构化数据（不含首页，由 Layout 补齐） */
+  breadcrumbTrail?: { name: string; path: string }[];
 };
 
 const {
@@ -37,6 +46,10 @@ const {
   prev,
   next,
   structuredData: structuredDataProp,
+  noindex = false,
+  headline,
+  keywords,
+  breadcrumbTrail,
 } = Astro.props;
 
 // Always build canonical from SITE.website (production URL), never localhost.
@@ -51,6 +64,11 @@ const socialImageURL = new URL(ogImage, Astro.url);
 // Whether this page is a blog post (has a publish date)
 const isArticle = Boolean(pubDatetime);
 
+// 作者实体的外部同一性链接（只取 http(s) 主页，排除 mailto 与站内 RSS）
+const authorSameAs = SOCIALS.filter(s => s.href.startsWith("http")).map(
+  s => s.href
+);
+
 const finalStructuredData =
   structuredDataProp ??
   (isArticle
@@ -61,10 +79,13 @@ const finalStructuredData =
           "@type": "WebPage",
           "@id": canonicalURL.toString(),
         },
-        headline: title,
+        headline: headline ?? title,
         description,
         image: socialImageURL.toString(),
         url: canonicalURL.toString(),
+        inLanguage: SITE.lang,
+        ...(keywords?.length ? { keywords: keywords.join(", ") } : {}),
+        isPartOf: { "@type": "WebSite", name: SITE.title, url: SITE.website },
         datePublished: pubDatetime!.toISOString(),
         ...(modDatetime && { dateModified: modDatetime.toISOString() }),
         author: [
@@ -72,12 +93,14 @@ const finalStructuredData =
             "@type": "Person",
             name: author,
             ...(profile && { url: profile }),
+            ...(authorSameAs.length > 0 ? { sameAs: authorSameAs } : {}),
           },
         ],
         publisher: {
-          "@type": "Person",
-          name: author,
-          ...(profile && { url: profile }),
+          "@type": "Organization",
+          name: SITE.title,
+          url: SITE.website,
+          logo: new URL("logo.png", SITE.website).href,
         },
       }
     : rawPath === ""
@@ -102,9 +125,26 @@ const finalStructuredData =
               name: author,
               description: `${SITE.author} 的个人博客：${SITE.desc}`,
               ...(profile && { url: profile }),
+              ...(authorSameAs.length > 0 ? { sameAs: authorSameAs } : {}),
             },
           }
         : null);
+
+// 面包屑结构化数据：与页面可见面包屑同源（首页由 Layout 补齐）
+const breadcrumbStructuredData = breadcrumbTrail?.length
+  ? {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [{ name: "首页", path: "/" }, ...breadcrumbTrail].map(
+        (item, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: item.name,
+          item: new URL(item.path, SITE.website).href,
+        })
+      ),
+    }
+  : null;
 
 const showCursorGlow = SITE.backdropEffects.cursorGlow;
 const showGrain = SITE.backdropEffects.grain;
@@ -118,10 +158,11 @@ const showGrain = SITE.backdropEffects.grain;
 >
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0b0b0b" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonicalURL} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <meta name="generator" content={Astro.generator} />
 
     <!-- Relational Pagination Links -->
@@ -147,6 +188,7 @@ const showGrain = SITE.backdropEffects.grain;
 
     <!-- Open Graph / Facebook -->
     <meta property="og:site_name" content={SITE.title} />
+    <meta property="og:locale" content={SITE.lang.replace("-", "_")} />
     <meta property="og:type" content={isArticle ? "article" : "website"} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -154,6 +196,7 @@ const showGrain = SITE.backdropEffects.grain;
     <meta property="og:image" content={socialImageURL} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
 
     <!-- Article Published/Modified time -->
     {
@@ -192,6 +235,17 @@ const showGrain = SITE.backdropEffects.grain;
       )
     }
 
+    <!-- 面包屑 JSON-LD（与可见面包屑同源） -->
+    {
+      breadcrumbStructuredData && (
+        <script
+          type="application/ld+json"
+          is:inline
+          set:html={JSON.stringify(breadcrumbStructuredData)}
+        />
+      )
+    }
+
     <!-- Enable RSS feed auto-discovery  -->
     <!-- https://docs.astro.build/en/recipes/rss/#enabling-rss-feed-auto-discovery -->
     <link
@@ -212,12 +266,6 @@ const showGrain = SITE.backdropEffects.grain;
         />
       )
     }
-
-    <link
-      rel="prefetch"
-      as="image"
-      href="https://www.blogsclub.org/badge/baiwumm.com"
-    />
 
     <ClientRouter />
 

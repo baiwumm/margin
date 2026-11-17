@@ -247,7 +247,7 @@ export default async function RootLayout({
 
 ## 效果演示
 
-![](./01-route-transition.gif)
+::video{src=/videos/route-transition.mp4 poster=/videos/route-transition-poster.jpg title=路由切换过渡动画效果}
 
 ## 总结
 

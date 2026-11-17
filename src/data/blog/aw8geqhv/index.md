@@ -158,7 +158,7 @@ export default function RootLayout({
 
 后续开发会以 [Next.js](https://nextjs.org/) 为核心，开发一个类似 [React-Admin](https://react.baiwumm.com/) 项目的功能，为此来探索 [Next.js](https://nextjs.org/) 其中的奥秘：
 
-![](./01-project-structure.png)
+![Next.js 项目目录结构](./01-project-structure.png)
 
 我会在此基础上加入我的一些设计和想法，致力于提高用户体验。
 

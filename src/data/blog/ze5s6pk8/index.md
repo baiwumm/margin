@@ -35,7 +35,7 @@ draft: false
 
 我们先搞定最常规的布局，[shadcn/ui](https://www.shadcn-ui.cn/)的[构建块](https://www.shadcn-ui.cn/blocks)中有一些常规的布局，我一下就看重这个：
 
-![](./01-layout-overview.png)
+![选用的 shadcn/ui 后台布局示例](./01-layout-overview.png)
 
 1.  左侧是[slibar](https://www.shadcn-ui.cn/docs/components/sidebar)，菜单顶部可以放 **Logo** 和标题
 
@@ -352,7 +352,7 @@ return (
 
 ## 最终效果
 
-![](./02-sidebar-header.png)
+![侧边栏与顶栏的最终效果](./02-sidebar-header.png)
 
 万事开头难，后续我们就可以在此基础上新增功能、主题配置等，比如：侧边栏宽度、主题色、头部是否固定等
 

@@ -245,7 +245,7 @@ export class PrismaModule {}
 
 ## 最终效果
 
-![](./01-prisma-schema.png)
+![生成的 prisma 目录结构](./01-prisma-schema.png)
 
 ## 总结
 

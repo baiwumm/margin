@@ -54,6 +54,9 @@ const prevURL = page.url.prev
 const nextURL = page.url.next
   ? new URL(page.url.next, SITE.website).toString()
   : undefined;
+
+// 仅有 1 篇文章的标签页属于薄内容：保留可访问，但不让搜索引擎收录
+const isThinTag = page.total < 2;
 ---
 
 <Layout
@@ -62,6 +65,12 @@ const nextURL = page.url.next
   ogImage={tagOgImage}
   prev={prevURL}
   next={nextURL}
+  noindex={isThinTag}
+  keywords={[tagName]}
+  breadcrumbTrail={[
+    { name: "Tags", path: "/tags/" },
+    { name: tagName, path: `/tags/${tag}/` },
+  ]}
 >
   <Header />
   <Main

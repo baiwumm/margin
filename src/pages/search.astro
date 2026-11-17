@@ -9,7 +9,11 @@ import { SITE } from "@/config";
 const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
 ---
 
-<Layout title={`Search | ${SITE.title}`}>
+<Layout
+  title={`Search | ${SITE.title}`}
+  description="按标题与正文搜索本站文章、画廊与瞬间，快捷键 Ctrl/⌘ + K 随时唤起。"
+  noindex
+>
   <Header />
   <Breadcrumb />
   <main id="main-content" class="app-layout pb-8">

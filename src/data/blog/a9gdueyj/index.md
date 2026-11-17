@@ -232,8 +232,8 @@ bootstrap();
 
 1.  正常请求成功
 
-![](./01-success-response.png)
+![统一格式的成功响应](./01-success-response.png)
 
 2.  当我们访问一个不存在的接口时
 
-![](./02-error-response.png)
+![访问不存在接口时的错误响应](./02-error-response.png)

@@ -73,15 +73,15 @@ export const { GET, POST } = handlers;
 
 1.  打开 [OAuth Apps](https://github.com/settings/developers) 页面，点击 **New Oauth App**
 
-![](./01-auth-providers.png)
+![OAuth Apps 页面](./01-auth-providers.png)
 
 2.  填入项目的信息，这里的 **Homepage URL** 我们可以先填本地开发的地址，等部署上线再改成线上地址，**Authorization callback URL** 填入 https://example.com/api/auth/callback/github，然后点击 **Register Application**
 
-![](./04-github-login.png)
+![填写 OAuth App 的基本信息](./04-github-login.png)
 
 3.  打开刚创建的 **Oauth App**，这里可以根据需要设置 **Oauth App** 信息，点击 **Generate a new client secret** 复制密钥
 
-![](./05-user-table.png)
+![生成并复制 Client Secret](./05-user-table.png)
 
 4.  在根目录的 **.env** 文件中填入刚才复制的密钥
 
@@ -174,11 +174,11 @@ export function SignOut() {
 
 5.  新建一个登录界面，点击登录按钮，就能看到跳转到 **Github** 授权信息
 
-![](./02-session-data.png)
+![点击登录后跳转到 GitHub 授权页](./02-session-data.png)
 
 6.  打开控制台，就能看到 **session** 会话信息，如果没有登录则返回 **null**
 
-![](./03-prisma-adapter.png)
+![控制台中看到的 session 会话信息](./03-prisma-adapter.png)
 
 ## 适配器 Adapters
 
@@ -309,7 +309,7 @@ model Authenticator {
 
 6.  在用户登录后，用户的会话信息就会自动保存到数据库：
 
-![](./06-auth-callback.png)
+![登录后会话信息自动写入数据库](./06-auth-callback.png)
 
 ## 总结
 

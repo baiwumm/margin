@@ -31,7 +31,10 @@ export default defineConfig({
       extendMarkdownConfig: true,
     }),
     sitemap({
-      filter: page => SITE.showArchives || !page.endsWith("/archives"),
+      // page 是完整 URL 且带尾斜杠：站内搜索页不参与索引，归档页跟随开关
+      filter: page =>
+        !page.endsWith("/search/") &&
+        (SITE.showArchives || !page.endsWith("/archives/")),
     }),
   ],
   markdown: {
