@@ -51,6 +51,7 @@ export type ProjectConfig = {
 };
 
 export const projects: ProjectConfig[] = [
+  { name: "token-usage", featured: true },
   { name: "better-admin", featured: true },
   {
     name: "theme-switch-animation",
