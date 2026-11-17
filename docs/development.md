@@ -28,6 +28,7 @@
 - 客户端脚本默认写在 Astro 组件 `<script>` 内，统一模式：`astro:page-load` 初始化 + `AbortController` 清理 + 防重复绑定（View Transitions 兼容）。**已知例外**：画廊 Lightbox（`src/pages/galleries/[gallery].astro`）与 `src/components/GalleryEmbed.astro` 挂在 `astro:after-swap` 上，见 `docs/pitfalls.md`。
 - 全局配置在 `src/config.ts` 的 `SITE`（含所有功能开关）；社交链接与「编辑本文」URL 来自环境变量 `PUBLIC_*`，禁止硬编码。
 - 搜索链路：`pnpm build` 时 `pagefind --site dist` → 拷贝到 `public/pagefind` → 浏览器端 PagefindUI 消费。
+- 灯箱：`src/components/Lightbox.astro` 是四处（文章正文 / 瞬间 / 画廊详情 / 画廊内嵌）共用的 dialog 外壳与样式，元素 id 统一为 `<id>-{counter,img,stage,caption,zoom-in,zoom-out,reset,rotate,close,prev,next}`，画廊内嵌另用 `data-lb-*` 区分同页多实例；开合、换图、键盘与滚动锁仍在各调用方的脚本里，新增灯箱不要再复制一份 dialog。
 - 图片变体档位：`astro.config.ts` 的 `image.breakpoints = [640, 800, 1200, 1600]` 决定正文内联图的 srcset（卡片 / 画廊 / 瞬间各自用 `widths` 指定）。导出层 `src/utils/export/images.ts` 的 `TIERS` 必须 ⊆ 这些档位，否则每张图会多出一批变体；新增档位时两侧同步改。
 - 排序口径：站点列表（`getSortedPosts`）按 `modDatetime ?? pubDatetime` 降序（最近更新优先）；导出层按 `pubDatetime` 降序，这是 api-contract D40 给小程序的列表契约。文章页「上一篇 / 下一篇」沿用站点顺序，因此相邻关系可能与小程序不一致——改任一侧都要按「关联项目」规则先评估。
 - 构建后裁剪：`scripts/prune-assets.mjs` 删除 `dist/_astro` 下没有任何引用的图片（eager glob 为取宽高而落盘的原图等），2026-11-17 实测回收约 100MB；它只删未被引用的文件，若发现引用了不存在的图片会直接报错退出。
