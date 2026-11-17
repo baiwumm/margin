@@ -68,8 +68,11 @@ const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
   "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
-/** 缓存记录最大有效龄期（ms）；超过则下次构建回源刷新。0 = 永不主动失效 */
-const CACHE_MAX_AGE_MS = 0;
+/**
+ * 缓存记录最大有效龄期（ms，30 天）；过期后下次构建回源刷新，
+ * 否则 B 站改了标题/封面（或视频被删、改分 P）站点会永远停在旧值。
+ */
+const CACHE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** B 站官方外链播放器（facade 点击时注入 iframe） */
 function buildEmbedUrl(ref: { bvid?: string; aid?: number; page?: number }) {

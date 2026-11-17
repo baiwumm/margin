@@ -85,8 +85,13 @@ const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
   "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
-/** 缓存记录最大有效龄期（ms）；超过则下次构建回源刷新。0 = 永不主动失效 */
-const CACHE_MAX_AGE_MS = 0;
+/**
+ * 缓存记录最大有效龄期（ms，30 天）；过期后下次构建回源刷新，
+ * 以免平台侧改了歌名/封面而站点永远停在旧值。
+ * 注意：导出层的 cachedTrack 是「禁联网」口径，读缓存时允许过期（allowStale），
+ * 宁可给旧数据也不能因为过期就把歌名/封面丢成 null。
+ */
+const CACHE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
 /** 本地音频目录（相对项目根）：public/audio */
 const AUDIO_DIR = join(
@@ -173,10 +178,14 @@ function cacheKey(platform: MusicPlatform, id: string): string {
   return `${platform}:${id}`;
 }
 
-function readCached(platform: MusicPlatform, id: string): CacheRecord | null {
+function readCached(
+  platform: MusicPlatform,
+  id: string,
+  allowStale = false
+): CacheRecord | null {
   const rec = cacheStore[cacheKey(platform, id)];
   if (!rec) return null;
-  if (CACHE_MAX_AGE_MS > 0 && rec.fetchedAt) {
+  if (!allowStale && CACHE_MAX_AGE_MS > 0 && rec.fetchedAt) {
     if (Date.now() - rec.fetchedAt > CACHE_MAX_AGE_MS) return null;
   }
   return rec;
@@ -353,7 +362,8 @@ export function cachedTrack(
   id: string,
   platform: MusicPlatform = "netease"
 ): MusicTrack | null {
-  const cached = readCached(platform, id);
+  // 禁联网口径：过期缓存也照用，避免把歌名/封面降级成 null
+  const cached = readCached(platform, id, true);
   if (!cached || (!cached.cover && !cached.name)) return null;
   const meta = PLATFORM_META[platform];
   return {
