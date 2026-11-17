@@ -273,6 +273,18 @@ const kindred: Friend[] = [
     url: "https://www.inkheap.com",
     avatar: "https://www.inkheap.com/logo.png",
   },
+  {
+    name: "Aiixi Bear 數位後花園",
+    description: "把科技融入生活、把 FOSS 变成日常，随手记录心情与生活点滴",
+    url: "https://www.aiixi.cc",
+    avatar: "https://www.aiixi.cc/img/blowfish_logo.webp",
+  },
+  {
+    name: "音乐虫子",
+    description: "音乐稀饭 篮球粉丝 IT米",
+    url: "https://blog.ruinet.com/",
+    avatar: "https://blog.ruinet.com/favicon.ico",
+  },
 ];
 
 const services: Friend[] = [
