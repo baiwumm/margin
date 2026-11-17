@@ -171,10 +171,20 @@ const showGrain = SITE.backdropEffects.grain;
 
     <!-- Load Fonts -->
     <!-- 全站字体为 Maple Mono CN（下方本地 CSS 提供）；Wotfard 仅作字体栈兜底 -->
+    <!-- 该 CSS 为 187KB（gzip 约 54KB）、229 个 @font-face，同步加载会阻塞首屏：
+         改用 media="print" 低优先级拉取、加载完成后切回 all；无 JS 时回退到阻塞加载。 -->
     <link
       rel="stylesheet"
       href="/giscus/fonts/maple-mono-cn/maple-mono-cn.css"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="/giscus/fonts/maple-mono-cn/maple-mono-cn.css"
+      />
+    </noscript>
     <Font
       cssVariable="--font-wotfard"
       preload={[{ subset: "latin", weight: 400, style: "normal" }]}
