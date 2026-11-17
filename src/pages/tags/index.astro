@@ -75,7 +75,6 @@ const maxCount = Math.max(...tagsWithCount.map(t => t.count));
           return (
             <a
               href={`/tags/${tag}/`}
-              transition:name={tag}
               class="tag-card group"
               data-tag-card
             >
