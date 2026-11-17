@@ -8,7 +8,7 @@
  * 有 `npmUrl` 时标题旁追加 npm 图标链接；
  * 有 `homepageUrl` 时卡片底部显示「在线体验」胶囊按钮；
  * 描述与标签跟随仓库端（构建期从 GitHub API 拉取），
- * 标签最多展示 3 个，超出时显示 +N。
+ * 标签最多展示 3 个（含 +N 计数），保证标签行不折行。
  */
 import { LANGUAGE_COLORS, type Project } from "@/data/projects";
 import IconGitHub from "@/assets/icons/IconGitHub.svg";
@@ -31,6 +31,10 @@ const {
 
 // Astro props 不做运行时校验，查不到颜色时由模板回退到 accent
 const languageColor = language ? LANGUAGE_COLORS[language] : undefined;
+
+// 标签行固定放 3 个胶囊：超出 3 个时让出末位给 +N，避免 +N 被单独挤到第二行
+const visibleTags = tags.length > 3 ? tags.slice(0, 2) : tags;
+const hiddenTags = tags.slice(visibleTags.length);
 ---
 
 <li
@@ -87,7 +91,7 @@ const languageColor = language ? LANGUAGE_COLORS[language] : undefined;
 
       {
         featured && (
-          <span class="rounded-full border border-featured/30 bg-featured/10 px-2 py-0.5 text-xs font-medium text-featured">
+          <span class="shrink-0 rounded-full border border-featured/30 bg-featured/10 px-2 py-0.5 text-xs font-medium whitespace-nowrap text-featured">
             置顶
           </span>
         )
@@ -171,7 +175,7 @@ const languageColor = language ? LANGUAGE_COLORS[language] : undefined;
             href={npmUrl}
             target="_blank"
             rel="noopener noreferrer"
-            class="shrink-0 rounded-sm text-foreground/55 transition-colors duration-200 hover:text-accent focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:ring-accent focus-visible:outline-none"
+            class="shrink-0 rounded-sm text-foreground/55 transition-colors duration-200 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
             aria-label={`${name}（npm 包）`}
             title="npm 包"
           >
@@ -181,40 +185,39 @@ const languageColor = language ? LANGUAGE_COLORS[language] : undefined;
       }
     </h3>
 
-    <!-- Description（仓库端 description，可能为空） -->
+    <!-- Description（仓库端 description，可能为空；固定两行高度，让同级卡片的标签行对齐） -->
+    <p
+      class="pointer-events-auto relative z-20 mt-2 line-clamp-2 min-h-[2lh] text-sm leading-relaxed text-foreground/75 select-text"
+    >
+      {description}
+    </p>
+
+    <!-- Tech tags：紧随描述，不随卡片高度浮动 -->
     {
-      description && (
-        <p class="pointer-events-auto relative z-20 mt-2 line-clamp-2 text-sm leading-relaxed text-foreground/75 select-text">
-          {description}
-        </p>
+      tags.length > 0 && (
+        <ul class="pointer-events-auto relative z-20 mt-3 flex w-full flex-wrap gap-1.5">
+          {visibleTags.map(tag => (
+            <li class="inline-flex items-center rounded-full border border-border/30 bg-background/40 px-2.5 py-0.5 text-xs font-medium text-foreground/70">
+              {tag}
+            </li>
+          ))}
+          {hiddenTags.length > 0 && (
+            <li
+              class="inline-flex items-center rounded-full border border-border/30 bg-background/40 px-2.5 py-0.5 text-xs font-medium text-foreground/50"
+              title={hiddenTags.join("、")}
+              aria-label={`另有 ${hiddenTags.length} 个标签：${hiddenTags.join("、")}`}
+            >
+              +{hiddenTags.length}
+            </li>
+          )}
+        </ul>
       )
     }
 
-    <!-- Footer: tech tags + demo button -->
-    <div class="relative z-20 mt-auto flex flex-col items-end gap-3 pt-4">
-      {
-        tags.length > 0 && (
-          <ul class="pointer-events-auto flex w-full flex-wrap gap-1.5">
-            {tags.slice(0, 3).map(tag => (
-              <li class="inline-flex items-center rounded-full border border-border/30 bg-background/40 px-2.5 py-0.5 text-xs font-medium text-foreground/70">
-                {tag}
-              </li>
-            ))}
-            {tags.length > 3 && (
-              <li
-                class="inline-flex items-center rounded-full border border-border/30 bg-background/40 px-2.5 py-0.5 text-xs font-medium text-foreground/50"
-                title={tags.slice(3).join("、")}
-                aria-label={`另有 ${tags.length - 3} 个标签：${tags.slice(3).join("、")}`}
-              >
-                +{tags.length - 3}
-              </li>
-            )}
-          </ul>
-        )
-      }
-
-      {
-        homepageUrl && (
+    <!-- 在线体验：底部对齐 -->
+    {
+      homepageUrl && (
+        <div class="relative z-20 mt-auto flex justify-end pt-4">
           <a
             href={homepageUrl}
             target="_blank"
@@ -237,8 +240,8 @@ const languageColor = language ? LANGUAGE_COLORS[language] : undefined;
             </svg>
             在线体验
           </a>
-        )
-      }
-    </div>
+        </div>
+      )
+    }
   </div>
 </li>
