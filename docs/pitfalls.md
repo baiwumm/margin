@@ -12,7 +12,7 @@
 - **accent 默认值决定在 FOUC 内联脚本里**：`Layout.astro` 内联脚本按 `localStorage`（用户手动选过）> `sessionStorage`（本标签页会话已抽过）> 五档等概率随机的顺序写 `data-accent`，随机值只写 `sessionStorage`、不占用 `localStorage`；`theme.ts` 的 `DEFAULT_ACCENT = "blue"` 仅是内联脚本未执行时的兜底。**副作用**：首次访问的强调色是非确定的，截图或走查需要稳定颜色时先在控制台执行 `localStorage.setItem("accent", "blue")` 再刷新。
 - **favicon 跟不了 `data-accent`，只能 JS 重算**：`theme.ts` 的 `reflectFavicon()` 读运行时 `--accent` 生成 data URL 覆盖 `link[rel=icon]`，挂在 `reflectAccent()` 与 `reflectPreference()` 上（accent 明暗两态色值不同，主题切换也要重算）。静态 `public/favicon.svg` 只负责首屏与无 JS，其外框深浅用 SVG 内 `@media (prefers-color-scheme)` 跟随**浏览器**而非站点 `data-theme`，否则标签页底色与描边同色会让图标看不见。`apple-touch-icon.png` 保留不透明深底板（iOS 读静态 PNG，透明底会被填黑）。
 - **搜索索引的复制是跨平台的**：`build` 脚本用 Node 的 `fs.cpSync` 把 `dist/pagefind` 复制到 `public/pagefind`（Windows / Linux 均可），dev 下搜索需先 build 一次。
-- **构建后会裁剪未被引用的图片**：`scripts/prune-assets.mjs` 在 `astro build` 之后删除 `dist/_astro` 下没有任何引用的图片（`import.meta.glob({ eager: true })` 只为取宽高就会把每张源图原件落盘，站点与导出层只用变体）。它只删无引用文件，发现「引用了不存在的图片」会直接报错；不要用单纯的「有没有被正文用到」来手删内容目录里的图。
+- **构建后会整理图片资源**：`scripts/prune-assets.mjs` 在 `astro build` 之后先按内容去重（同一张图被不同组件以不同参数请求时，Astro 会落出多份字节相同、文件名不同的变体），再删除没有任何引用的图片（`import.meta.glob({ eager: true })` 只为取宽高就会把每张源图原件落盘）。它只碰字节相同或无引用的文件，发现「引用了不存在的图片」会直接报错；不要用单纯的「有没有被正文用到」来手删内容目录里的图。
 - **已转视频的 GIF 源文件要同步删除**：`docs/content.md` 要求屏幕录制类演示优先用 mp4 + 首帧海报并在正文改用 `::video`，原 GIF 若不再被任何正文引用就直接删（git 历史仍在），否则它会被画廊/正文 glob 继续打进构建产物。
 - **生产构建依赖 devDependencies**：`@tailwindcss/typography`、`@pagefind/default-ui` 位于 devDependencies 但生产构建需要，CI 安装不要用 `--prod`。
 - **无自动化测试**：改动靠人工验证；View Transitions 下最常见的回归是事件监听器重复绑定。
