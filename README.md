@@ -28,7 +28,7 @@ Astro 7（SSG）· TypeScript（strict）· Tailwind CSS 4 · MDX · Shiki 代�
 
 ## 🚀 开发
 
-要求 Node.js 20+ 与 pnpm。
+要求 Node.js 22+ 与 pnpm（CI 使用 Node 24）。
 
 ```bash
 pnpm install        # 安装依赖
@@ -60,12 +60,10 @@ astro.config.ts     # 站点配置、字体、Shiki、集成
 
 ## 🔤 字体
 
-| 用途                 | 字体                                      |
-| -------------------- | ----------------------------------------- |
-| 正文                 | Maple Mono CN（本地子集化，Wotfard 兜底） |
-| 代码 / 等宽 / 终端风 | Fira Code                                 |
-| 斜体 / 装饰          | Sriracha                                  |
-| OG 图（构建期）      | Wotfard + Maple Mono CN（TTF）            |
+| 用途                     | 字体                                      |
+| ------------------------ | ----------------------------------------- |
+| 正文 / 代码 / 终端风     | Maple Mono CN（本地子集化，Wotfard 兜底） |
+| OG 图（构建期）          | Wotfard + Maple Mono CN（TTF）            |
 
 主站与 Giscus 评论共用 `public/giscus/fonts/` 下的字体（由 Layout 内联加载，避免重复请求）；Wotfard 与 OG 构建期 TTF 位于 `src/assets/fonts/`，由 `astro.config.ts` 注册。
 

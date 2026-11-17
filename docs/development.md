@@ -15,7 +15,7 @@
 - 搜索：Pagefind 1.5（构建期生成索引） + `@pagefind/default-ui`（弹窗 / 搜索页 / 文章列表三处）
 - 动态 OG 图：Satori + `@resvg/resvg-js`（帖子 / 站点 / 标签三类模板）
 - SEO：`@astrojs/sitemap`、`@astrojs/rss`、Layout 内 JSON-LD / OpenGraph / Twitter meta
-- 工具库：dayjs（utc/timezone 插件）、slugify、lodash.kebabcase；Markdown 插件 remark-toc、remark-collapse
+- 工具库：dayjs（utc/timezone 插件）、slugify、lodash.kebabcase；Markdown 插件 `remarkRemoveTocMarker` / `remarkLinkCard` / `remarkMusic` / `remarkVideo` 与 `rehypeExternalLinks`（全部在 `astro.config.ts` 的 `markdown.processor` 注册，项目未使用 `remark-toc` / `remark-collapse`）
 - 包管理 pnpm；ESLint（`no-console` 为 error）+ Prettier（astro / tailwind 插件）
 - 无 React / Vue 等框架组件，全部组件为 Astro Component
 
@@ -28,6 +28,9 @@
 - 客户端脚本默认写在 Astro 组件 `<script>` 内，统一模式：`astro:page-load` 初始化 + `AbortController` 清理 + 防重复绑定（View Transitions 兼容）。**已知例外**：画廊 Lightbox（`src/pages/galleries/[gallery].astro`）与 `src/components/GalleryEmbed.astro` 挂在 `astro:after-swap` 上，见 `docs/pitfalls.md`。
 - 全局配置在 `src/config.ts` 的 `SITE`（含所有功能开关）；社交链接与「编辑本文」URL 来自环境变量 `PUBLIC_*`，禁止硬编码。
 - 搜索链路：`pnpm build` 时 `pagefind --site dist` → 拷贝到 `public/pagefind` → 浏览器端 PagefindUI 消费。
+- 图片变体档位：`astro.config.ts` 的 `image.breakpoints = [640, 800, 1200, 1600]` 决定正文内联图的 srcset（卡片 / 画廊 / 瞬间各自用 `widths` 指定）。导出层 `src/utils/export/images.ts` 的 `TIERS` 必须 ⊆ 这些档位，否则每张图会多出一批变体；新增档位时两侧同步改。
+- 排序口径：站点列表（`getSortedPosts`）按 `modDatetime ?? pubDatetime` 降序（最近更新优先）；导出层按 `pubDatetime` 降序，这是 api-contract D40 给小程序的列表契约。文章页「上一篇 / 下一篇」沿用站点顺序，因此相邻关系可能与小程序不一致——改任一侧都要按「关联项目」规则先评估。
+- 构建后裁剪：`scripts/prune-assets.mjs` 删除 `dist/_astro` 下没有任何引用的图片（eager glob 为取宽高而落盘的原图等），2026-11-17 实测回收约 100MB；它只删未被引用的文件，若发现引用了不存在的图片会直接报错退出。
 
 # 关联项目（Ecosystem）
 
@@ -35,7 +38,7 @@ margin 不是孤立仓库：内容被 **margin-app**（微信小程序）消费�
 
 | 触点 | margin 侧 | 对方 |
 | --- | --- | --- |
-| 导出管线（构建期） | `src/utils/export/`（10 个模块；类型定义 `export/types.ts` 与 api-contract 一一对应） | margin-app 拉取导出产物展示全量内容 |
+| 导出管线（构建期） | `src/utils/export/`（9 个模块；类型定义 `export/types.ts` 与 api-contract 一一对应） | margin-app 拉取导出产物展示全量内容 |
 | 站点配置端点 | `src/pages/api/v1/site.json.ts`（api-contract §2，构建期落盘静态 JSON） | margin-app |
 | 评论标题映射 | `src/pages/comment-titles.json.ts` → 部署后 `https://www.baiwumm.com/comment-titles.json`（仅博客、与列表/详情同口径过滤草稿与定时文） | margin-comments 的 giscus 评论通知脚本查真实标题（discussion.title 只有 path） |
 | Markdown 插件 | `remarkVideo.ts` / `remarkMusic.ts` / `remarkLinkCard.ts` / `music.ts` | 插件本体与小程序导出层共用同一解析实现 |
@@ -80,7 +83,7 @@ edgeone.json           # EdgeOne Makers 项目配置（输出目录、边缘规�
 
 - 安装依赖：`pnpm install`
 - 开发：`pnpm run dev`（localhost:4321；搜索索引需先 build 一次）
-- 构建：`pnpm run build`（= `astro check` + `astro build` + `pagefind --site dist` + 拷贝索引到 `public/pagefind`）
+- 构建：`pnpm run build`（= `astro check` + `astro build` + `node scripts/prune-assets.mjs` + `pagefind --site dist` + 拷贝索引到 `public/pagefind`）
 - 预览：`pnpm run preview`
 - 类型同步：`pnpm run sync`（`astro sync`）
 - Lint：`pnpm run lint`

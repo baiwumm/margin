@@ -67,7 +67,7 @@ export function envelope<T>(
 }
 
 /* ── 体积预算（gzip 前，单位字节）与断言 ──────────────────────────── */
-/* manifest / titles 两项为 M0 实测修订（原估算 4KB / 40KB 在 74 篇全量 +
+/* manifest / titles 两项为 M0 实测修订（原估算 4KB / 40KB 在全量文章 +
  * resources 清单 + 拼音键的现实下不成立，实测 19.1KB / 46.3KB，留余量定档；
  * titles 又于 2026-10-16 提至 64KB——48KB 只剩 261 字节，~750B/篇的实测增速
  * 下篇必超。端上真实流量以 gzip 后为准：manifest ≈ 4KB、titles ≈ 12KB） */

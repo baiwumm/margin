@@ -1,6 +1,6 @@
 /**
  * 13 端点的数据构建器与全局编排 buildAll()。
- * - 一次进程内 memoize：所有端点共享同一份产物（含 74 篇 toBlocks 的重活）；
+ * - 一次进程内 memoize：所有端点共享同一份产物（含全部文章 toBlocks 的重活）；
  * - buildId = git short sha + 内容 hash（D34，hash 只覆盖 data，不含时变字段）；
  * - 每个文件出线前过体积预算与 URL 断言（D44），违规 throw 构建失败。
  */
