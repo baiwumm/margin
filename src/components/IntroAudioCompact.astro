@@ -31,13 +31,13 @@ const isStream = streamOverride ?? /^https?:\/\//i.test(src);
   data-duration={String(duration)}
   data-stream={isStream ? "true" : "false"}
   role="region"
-  aria-label="Compact audio player"
+  aria-label="音频播放器"
 >
   <button
     id="intro-audio-compact-btn"
     class="intro-audio-compact-btn"
     type="button"
-    aria-label="Play audio"
+    aria-label="播放音频"
   >
     <svg
       id="intro-audio-compact-play"
