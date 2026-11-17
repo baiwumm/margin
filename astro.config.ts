@@ -70,6 +70,11 @@ export default defineConfig({
   image: {
     responsiveStyles: true,
     layout: "constrained",
+    // 变体档位收敛（2026-11-17）：Astro 默认 7 档（640→2560），正文内联图
+    // 每张要落 6–7 份变体。这里只保留 4 档，且全部 ⊆ 导出层 TIERS
+    // （src/utils/export/images.ts），导出直接复用站点已产出的变体。
+    // 卡片 / 画廊等自带 widths 的组件不受此项影响。
+    breakpoints: [640, 800, 1200, 1600],
   },
   env: {
     schema: {

@@ -3,7 +3,8 @@
  *
  * 「只选择、不生成」（D25）：按集合用站点已产出的档位（research.md F7 实测）
  * 请求变体，请求宽度 ⊆ 站点已渲染的 srcset → 变体零新增（D46 定档）：
- * - blog 正文图   [640, 750, 828, 1080, 1280, 1541] → thumb 640 / md 750 / src 1280
+ * - blog 正文图   [640, 800, 1200, 1600]（astro.config.ts image.breakpoints）
+ *                 → thumb 640 / md 800 / src 1200
  * - 画廊照片      [400, 800, 1600]                  → thumb 400 / md 800 / src 1600
  * - 画廊封面      [800, 1200, 1600]                 → thumb 800 / md 800 / src 1600
  * - 瞬间图        [400, 800]                        → thumb 400 / md 800 / src 800
@@ -56,7 +57,7 @@ for (const map of [
 /* ── 档位定档（D46，依据 research.md F7 的站点实测 srcset）────────── */
 
 const TIERS: Record<AssetKind, { thumb: number; md: number; src: number }> = {
-  blog: { thumb: 640, md: 750, src: 1280 },
+  blog: { thumb: 640, md: 800, src: 1200 },
   galleryPhoto: { thumb: 400, md: 800, src: 1600 },
   galleryCover: { thumb: 800, md: 800, src: 1600 },
   moment: { thumb: 400, md: 800, src: 800 },

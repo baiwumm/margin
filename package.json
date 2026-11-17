@@ -16,7 +16,8 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build && pagefind --site dist && node -e \"fs.cpSync('dist/pagefind','public/pagefind',{recursive:true})\"",
+    "build": "astro check && astro build && node scripts/prune-assets.mjs && pagefind --site dist && node -e \"fs.cpSync('dist/pagefind','public/pagefind',{recursive:true})\"",
+    "assets:prune": "node scripts/prune-assets.mjs",
     "preview": "astro preview",
     "sync": "astro sync",
     "astro": "astro",
