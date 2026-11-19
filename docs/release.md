@@ -10,6 +10,7 @@
 - 有明确作用域时写 `类型(scope): 描述`（如 `docs(agents): ...`），无作用域时省略。
 - 一次提交只包含一个逻辑改动，不把无关改动混入同一提交。
 - 提交信息会被 release-it 按 Conventional Commits 自动分组进 CHANGELOG 与 GitHub Release（分组标题见 `.release-it.json`），请认真填写，发版不再人工撰写发布说明。
+- **AI 参与的提交还必须遵守根 [AGENTS.md](../AGENTS.md) 的「提交规范」**：按 `ai-commit-trailer` skill 添加 `Co-authored-by` 与 `Assisted-by` trailer，并用 `normalize.mjs check` 自检；纯人工改动不加。
 
 # 发版流程（全自动）
 

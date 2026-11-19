@@ -23,6 +23,13 @@ Margin（原 Devosfera）：基于 AstroPaper 深度二次开发的个人博客�
 5. **检查（本步骤完成判据）**：`pnpm run build`（含 `astro check`）退出码为 0；`pnpm run lint` 需要时也必须退出码 0，两项通过才算完成。
 6. **总结**：说明改了什么、依赖项、验证结果与遗留事项。
 
+# 提交规范
+
+- 提交信息使用 Conventional Commits 格式，描述中文优先；其余规则见 [docs/release.md](docs/release.md)。
+- **AI 参与的提交必须带 trailer**：正文后空一行，追加连续的 trailer 块。`Co-authored-by` 只写产品名与 registry 邮箱（GitHub 只解析这一行），模型名只进 `Assisted-by` 的 `host:model`；纯人工改动不加 trailer。
+- trailer 的身份、写法与校验流程一律以 `ai-commit-trailer` skill 为唯一规范：按实际运行本次会话的 Agent 匹配 `references/agents.json`，不得照抄其它产品。
+- 提交前把信息存成文件（建议 `.git/COMMIT_TRAILER_MSG`），运行该 skill 的 `node "$SKILL_DIR/scripts/normalize.mjs" check --message <文件>`（`SKILL_DIR` 为该 skill 目录），exit 0 才算通过；`fix --message <文件> --write` 可自动归位。不要改写已推送的历史。
+
 # 文档索引（docs/）
 
 本文件只保留总纲与最高频规则；专题规范按需阅读，**做对应类型的任务前必须先读对应文档**：
@@ -32,7 +39,7 @@ Margin（原 Devosfera）：基于 AstroPaper 深度二次开发的个人博客�
 | [docs/development.md](docs/development.md) | 技术栈、架构、目录结构、开发命令 | 改代码、动构建/依赖、排查构建问题前 |
 | [docs/content.md](docs/content.md) | 内容系统、创作规范、文章 Metadata 规则、成文后去 AI 味 | 创建或修改文章 / 画廊、生成 title / description / tags、文章成文后 |
 | [docs/ui-guidelines.md](docs/ui-guidelines.md) | 组件、样式、性能、代码规范 | 改 UI、写组件或客户端脚本前 |
-| [docs/release.md](docs/release.md) | 提交规则、全自动发版流程 | 提交代码、执行发版前 |
+| [docs/release.md](docs/release.md) | 提交规则、AI trailer、全自动发版流程 | 提交代码、执行发版前 |
 | [docs/pitfalls.md](docs/pitfalls.md) | 已知陷阱、隐式约定与历史决策 | **任何修改前扫一遍**，避免重复踩坑 |
 | [docs/galleries.md](docs/galleries.md) | 画廊功能完整技术文档 | 深入定制或排查画廊功能时 |
 
