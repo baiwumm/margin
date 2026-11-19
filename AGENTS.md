@@ -2,7 +2,7 @@
 
 Margin（原 Devosfera）：基于 AstroPaper 深度二次开发的个人博客（纯静态站点，作者：白雾茫茫丶，域名：https://baiwumm.com）。项目定位是「个人技术博客 + 图片画廊」，当前主要目标是在保持静态生成、页面性能与既有视觉体系（终端/赛博朋克风格、玻璃拟态、Aurora 光效）的前提下，持续扩展和维护博客内容、画廊、全局搜索、SEO 与 OG 图等既有能力，不做架构性重写。
 
-关键事实：提交历史较短（版本 tag 自 `v1.1.0` 起，可回退）、无自动化测试；CI 有两个——手动触发的发版 workflow（`.github/workflows/release.yml`：lint / build 预检 + release-it 自动完成版本号、CHANGELOG、tag 与 GitHub Release 发布，不负责部署）与 push/PR 触发的图片压缩校验 workflow（`.github/workflows/image-check.yml`，兜底 pre-commit 钩子）；改动质量依赖 `astro check` + 构建与人工验证。本项目处于「先理解、后修改」的长期 AI 协作模式。
+关键事实：提交历史较短（版本 tag 自 `v1.1.0` 起，可回退）、无自动化测试；CI 有三个——手动触发的发版 workflow（`.github/workflows/release.yml`：lint / build 预检 + release-it 自动完成版本号、CHANGELOG、tag 与 GitHub Release 发布，不负责部署）、push/PR 触发的 lint + build 校验 workflow（`.github/workflows/ci.yml`）与图片压缩校验 workflow（`.github/workflows/image-check.yml`，兜底 pre-commit 钩子）；改动质量依赖 `astro check` + 构建与人工验证。本项目处于「先理解、后修改」的长期 AI 协作模式。
 
 # 修改原则
 
