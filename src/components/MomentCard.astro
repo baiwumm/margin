@@ -12,7 +12,7 @@
  */
 import type { CollectionEntry } from "astro:content";
 import type { ImageMetadata } from "astro";
-import { Image } from "astro:assets";
+import { Image, getImage } from "astro:assets";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -40,12 +40,19 @@ const showAll = imageCount <= 3;
 const visibleImages = showAll ? images : images.slice(0, 2);
 const extraCount = showAll ? 0 : imageCount - 2;
 
-// 全部图片的 src/alt 列表（含未展示的隐藏图），供灯箱按卡片读取
+// 全部图片的 src/alt 列表（含未展示的隐藏图），供灯箱按卡片读取。
+// 灯箱用 800px 变体而不是 img.src：Astro 7.4 起不再保证原始图落盘，
+// 直接用源图 URL 会指向不存在的 _astro 文件。
 const imageList = JSON.stringify(
-  images.map(img => ({
-    src: img.src,
-    alt: text.slice(0, 30) || "瞬间图片",
-  }))
+  await Promise.all(
+    images.map(async img => {
+      const optimized = await getImage({ src: img, width: 800 });
+      return {
+        src: optimized.src,
+        alt: text.slice(0, 30) || "瞬间图片",
+      };
+    })
+  )
 );
 ---
 
