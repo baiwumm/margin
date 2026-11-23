@@ -57,7 +57,7 @@
     "pagefind": "^1.6.0",
     "pinyin-pro": "^3.29.5",
     "prettier": "^3.10.1",
-    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-astro": "^1.1.2",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "release-it": "^20.2.1",
     "typescript": "^6.0.3",
