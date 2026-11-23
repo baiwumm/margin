@@ -59,7 +59,7 @@
     "prettier": "^3.10.1",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
-    "release-it": "^20.2.1",
+    "release-it": "^21.1.2",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.72.2"
   }
